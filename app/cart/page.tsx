@@ -24,7 +24,7 @@ export default function CartPage() {
       setLoading(true);
       const { data, error } = await supabase.from("cart_items").select(`id, quantity, products ( name, price )`);
       if (error) throw error;
-      if (data) setItems(data as CartItem[]);
+      if (data) setItems(data as any);
     } catch (err) {
       setError("Failed to load cart");
       console.error(err);
