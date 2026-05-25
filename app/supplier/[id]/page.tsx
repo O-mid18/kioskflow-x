@@ -25,6 +25,8 @@ export default function SupplierProfilePage() {
       .single();
 
     setSupplier(data);
+    console.log("SUPPLIER:", data);
+    console.log(data);
 
     const { data: productData } = await supabase
       .from("products")
@@ -32,6 +34,7 @@ export default function SupplierProfilePage() {
       .eq("supplier_id", supplierId);
 
     setProducts(productData || []);
+    console.log("PRODUCTS:", productData);
 
     setLoading(false);
   };
