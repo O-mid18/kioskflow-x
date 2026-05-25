@@ -94,7 +94,7 @@ export default function SupplierProfilePage() {
   <h2 className="text-2xl font-bold mt-4 text-black hover:text-red-600 cursor-pointer">
     {product.name}
   </h2>
-</a>
+</a> 
 
       <p className="text-gray-600 mt-2">
         {product.description}
