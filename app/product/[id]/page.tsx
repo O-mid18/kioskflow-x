@@ -20,7 +20,7 @@ const [rating, setRating] = useState(5);
     const { data } = await supabase
       .from("products")
       .select("*")
-      .eq("id", params.id)
+      .eq("id", String(params.id))
       .single();
 
     setProduct(data);
