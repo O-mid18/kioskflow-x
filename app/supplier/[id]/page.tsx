@@ -84,6 +84,44 @@ export default function SupplierProfilePage() {
       key={product.id}
       className="bg-white rounded-2xl p-4 shadow-lg"
     >
+      <a href={`/product/${product.id}`}>
+        <h2 className="text-2xl font-bold mt-4 text-black hover:text-red-600 cursor-pointer">
+          {product.name}
+        </h2>
+      </a>
+
+      <p className="text-3xl font-bold mt-4 text-green-600">
+        €{product.price}
+      </p>
+
+      <button
+        onClick={async () => {
+          const { data: userData } =
+            await supabase.auth.getUser();
+
+          if (!userData.user) {
+            alert("Please login first");
+            return;
+          }
+
+          await supabase.from("cart_items").insert({
+            user_id: userData.user.id,
+            product_id: product.id,
+            quantity: 1,
+          });
+
+          alert("Added to cart 🛒");
+        }}
+        className="mt-4 w-full bg-black text-white py-3 rounded-xl"
+      >
+        Add To Cart
+      </button>
+    </div>
+  ))}
+</div>
+      key={product.id}
+      className="bg-white rounded-2xl p-4 shadow-lg"
+    >
       <img
         src={product.image_url}
         alt={product.name}
