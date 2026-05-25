@@ -21,7 +21,7 @@ export default function SupplierProfilePage() {
     const { data } = await supabase
       .from("suppliers")
       .select("*")
-      .eq("user_id", supplierId)
+      .eq("id", supplierId)
       .single();
 
     setSupplier(data);
