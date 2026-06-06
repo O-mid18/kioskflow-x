@@ -5,31 +5,64 @@ import { supabase } from "@/lib/supabase";
 
 export default function SupplierDashboard() {
   const [products, setProducts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchProducts();
   }, []);
 
   const fetchProducts = async () => {
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from("products")
       .select("*");
 
-    if (data) {
-      setProducts(data);
+    if (error) {
+      console.error(error);
+      return;
     }
+
+    setProducts(data || []);
+    setLoading(false);
   };
 
+  const deleteProduct = async (productId: string) => {
+    const confirmDelete = confirm(
+      "Are you sure you want to delete this product?"
+    );
+
+    if (!confirmDelete) return;
+
+    const { error } = await supabase
+      .from("products")
+      .delete()
+      .eq("id", productId);
+
+    if (error) {
+      alert(error.message);
+      return;
+    }
+
+    fetchProducts();
+  };
+
+  if (loading) {
+    return (
+      <main className="min-h-screen flex items-center justify-center">
+        Loading...
+      </main>
+    );
+  }
+
   return (
-    <main className="min-h-screen bg-gray-50 p-8">
+    <main className="min-h-screen bg-black text-white p-8">
       <div className="flex items-center justify-between mb-10">
-        <h1 className="text-4xl font-bold">
+        <h1 className="text-5xl font-bold">
           Supplier Dashboard
         </h1>
 
         <a
           href="/add-product"
-          className="bg-red-600 text-white px-5 py-3 rounded-2xl"
+          className="bg-red-600 hover:bg-red-700 px-5 py-3 rounded-2xl"
         >
           Add Product
         </a>
@@ -39,7 +72,7 @@ export default function SupplierDashboard() {
         {products.map((product) => (
           <div
             key={product.id}
-            className="bg-white rounded-3xl p-5 shadow"
+            className="bg-white text-black rounded-3xl p-5 shadow-xl"
           >
             <img
               src={
@@ -55,19 +88,26 @@ export default function SupplierDashboard() {
             </h2>
 
             <p className="text-gray-500 mt-2">
-              Stock: {product.stock}
+              Stock: {product.stock || 0}
             </p>
 
-            <p className="text-2xl font-bold mt-4">
+            <p className="text-3xl font-bold mt-4 text-green-600">
               €{product.price}
             </p>
 
             <a
               href={`/edit-product/${product.id}`}
-              className="block mt-4 bg-red-600 text-white text-center px-4 py-2 rounded-xl"
+              className="block mt-4 bg-red-600 text-white text-center px-4 py-3 rounded-xl"
             >
               Edit Product
             </a>
+
+            <button
+              onClick={() => deleteProduct(product.id)}
+              className="block mt-3 w-full bg-black text-white px-4 py-3 rounded-xl"
+            >
+              Delete Product
+            </button>
           </div>
         ))}
       </div>
