@@ -83,8 +83,57 @@ export default function CheckoutPage() {
   }
 
   return (
-    <main className="min-h-screen bg-gray-50 p-6 max-w-2xl mx-auto">
-      <h1 className="text-4xl font-bold mb-8">Checkout</h1>
+    <main className="min-h-screen bg-black text-white p-6">
+      <div className="relative overflow-hidden rounded-[40px] bg-gradient-to-br from-red-700 via-black to-gray-900 p-12 mb-12 shadow-2xl">
+
+  <p className="uppercase tracking-[6px] text-red-400 text-sm font-bold">
+    Secure Checkout
+  </p>
+
+  <h1 className="text-6xl font-black leading-tight mt-4">
+    Complete Your
+    <span className="text-red-500">
+      {" "}Order
+    </span>
+  </h1>
+
+  <p className="text-gray-300 text-xl mt-6 max-w-2xl">
+    Fast, secure and premium checkout experience
+    powered by KioskFlow.
+  </p>
+
+  <div className="flex gap-10 mt-10">
+    <div>
+      <p className="text-4xl font-black">
+        {items.length}
+      </p>
+
+      <p className="text-gray-400">
+        Products
+      </p>
+    </div>
+
+    <div>
+      <p className="text-4xl font-black">
+        €{total.toFixed(2)}
+      </p>
+
+      <p className="text-gray-400">
+        Total
+      </p>
+    </div>
+
+    <div>
+      <p className="text-4xl font-black">
+        100%
+      </p>
+
+      <p className="text-gray-400">
+        Secure
+      </p>
+    </div>
+  </div>
+</div>
 
       {error && (
         <div className="bg-red-100 text-red-700 p-4 rounded-2xl mb-6">
@@ -99,16 +148,20 @@ export default function CheckoutPage() {
           <div className="space-y-4">
             {items.map((item) => (
               <div key={item.id} className="bg-white rounded-2xl p-5 shadow">
-                <h2 className="text-2xl font-bold">{item.products?.name}</h2>
-                <p className="text-gray-500 mt-2">Quantity: {item.quantity}</p>
-                <p className="text-2xl font-bold mt-4">
+                <h2 className="text-3xl font-black text-white">
+  {item.products?.name}
+</h2>
+                <p className="text-gray-300 mt-3 text-lg">
+  Quantity: {item.quantity}
+</p>
+                <p className="text-4xl font-black mt-6 text-red-400">
                   €{(item.products?.price * item.quantity).toFixed(2)}
                 </p>
               </div>
             ))}
           </div>
 
-          <div className="bg-white rounded-2xl p-6 shadow mt-10">
+          <div className="bg-white/10 backdrop-blur-xl border border-white/10 rounded-[30px] p-6 shadow-2xl">
             <h2 className="text-3xl font-bold">Total: €{total.toFixed(2)}</h2>
             <button
               onClick={handlePayment}
