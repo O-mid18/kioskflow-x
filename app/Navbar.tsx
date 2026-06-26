@@ -2,39 +2,45 @@
 
 import Link from "next/link";
 
+const ORANGE = "#E8521A";
+
 export default function Navbar() {
   return (
-    <nav className="bg-black border-b border-gray-800 px-6 py-4 flex items-center justify-between sticky top-0 z-50">
-      <h1 className="text-2xl font-bold text-white">
-        KioskFlow
-      </h1>
+    <nav style={{
+      background: "var(--kf-surface)",
+      borderBottom: "1px solid var(--kf-border)",
+      padding: "0 24px",
+      height: 60,
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "space-between",
+      position: "sticky",
+      top: 0,
+      zIndex: 50,
+    }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <div style={{ width: 30, height: 30, background: ORANGE, borderRadius: 7, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 900, fontSize: 14, color: "#fff" }}>
+          K
+        </div>
+        <span style={{ fontWeight: 800, fontSize: 15, color: "var(--kf-text)", letterSpacing: "-0.3px" }}>
+          KioskFlow
+        </span>
+      </div>
 
-      <div className="flex items-center gap-4">
-        <Link
-          href="/marketplace"
-          className="text-white hover:text-red-500"
-        >
-          Marketplace
+      <div style={{ display: "flex", alignItems: "center", gap: 24 }}>
+        <Link href="/marketplace" style={{ color: "var(--kf-text2)", fontWeight: 500, fontSize: 14, textDecoration: "none" }}>
+          Marktplatz
         </Link>
 
-        <Link
-          href="/cart"
-          className="text-white hover:text-red-500"
-        >
-          Cart
+        <Link href="/cart" style={{ color: "var(--kf-text2)", fontWeight: 500, fontSize: 14, textDecoration: "none" }}>
+          Warenkorb
         </Link>
 
-        <Link
-          href="/supplier"
-          className="text-white hover:text-red-500"
-        >
-          Supplier
+        <Link href="/supplier" style={{ color: "var(--kf-text2)", fontWeight: 500, fontSize: 14, textDecoration: "none" }}>
+          Lieferant
         </Link>
 
-        <Link
-          href="/admin"
-          className="text-white hover:text-red-500"
-        >
+        <Link href="/admin" style={{ color: "var(--kf-text2)", fontWeight: 500, fontSize: 14, textDecoration: "none" }}>
           Admin
         </Link>
       </div>

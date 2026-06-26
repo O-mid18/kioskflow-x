@@ -4,6 +4,34 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* KioskFlow theme tokens */
+:root {
+  --kf-bg: #E8E4DC;
+  --kf-surface: #F4F1EC;
+  --kf-border: #CEC8BF;
+  --kf-text: #100E0B;
+  --kf-text2: #574F4A;
+  --kf-text3: #8F857E;
+  --kf-toast-bg: #1A1714;
+  --kf-toast-fg: #ffffff;
+}
+
+.dark {
+  --kf-bg: #0E0C0A;
+  --kf-surface: #1A1714;
+  --kf-border: #2C2824;
+  --kf-text: #EDE9E3;
+  --kf-text2: #9A9088;
+  --kf-text3: #5C5450;
+  --kf-toast-bg: #EDE9E3;
+  --kf-toast-fg: #1A1714;
+}
+
+/* analytics-bento overrides */
+:root {
+  --border: oklch(0.7 0 0);
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);

@@ -1,371 +1,258 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import {
-  ResponsiveContainer,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  Tooltip,
-} from "recharts";
 import { supabase } from "@/lib/supabase";
 
-// ─── Types ────────────────────────────────────────────────────────────────────
-interface OrderItem {
-  id: number;
-  product_id: number;
-  quantity: number;
-  price: number;
-}
+const BG      = "var(--kf-bg)";
+const SURFACE = "var(--kf-surface)";
+const BORDER  = "var(--kf-border)";
+const TEXT    = "var(--kf-text)";
+const TEXT2   = "var(--kf-text2)";
+const TEXT3   = "var(--kf-text3)";
+const ORANGE  = "#E8521A";
 
-interface Order {
-  id: number;
-  status: "pending" | "processing" | "completed" | "cancelled";
-  total_price: number;
-  created_at: string;
-  user_id: string;
-  users?: { email: string };
-  order_items?: OrderItem[];
-}
-
-// ─── Status config ────────────────────────────────────────────────────────────
-const STATUS_CONFIG = {
-  pending:    { color: "text-yellow-500", bg: "bg-yellow-100", dot: "bg-yellow-500", label: "Pending" },
-  processing: { color: "text-blue-500",   bg: "bg-blue-100",   dot: "bg-blue-500",   label: "Processing" },
-  completed:  { color: "text-green-500",  bg: "bg-green-100",  dot: "bg-green-500",  label: "Completed" },
-  cancelled:  { color: "text-red-500",    bg: "bg-red-100",    dot: "bg-red-500",    label: "Cancelled" },
+const STATUS: Record<string, { label: string; color: string; bg: string; icon: string }> = {
+  pending:   { label: "Ausstehend", color: "#ea580c", bg: "#fff7ed", icon: "⏳" },
+  paid:      { label: "Bezahlt",    color: "#16a34a", bg: "#f0fdf4", icon: "✅" },
+  shipped:   { label: "Versandt",   color: "#2563eb", bg: "#eff6ff", icon: "🚚" },
+  delivered: { label: "Geliefert",  color: "#16a34a", bg: "#f0fdf4", icon: "📦" },
+  cancelled: { label: "Storniert",  color: "#dc2626", bg: "#fef2f2", icon: "❌" },
 };
 
-const STEPS = ["pending", "processing", "completed"];
+const STEPS = [
+  { key: "pending",   label: "Bestellt" },
+  { key: "paid",      label: "Bezahlt"  },
+  { key: "shipped",   label: "Versandt" },
+  { key: "delivered", label: "Geliefert"},
+];
 
-// ─── Order Progress Bar ───────────────────────────────────────────────────────
-function OrderProgress({ status }: { status: Order["status"] }) {
-  if (status === "cancelled") {
-    return (
-      <div className="mt-4 flex items-center gap-2">
-        <span className="bg-red-100 text-red-600 text-xs font-bold px-3 py-1 rounded-full">
-          ❌ Order Cancelled
-        </span>
-      </div>
-    );
-  }
+type OrderItem = {
+  id: string; product_id: string; quantity: number; price_at_purchase: number;
+  products?: { name: string; image_url?: string } | null;
+};
+type Order = {
+  id: string; total_price: number; status: string; created_at: string;
+  order_items?: OrderItem[];
+};
 
-  const currentStep = STEPS.indexOf(status);
+function StatusBadge({ status }: { status: string }) {
+  const s = STATUS[status] ?? { label: status, color: TEXT3, bg: BG, icon: "•" };
+  return (
+    <span style={{ background: s.bg, color: s.color, fontSize: 12, fontWeight: 700, padding: "4px 12px", borderRadius: 100, display: "inline-flex", alignItems: "center", gap: 5 }}>
+      {s.icon} {s.label}
+    </span>
+  );
+}
+
+function ProgressBar({ status }: { status: string }) {
+  if (status === "cancelled") return (
+    <div style={{ marginTop: 16, display: "flex", alignItems: "center", gap: 8 }}>
+      <span style={{ background: "#fef2f2", color: "#dc2626", fontSize: 12, fontWeight: 700, padding: "4px 12px", borderRadius: 100 }}>❌ Bestellung storniert</span>
+    </div>
+  );
+
+  const currentIdx = STEPS.findIndex(s => s.key === status);
 
   return (
-    <div className="mt-6">
-      <div className="flex items-center gap-0">
+    <div style={{ marginTop: 20 }}>
+      <div style={{ display: "flex", alignItems: "center" }}>
         {STEPS.map((step, i) => {
-          const done = i <= currentStep;
+          const done = i <= currentIdx;
           return (
-            <div key={step} className="flex items-center">
-              <div
-                className={`w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold transition ${
-                  done ? "bg-red-600 text-white" : "bg-gray-200 text-gray-400"
-                }`}
-              >
-                {done ? "✓" : i + 1}
+            <div key={step.key} style={{ display: "flex", alignItems: "center", flex: i < STEPS.length - 1 ? 1 : 0 }}>
+              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
+                <div style={{ width: 28, height: 28, borderRadius: "50%", background: done ? ORANGE : BORDER, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 800, color: done ? "#fff" : TEXT3, flexShrink: 0, transition: "background 0.3s" }}>
+                  {done ? "✓" : i + 1}
+                </div>
+                <p style={{ fontSize: 10, fontWeight: 600, color: done ? ORANGE : TEXT3, whiteSpace: "nowrap" }}>{step.label}</p>
               </div>
               {i < STEPS.length - 1 && (
-                <div className={`w-20 h-1 transition ${done && i < currentStep ? "bg-red-600" : "bg-gray-200"}`} />
+                <div style={{ flex: 1, height: 2, background: i < currentIdx ? ORANGE : BORDER, margin: "0 4px", marginBottom: 18, transition: "background 0.3s" }} />
               )}
             </div>
           );
         })}
       </div>
-      <div className="flex justify-between text-xs mt-2 text-gray-400 w-[calc(5*1.25rem+2*5rem)]">
-        <span>Pending</span>
-        <span className="ml-8">Processing</span>
-        <span>Completed</span>
-      </div>
     </div>
   );
 }
 
-// ─── Main Page ────────────────────────────────────────────────────────────────
 export default function OrdersPage() {
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [orders, setOrders]           = useState<Order[]>([]);
+  const [loading, setLoading]         = useState(true);
   const [statusFilter, setStatusFilter] = useState("all");
-  const [search, setSearch] = useState("");
-  const [expandedOrder, setExpandedOrder] = useState<number | null>(null);
-  const [updatingStatus, setUpdatingStatus] = useState<number | null>(null);
-  const [sortBy, setSortBy] = useState<"newest" | "oldest" | "highest" | "lowest">("newest");
+  const [expandedId, setExpandedId]   = useState<string | null>(null);
 
-  useEffect(() => {
-    fetchOrders();
-  }, [statusFilter]);
+  useEffect(() => { fetchOrders(); }, []);
 
   const fetchOrders = async () => {
     setLoading(true);
-    let query = supabase
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) { window.location.href = "/login"; return; }
+
+    const { data } = await supabase
       .from("orders")
-      .select("*, order_items(*)")
+      .select("id, total_price, status, created_at, order_items(id, product_id, quantity, price_at_purchase, products(name, image_url))")
+      .eq("buyer_id", user.id)
       .order("created_at", { ascending: false });
 
-    if (statusFilter !== "all") {
-      query = query.eq("status", statusFilter);
-    }
-
-    const { data, error } = await query;
-    if (error) console.error("Error fetching orders:", error.message);
-    setOrders(data || []);
+    setOrders((data as unknown as Order[]) ?? []);
     setLoading(false);
   };
 
-  const updateStatus = async (orderId: number, newStatus: Order["status"]) => {
-    setUpdatingStatus(orderId);
-    const { error } = await supabase
-      .from("orders")
-      .update({ status: newStatus })
-      .eq("id", orderId);
+  const filtered = statusFilter === "all"
+    ? orders
+    : orders.filter(o => o.status === statusFilter);
 
-    if (!error) {
-      setOrders((prev) =>
-        prev.map((o) => (o.id === orderId ? { ...o, status: newStatus } : o))
-      );
-    }
-    setUpdatingStatus(null);
-  };
+  const totalSpent = orders
+    .filter(o => ["paid","shipped","delivered"].includes(o.status))
+    .reduce((s, o) => s + Number(o.total_price), 0);
 
-  // Stats
-  const totalRevenue = orders.reduce((sum, o) => sum + Number(o.total_price || 0), 0);
-  const avgOrderValue = orders.length ? (totalRevenue / orders.length).toFixed(2) : "0.00";
-
-  const chartData = [
-    { name: "Revenue (€)", value: totalRevenue },
-    { name: "Orders", value: orders.length },
-    { name: "Pending", value: orders.filter((o) => o.status === "pending").length },
-    { name: "Completed", value: orders.filter((o) => o.status === "completed").length },
-  ];
-
-  // Filter + sort
-  const filteredOrders = orders
-    .filter((o) => {
-      const q = search.toLowerCase();
-      return (
-        String(o.id).includes(q) ||
-        (o.users?.email || o.user_id || "").toLowerCase().includes(q)
-      );
-    })
-    .sort((a, b) => {
-      if (sortBy === "newest") return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
-      if (sortBy === "oldest") return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
-      if (sortBy === "highest") return Number(b.total_price) - Number(a.total_price);
-      return Number(a.total_price) - Number(b.total_price);
-    });
-
-  if (loading) {
-    return (
-      <main className="min-h-screen bg-black flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-red-600 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-white text-xl">Loading orders...</p>
-        </div>
-      </main>
-    );
-  }
+  if (loading) return (
+    <main style={{ minHeight: "100vh", background: BG, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'DM Sans',system-ui,sans-serif" }}>
+      <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
+      <div style={{ width: 36, height: 36, border: `3px solid ${BORDER}`, borderTopColor: ORANGE, borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
+    </main>
+  );
 
   return (
-    <main className="min-h-screen bg-black text-white p-8">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-10">
-        <div>
-          <h1 className="text-5xl font-black">Orders Dashboard</h1>
-          <p className="text-gray-400 mt-1">{orders.length} total orders</p>
-        </div>
-        <button
-          onClick={fetchOrders}
-          className="bg-red-600 hover:bg-red-700 transition px-6 py-3 rounded-2xl font-bold"
-        >
-          ↻ Refresh
-        </button>
-      </div>
+    <main style={{ minHeight: "100vh", background: BG, fontFamily: "'DM Sans','Helvetica Neue',system-ui,sans-serif", color: TEXT, paddingBottom: 60 }}>
+      <style>{`@import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600;700&display=swap'); *{box-sizing:border-box}`}</style>
 
-      {/* Stats Cards */}
-      <div className="grid md:grid-cols-5 gap-4 mb-10">
-        {[
-          { label: "Total Orders", value: orders.length, color: "text-black" },
-          { label: "Pending", value: orders.filter((o) => o.status === "pending").length, color: "text-yellow-500" },
-          { label: "Processing", value: orders.filter((o) => o.status === "processing").length, color: "text-blue-500" },
-          { label: "Completed", value: orders.filter((o) => o.status === "completed").length, color: "text-green-500" },
-          { label: "Cancelled", value: orders.filter((o) => o.status === "cancelled").length, color: "text-red-500" },
-        ].map((stat) => (
-          <div key={stat.label} className="bg-white text-black rounded-3xl p-5 shadow">
-            <p className="text-gray-500 text-sm">{stat.label}</p>
-            <h2 className={`text-4xl font-black mt-1 ${stat.color}`}>{stat.value}</h2>
+      {/* Navbar */}
+      <nav style={{ background: SURFACE, borderBottom: `1px solid ${BORDER}`, padding: "0 28px", height: 60, display: "flex", alignItems: "center", justifyContent: "space-between", position: "sticky", top: 0, zIndex: 40 }}>
+        <a href="/marketplace" style={{ display: "flex", alignItems: "center", gap: 8, textDecoration: "none" }}>
+          <div style={{ width: 30, height: 30, background: ORANGE, borderRadius: 7, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 900, fontSize: 14, color: "#fff", fontFamily: "'Syne',sans-serif" }}>K</div>
+          <span style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 14, color: TEXT }}>KioskFlow</span>
+        </a>
+        <div style={{ display: "flex", gap: 6 }}>
+          <a href="/marketplace" style={{ fontSize: 13, color: TEXT2, textDecoration: "none", fontWeight: 500, padding: "6px 14px", borderRadius: 8 }}>Marktplatz</a>
+          <a href="/cart" style={{ fontSize: 13, color: TEXT2, textDecoration: "none", fontWeight: 500, padding: "6px 14px", borderRadius: 8 }}>Warenkorb</a>
+          <a href="/profile" style={{ fontSize: 13, color: TEXT2, textDecoration: "none", fontWeight: 500, padding: "6px 14px", borderRadius: 8 }}>Profil</a>
+        </div>
+      </nav>
+
+      <div style={{ maxWidth: 800, margin: "0 auto", padding: "36px 24px" }}>
+
+        {/* Header */}
+        <div style={{ marginBottom: 28 }}>
+          <p style={{ fontSize: 11, fontWeight: 700, color: TEXT3, letterSpacing: "2.5px", textTransform: "uppercase", marginBottom: 8 }}>Mein Konto</p>
+          <h1 style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 28, color: TEXT, letterSpacing: "-0.8px" }}>Meine Bestellungen</h1>
+        </div>
+
+        {/* KPI row */}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12, marginBottom: 28 }}>
+          {[
+            { icon: "🧾", label: "Bestellungen",    value: String(orders.length) },
+            { icon: "💶", label: "Ausgegeben",       value: `€${totalSpent.toFixed(2)}`, hi: true },
+            { icon: "⏳", label: "Ausstehend",       value: String(orders.filter(o => o.status === "pending").length) },
+          ].map(s => (
+            <div key={s.label} style={{ background: s.hi ? ORANGE : SURFACE, border: `1px solid ${s.hi ? ORANGE : BORDER}`, borderRadius: 14, padding: "18px 20px" }}>
+              <span style={{ fontSize: 20 }}>{s.icon}</span>
+              <p style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 22, color: s.hi ? "#fff" : TEXT, margin: "8px 0 2px" }}>{s.value}</p>
+              <p style={{ fontSize: 12, fontWeight: 600, color: s.hi ? "rgba(255,255,255,0.8)" : TEXT2 }}>{s.label}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* Status filter */}
+        <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 20 }}>
+          {[{ key: "all", label: `Alle (${orders.length})` }, ...Object.entries(STATUS).map(([k, v]) => ({ key: k, label: `${v.icon} ${v.label} (${orders.filter(o => o.status === k).length})` }))]
+            .map(f => (
+              <button key={f.key} onClick={() => setStatusFilter(f.key)}
+                style={{ padding: "8px 14px", borderRadius: 100, border: `1.5px solid ${statusFilter === f.key ? ORANGE : BORDER}`, background: statusFilter === f.key ? `${ORANGE}15` : SURFACE, color: statusFilter === f.key ? ORANGE : TEXT2, fontWeight: 600, fontSize: 12, cursor: "pointer", whiteSpace: "nowrap" }}>
+                {f.label}
+              </button>
+            ))}
+        </div>
+
+        {/* Orders list */}
+        {filtered.length === 0 ? (
+          <div style={{ textAlign: "center", padding: "80px 0" }}>
+            <p style={{ fontSize: 48, marginBottom: 16 }}>📭</p>
+            <p style={{ color: TEXT2, fontSize: 15, fontWeight: 600 }}>Keine Bestellungen gefunden.</p>
+            <a href="/marketplace" style={{ display: "inline-block", marginTop: 20, background: ORANGE, color: "#fff", fontWeight: 700, padding: "12px 24px", borderRadius: 10, textDecoration: "none", fontSize: 14 }}>
+              Zum Marktplatz →
+            </a>
           </div>
-        ))}
-      </div>
+        ) : (
+          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+            {filtered.map(order => {
+              const expanded = expandedId === order.id;
+              const s = STATUS[order.status] ?? STATUS.pending;
+              const itemCount = order.order_items?.length ?? 0;
 
-      {/* Revenue + Avg */}
-      <div className="grid md:grid-cols-2 gap-4 mb-10">
-        <div className="bg-gradient-to-br from-red-600 to-black rounded-3xl p-6 shadow">
-          <p className="text-red-200 text-sm">Total Revenue</p>
-          <h2 className="text-5xl font-black mt-1">€{totalRevenue.toFixed(2)}</h2>
-        </div>
-        <div className="bg-white text-black rounded-3xl p-6 shadow">
-          <p className="text-gray-500 text-sm">Avg Order Value</p>
-          <h2 className="text-5xl font-black mt-1">€{avgOrderValue}</h2>
-        </div>
-      </div>
-
-      {/* Chart */}
-      <div className="bg-white text-black rounded-3xl p-6 mb-10 shadow">
-        <h2 className="text-2xl font-bold mb-4">📊 Overview</h2>
-        <ResponsiveContainer width="100%" height={220}>
-          <BarChart data={chartData}>
-            <XAxis dataKey="name" tick={{ fontSize: 12 }} />
-            <YAxis tick={{ fontSize: 12 }} />
-            <Tooltip />
-            <Bar dataKey="value" fill="#dc2626" radius={[8, 8, 0, 0]} />
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
-
-      {/* Search + Sort + Filter */}
-      <div className="flex flex-wrap gap-4 mb-6">
-        <input
-          type="text"
-          placeholder="Search by order ID or email..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="flex-1 min-w-[200px] p-3 rounded-2xl bg-gray-900 text-white border border-gray-700 focus:outline-none focus:border-red-500 transition"
-        />
-        <select
-          value={sortBy}
-          onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
-          className="p-3 rounded-2xl bg-gray-900 text-white border border-gray-700 focus:outline-none"
-        >
-          <option value="newest">Newest First</option>
-          <option value="oldest">Oldest First</option>
-          <option value="highest">Highest Price</option>
-          <option value="lowest">Lowest Price</option>
-        </select>
-      </div>
-
-      {/* Status Filter */}
-      <div className="flex gap-3 mb-8 flex-wrap">
-        {["all", "pending", "processing", "completed", "cancelled"].map((s) => (
-          <button
-            key={s}
-            onClick={() => setStatusFilter(s)}
-            className={`px-4 py-2 rounded-xl font-medium transition ${
-              statusFilter === s
-                ? "bg-red-600 text-white"
-                : "bg-white text-black hover:bg-gray-100"
-            }`}
-          >
-            {s.toUpperCase()}
-          </button>
-        ))}
-      </div>
-
-      {/* Orders List */}
-      {filteredOrders.length === 0 ? (
-        <div className="text-center text-gray-500 py-20">
-          <p className="text-5xl mb-4">📭</p>
-          <p className="text-xl">No orders found</p>
-        </div>
-      ) : (
-        <div className="space-y-4">
-          {filteredOrders.map((order) => {
-            const cfg = STATUS_CONFIG[order.status] || STATUS_CONFIG.pending;
-            const isExpanded = expandedOrder === order.id;
-            const isUpdating = updatingStatus === order.id;
-
-            return (
-              <div
-                key={order.id}
-                className="bg-white text-black rounded-3xl shadow overflow-hidden"
-              >
-                {/* Order Header — clickable to expand */}
-                <div
-                  className="p-6 cursor-pointer hover:bg-gray-50 transition"
-                  onClick={() => setExpandedOrder(isExpanded ? null : order.id)}
-                >
-                  <div className="flex items-start justify-between flex-wrap gap-4">
-                    <div>
-                      <div className="flex items-center gap-3">
-                        <h2 className="text-2xl font-bold">Order #{order.id}</h2>
-                        <span className={`text-xs font-bold px-3 py-1 rounded-full ${cfg.bg} ${cfg.color}`}>
-                          {cfg.label}
-                        </span>
+              return (
+                <div key={order.id} style={{ background: SURFACE, border: `1.5px solid ${expanded ? ORANGE : BORDER}`, borderRadius: 16, overflow: "hidden", transition: "border-color 0.2s" }}>
+                  {/* Order row */}
+                  <div onClick={() => setExpandedId(expanded ? null : order.id)}
+                    style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "18px 22px", cursor: "pointer" }}
+                    onMouseEnter={e => { if (!expanded) e.currentTarget.style.background = BG; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = "transparent"; }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+                      <div style={{ width: 44, height: 44, borderRadius: 12, background: `${s.color}15`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, flexShrink: 0 }}>
+                        {s.icon}
                       </div>
-                      <p className="text-gray-400 text-sm mt-1">
-                        {order.user_id || "Unknown user"}
-                      </p>
-                      <p className="text-gray-400 text-xs mt-1">
-                        {new Date(order.created_at).toLocaleDateString("en-GB", {
-                          day: "numeric", month: "short", year: "numeric",
-                          hour: "2-digit", minute: "2-digit",
-                        })}
-                      </p>
+                      <div>
+                        <p style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 15, color: TEXT }}>
+                          #{order.id.slice(-8).toUpperCase()}
+                        </p>
+                        <p style={{ fontSize: 12, color: TEXT3, marginTop: 2 }}>
+                          {new Date(order.created_at).toLocaleDateString("de-DE", { day: "2-digit", month: "short", year: "numeric" })} · {itemCount} Artikel
+                        </p>
+                      </div>
                     </div>
-                    <div className="text-right">
-                      <p className="text-3xl font-black">€{Number(order.total_price).toFixed(2)}</p>
-                      <p className="text-gray-400 text-sm">{order.order_items?.length || 0} items</p>
+                    <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+                      <StatusBadge status={order.status} />
+                      <p style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 18, color: TEXT }}>
+                        €{Number(order.total_price).toFixed(2)}
+                      </p>
+                      <span style={{ color: TEXT3, fontSize: 16, transition: "transform 0.2s", transform: expanded ? "rotate(180deg)" : "rotate(0deg)", display: "inline-block" }}>▾</span>
                     </div>
                   </div>
 
-                  {/* Progress */}
-                  <OrderProgress status={order.status} />
-                </div>
+                  {/* Expanded */}
+                  {expanded && (
+                    <div style={{ borderTop: `1px solid ${BORDER}`, padding: "20px 22px" }}>
+                      {/* Progress */}
+                      <ProgressBar status={order.status} />
 
-                {/* Expanded Content */}
-                {isExpanded && (
-                  <div className="border-t px-6 pb-6">
-                    {/* Status Update */}
-                    <div className="mt-4 mb-4">
-                      <p className="text-sm font-bold text-gray-500 mb-2">Update Status</p>
-                      <div className="flex gap-2 flex-wrap">
-                        {(["pending", "processing", "completed", "cancelled"] as Order["status"][]).map((s) => (
-                          <button
-                            key={s}
-                            onClick={() => updateStatus(order.id, s)}
-                            disabled={order.status === s || isUpdating}
-                            className={`px-3 py-1 rounded-xl text-sm font-bold transition ${
-                              order.status === s
-                                ? `${STATUS_CONFIG[s].bg} ${STATUS_CONFIG[s].color} cursor-default`
-                                : "bg-gray-100 hover:bg-gray-200 text-gray-700"
-                            }`}
-                          >
-                            {isUpdating && order.status !== s ? "..." : STATUS_CONFIG[s].label}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Order Items */}
-                    <h3 className="text-lg font-bold mb-3">Order Items</h3>
-                    {order.order_items && order.order_items.length > 0 ? (
-                      <div className="space-y-2">
-                        {order.order_items.map((item) => (
-                          <div
-                            key={item.id}
-                            className="flex justify-between items-center bg-gray-50 p-3 rounded-xl"
-                          >
-                            <span className="font-medium">Product #{item.product_id}</span>
-                            <span className="text-gray-500 text-sm">Qty: {item.quantity}</span>
-                            <span className="font-bold">€{Number(item.price).toFixed(2)}</span>
+                      {/* Items */}
+                      {itemCount > 0 && (
+                        <div style={{ marginTop: 20 }}>
+                          <p style={{ fontSize: 12, fontWeight: 700, color: TEXT3, textTransform: "uppercase", letterSpacing: "0.8px", marginBottom: 12 }}>Bestellte Artikel</p>
+                          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                            {order.order_items!.map(item => (
+                              <div key={item.id} style={{ display: "flex", alignItems: "center", gap: 12, background: BG, borderRadius: 12, padding: "12px 14px" }}>
+                                <div style={{ width: 44, height: 44, borderRadius: 10, overflow: "hidden", flexShrink: 0, background: BORDER }}>
+                                  <img src={(item.products as any)?.image_url || "https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?w=80&q=60"} alt={(item.products as any)?.name}
+                                    style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                                </div>
+                                <div style={{ flex: 1 }}>
+                                  <p style={{ fontSize: 13, fontWeight: 600, color: TEXT }}>{(item.products as any)?.name ?? `Produkt #${item.product_id.slice(-6)}`}</p>
+                                  <p style={{ fontSize: 12, color: TEXT3 }}>Menge: {item.quantity}</p>
+                                </div>
+                                <p style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 14, color: TEXT }}>
+                                  €{(item.price_at_purchase * item.quantity).toFixed(2)}
+                                </p>
+                              </div>
+                            ))}
                           </div>
-                        ))}
-                        <div className="flex justify-between items-center pt-2 border-t font-black text-lg">
-                          <span>Total</span>
-                          <span>€{Number(order.total_price).toFixed(2)}</span>
+
+                          <div style={{ display: "flex", justifyContent: "space-between", padding: "14px 14px 0", borderTop: `1px solid ${BORDER}`, marginTop: 8 }}>
+                            <p style={{ fontSize: 13, fontWeight: 700, color: TEXT2 }}>Gesamtbetrag</p>
+                            <p style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 16, color: ORANGE }}>€{Number(order.total_price).toFixed(2)}</p>
+                          </div>
                         </div>
-                      </div>
-                    ) : (
-                      <p className="text-gray-400 text-sm">No items found</p>
-                    )}
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
-      )}
+                      )}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
     </main>
   );
 }

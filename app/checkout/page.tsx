@@ -1,178 +1,312 @@
 "use client";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
+import { Breadcrumb } from "@/components/ui/step-breadcrumb";
 
-interface Product {
-  name: string;
-  price: number;
-}
+const BG      = "var(--kf-bg)";
+const SURFACE = "var(--kf-surface)";
+const BORDER  = "var(--kf-border)";
+const TEXT    = "var(--kf-text)";
+const TEXT2   = "var(--kf-text2)";
+const TEXT3   = "var(--kf-text3)";
+const ORANGE  = "#E8521A";
 
-interface CartItem {
-  id: string;
-  quantity: number;
-  products: Product;
-}
+interface Product  { name: string; price: number; }
+interface CartItem { id: string; quantity: number; products: Product; }
+
+const LS_KEY = "kf_shipping_address";
+
+const iStyle: React.CSSProperties = {
+  width: "100%", background: BG, border: `1.5px solid ${BORDER}`,
+  borderRadius: 10, padding: "11px 14px", color: TEXT, fontSize: 14,
+  fontFamily: "inherit", outline: "none", boxSizing: "border-box", transition: "border-color 0.2s",
+};
 
 export default function CheckoutPage() {
-  const [items, setItems] = useState<CartItem[]>([]);
-  const [total, setTotal] = useState(0);
+  const [items, setItems]   = useState<CartItem[]>([]);
+  const [total, setTotal]   = useState(0);
   const [loading, setLoading] = useState(true);
   const [paying, setPaying] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError]   = useState<string | null>(null);
+
+  // Address fields
+  const [firstName,  setFirstName]  = useState("");
+  const [lastName,   setLastName]   = useState("");
+  const [email,      setEmail]      = useState("");
+  const [street,     setStreet]     = useState("");
+  const [postalCode, setPostalCode] = useState("");
+  const [city,       setCity]       = useState("");
+  const [country,    setCountry]    = useState("Deutschland");
+  const [saveAddr,   setSaveAddr]   = useState(false);
+  const [addrErr,    setAddrErr]    = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchCart();
+    const saved = localStorage.getItem(LS_KEY);
+    if (saved) {
+      try {
+        const a = JSON.parse(saved);
+        setFirstName(a.firstName ?? "");
+        setLastName(a.lastName ?? "");
+        setEmail(a.email ?? "");
+        setStreet(a.street ?? "");
+        setPostalCode(a.postalCode ?? "");
+        setCity(a.city ?? "");
+        setCountry(a.country ?? "Deutschland");
+        setSaveAddr(true);
+      } catch {}
+    }
+  }, []);
+
+  // Pre-fill email from Supabase auth
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (user?.email && !email) setEmail(user.email);
+    });
+  }, []);
 
   const fetchCart = async () => {
     try {
       setLoading(true);
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) { setLoading(false); return; }
       const { data, error } = await supabase
         .from("cart_items")
-        .select(`
-          id,
-          quantity,
-          products (
-            name,
-            price
-          )
-        `);
-
+        .select("id, quantity, products (name, price)")
+        .eq("user_id", session.user.id);
       if (error) throw error;
-
       if (data) {
-        const cartItems = data as CartItem[];
+        const cartItems = data as unknown as CartItem[];
         setItems(cartItems);
-        const totalPrice = cartItems.reduce(
-          (sum, item) => sum + item.products.price * item.quantity,
-          0
-        );
-        setTotal(totalPrice);
+        setTotal(cartItems.reduce((s, i) => s + i.products.price * i.quantity, 0));
       }
-    } catch (err) {
-      setError("Failed to load cart");
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
+    } catch { setError("Warenkorb konnte nicht geladen werden."); }
+    finally { setLoading(false); }
   };
-
-  useEffect(() => {
-    fetchCart();
-  }, []);
 
   const handlePayment = async () => {
+    setAddrErr(null);
+    if (!firstName.trim() || !lastName.trim() || !email.trim() || !street.trim() || !postalCode.trim() || !city.trim()) {
+      setAddrErr("Bitte fülle alle Pflichtfelder (*) aus.");
+      document.getElementById("addr-section")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      return;
+    }
+    if (saveAddr) {
+      localStorage.setItem(LS_KEY, JSON.stringify({ firstName, lastName, email, street, postalCode, city, country }));
+    } else {
+      localStorage.removeItem(LS_KEY);
+    }
     try {
       setPaying(true);
-      const res = await fetch("/api/checkout", { method: "POST" });
-
-      if (!res.ok) throw new Error("Payment processing failed");
-
-      const data = await res.json();
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) { setError("Bitte zuerst einloggen."); setPaying(false); return; }
+      const res = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${session.access_token}` },
+        body: JSON.stringify({ shippingAddress: { firstName, lastName, email, street, postalCode, city, country } }),
+      });
+      const text = await res.text();
+      let data: any;
+      try { data = JSON.parse(text); } catch { data = { error: text.slice(0, 300) }; }
+      if (!res.ok) { setError(`[${res.status}] ${data?.error ?? "Payment failed"}`); setPaying(false); return; }
       window.location.href = data.url;
-    } catch (err) {
-      setError("Failed to connect to payment gateway");
-      console.error(err);
-    } finally {
-      setPaying(false);
-    }
+    } catch (e: any) { setError("Fetch-Fehler: " + (e?.message ?? String(e))); }
+    finally { setPaying(false); }
   };
 
-  if (loading) {
-    return (
-      <main className="min-h-screen bg-gray-50 p-6 flex items-center justify-center">
-        <p className="text-gray-500 text-lg">Loading...</p>
-      </main>
-    );
-  }
+  const fo = (e: React.FocusEvent<HTMLInputElement | HTMLSelectElement>) => e.currentTarget.style.borderColor = ORANGE;
+  const bl = (e: React.FocusEvent<HTMLInputElement | HTMLSelectElement>) => e.currentTarget.style.borderColor = BORDER;
+
+  if (loading) return (
+    <main style={{ minHeight: "100vh", background: BG, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'DM Sans',system-ui,sans-serif" }}>
+      <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
+      <div style={{ textAlign: "center" }}>
+        <div style={{ width: 36, height: 36, border: `3px solid ${BORDER}`, borderTopColor: ORANGE, borderRadius: "50%", animation: "spin 0.8s linear infinite", margin: "0 auto 14px" }} />
+        <p style={{ color: TEXT3, fontSize: 13 }}>Warenkorb laden...</p>
+      </div>
+    </main>
+  );
 
   return (
-    <main className="min-h-screen bg-black text-white p-6">
-      <div className="relative overflow-hidden rounded-[40px] bg-gradient-to-br from-red-700 via-black to-gray-900 p-12 mb-12 shadow-2xl">
+    <main style={{ minHeight: "100vh", background: BG, fontFamily: "'DM Sans','Helvetica Neue',system-ui,sans-serif", color: TEXT, paddingBottom: 60 }}>
+      <style>{`@import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600;700&display=swap'); @keyframes spin{to{transform:rotate(360deg)}} *{box-sizing:border-box}`}</style>
 
-  <p className="uppercase tracking-[6px] text-red-400 text-sm font-bold">
-    Secure Checkout
-  </p>
-
-  <h1 className="text-6xl font-black leading-tight mt-4">
-    Complete Your
-    <span className="text-red-500">
-      {" "}Order
-    </span>
-  </h1>
-
-  <p className="text-gray-300 text-xl mt-6 max-w-2xl">
-    Fast, secure and premium checkout experience
-    powered by KioskFlow.
-  </p>
-
-  <div className="flex gap-10 mt-10">
-    <div>
-      <p className="text-4xl font-black">
-        {items.length}
-      </p>
-
-      <p className="text-gray-400">
-        Products
-      </p>
-    </div>
-
-    <div>
-      <p className="text-4xl font-black">
-        €{total.toFixed(2)}
-      </p>
-
-      <p className="text-gray-400">
-        Total
-      </p>
-    </div>
-
-    <div>
-      <p className="text-4xl font-black">
-        100%
-      </p>
-
-      <p className="text-gray-400">
-        Secure
-      </p>
-    </div>
-  </div>
-</div>
-
-      {error && (
-        <div className="bg-red-100 text-red-700 p-4 rounded-2xl mb-6">
-          {error}
+      {/* Nav */}
+      <nav style={{ background: SURFACE, borderBottom: `1px solid ${BORDER}`, padding: "0 24px", height: 60, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <div style={{ width: 30, height: 30, background: ORANGE, borderRadius: 7, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 900, fontSize: 14, color: "#fff", fontFamily: "'Syne',sans-serif" }}>K</div>
+          <span style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 14, color: TEXT, letterSpacing: "-0.3px" }}>KioskFlow</span>
         </div>
-      )}
+        <div style={{ display: "flex", alignItems: "center", gap: 6, color: TEXT3, fontSize: 12 }}>
+          <span style={{ width: 16, height: 16, background: "#dcfce7", borderRadius: "50%", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: 9, color: "#16a34a" }}>✓</span>
+          Sichere SSL-Verbindung
+        </div>
+      </nav>
 
-      {items.length === 0 ? (
-        <p className="text-gray-500 text-center mt-20">Your cart is empty</p>
-      ) : (
-        <>
-          <div className="space-y-4">
-            {items.map((item) => (
-              <div key={item.id} className="bg-white rounded-2xl p-5 shadow">
-                <h2 className="text-3xl font-black text-white">
-  {item.products?.name}
-</h2>
-                <p className="text-gray-300 mt-3 text-lg">
-  Quantity: {item.quantity}
-</p>
-                <p className="text-4xl font-black mt-6 text-red-400">
-                  €{(item.products?.price * item.quantity).toFixed(2)}
-                </p>
+      {/* Steps */}
+      <div style={{ background: SURFACE, borderBottom: `1px solid ${BORDER}`, padding: "12px 24px" }}>
+        <div style={{ maxWidth: 640, margin: "0 auto" }}>
+          <Breadcrumb steps={[
+            { id: "01", name: "Warenkorb",   status: "complete" },
+            { id: "02", name: "Kasse",        status: "current" },
+            { id: "03", name: "Zahlung",      status: "upcoming" },
+            { id: "04", name: "Bestätigung",  status: "upcoming" },
+          ]} />
+        </div>
+      </div>
+
+      <div style={{ maxWidth: 640, margin: "0 auto", padding: "32px 24px" }}>
+        <div style={{ marginBottom: 28 }}>
+          <p style={{ fontSize: 11, fontWeight: 700, color: TEXT3, letterSpacing: "2.5px", textTransform: "uppercase", marginBottom: 8 }}>Kasse</p>
+          <h1 style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 26, color: TEXT, letterSpacing: "-0.8px" }}>Bestellung abschließen</h1>
+        </div>
+
+        {error && (
+          <div style={{ background: "#fef2f2", border: "1.5px solid #fca5a5", borderRadius: 10, padding: "12px 16px", marginBottom: 20 }}>
+            <p style={{ color: "#dc2626", fontSize: 13 }}>{error}</p>
+          </div>
+        )}
+
+        {items.length === 0 ? (
+          <div style={{ textAlign: "center", padding: "64px 0" }}>
+            <p style={{ fontSize: 48, marginBottom: 16 }}>🛒</p>
+            <p style={{ color: TEXT2, fontSize: 15 }}>Dein Warenkorb ist leer.</p>
+            <a href="/marketplace" style={{ display: "inline-block", marginTop: 20, color: ORANGE, fontSize: 14, fontWeight: 700, textDecoration: "none" }}>Zum Marktplatz →</a>
+          </div>
+        ) : (
+          <>
+            {/* ── Items ── */}
+            <div style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 16, overflow: "hidden", marginBottom: 20 }}>
+              <div style={{ padding: "14px 18px", borderBottom: `1px solid ${BORDER}` }}>
+                <p style={{ fontSize: 12, fontWeight: 700, color: TEXT3, letterSpacing: "1px", textTransform: "uppercase" }}>{items.length} Artikel</p>
               </div>
-            ))}
-          </div>
+              {items.map((item, i) => (
+                <div key={item.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "16px 18px", borderBottom: i < items.length - 1 ? `1px solid ${BORDER}` : "none" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                    <div style={{ width: 38, height: 38, background: BG, borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>🛍️</div>
+                    <div>
+                      <p style={{ fontSize: 14, fontWeight: 600, color: TEXT, marginBottom: 2 }}>{item.products?.name}</p>
+                      <p style={{ fontSize: 12, color: TEXT3 }}>{item.quantity}× à €{item.products?.price?.toFixed(2)}</p>
+                    </div>
+                  </div>
+                  <p style={{ fontSize: 15, fontWeight: 700, color: TEXT }}>€{(item.products?.price * item.quantity).toFixed(2)}</p>
+                </div>
+              ))}
+            </div>
 
-          <div className="bg-white/10 backdrop-blur-xl border border-white/10 rounded-[30px] p-6 shadow-2xl">
-            <h2 className="text-3xl font-bold">Total: €{total.toFixed(2)}</h2>
-            <button
-              onClick={handlePayment}
-              disabled={paying}
-              className="mt-6 w-full bg-red-600 hover:bg-red-700 disabled:bg-red-300 text-white py-4 rounded-2xl text-lg font-semibold transition-colors"
-            >
-              {paying ? "Processing..." : "Confirm & Pay"}
+            {/* ── Shipping address ── */}
+            <div id="addr-section" style={{ background: SURFACE, border: `1.5px solid ${addrErr ? "#fca5a5" : BORDER}`, borderRadius: 16, padding: "22px", marginBottom: 20 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20 }}>
+                <div style={{ width: 32, height: 32, borderRadius: 8, background: `${ORANGE}15`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16 }}>📦</div>
+                <div>
+                  <p style={{ fontFamily: "'Syne',sans-serif", fontWeight: 700, fontSize: 14, color: TEXT }}>Lieferadresse</p>
+                  <p style={{ fontSize: 12, color: TEXT3, marginTop: 1 }}>Wohin sollen wir liefern?</p>
+                </div>
+              </div>
+
+              {addrErr && (
+                <div style={{ background: "#fef2f2", border: "1px solid #fca5a5", borderRadius: 8, padding: "10px 14px", marginBottom: 16 }}>
+                  <p style={{ color: "#dc2626", fontSize: 12, fontWeight: 600 }}>{addrErr}</p>
+                </div>
+              )}
+
+              <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+                {/* Name row */}
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+                  <div>
+                    <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: TEXT2, marginBottom: 6 }}>Vorname <span style={{ color: ORANGE }}>*</span></label>
+                    <input value={firstName} onChange={e => setFirstName(e.target.value)} placeholder="Max" style={iStyle} onFocus={fo} onBlur={bl} />
+                  </div>
+                  <div>
+                    <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: TEXT2, marginBottom: 6 }}>Nachname <span style={{ color: ORANGE }}>*</span></label>
+                    <input value={lastName} onChange={e => setLastName(e.target.value)} placeholder="Mustermann" style={iStyle} onFocus={fo} onBlur={bl} />
+                  </div>
+                </div>
+
+                {/* Email */}
+                <div>
+                  <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: TEXT2, marginBottom: 6 }}>E-Mail-Adresse <span style={{ color: ORANGE }}>*</span></label>
+                  <input value={email} onChange={e => setEmail(e.target.value)} type="email" placeholder="max@beispiel.de" style={iStyle} onFocus={fo} onBlur={bl} />
+                </div>
+
+                {/* Street */}
+                <div>
+                  <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: TEXT2, marginBottom: 6 }}>Straße & Hausnummer <span style={{ color: ORANGE }}>*</span></label>
+                  <input value={street} onChange={e => setStreet(e.target.value)} placeholder="Musterstraße 42" style={iStyle} onFocus={fo} onBlur={bl} />
+                </div>
+
+                {/* PLZ + Stadt */}
+                <div style={{ display: "grid", gridTemplateColumns: "130px 1fr", gap: 12 }}>
+                  <div>
+                    <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: TEXT2, marginBottom: 6 }}>PLZ <span style={{ color: ORANGE }}>*</span></label>
+                    <input value={postalCode} onChange={e => setPostalCode(e.target.value)} placeholder="60311" style={iStyle} onFocus={fo} onBlur={bl} />
+                  </div>
+                  <div>
+                    <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: TEXT2, marginBottom: 6 }}>Stadt <span style={{ color: ORANGE }}>*</span></label>
+                    <input value={city} onChange={e => setCity(e.target.value)} placeholder="Frankfurt am Main" style={iStyle} onFocus={fo} onBlur={bl} />
+                  </div>
+                </div>
+
+                {/* Country */}
+                <div>
+                  <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: TEXT2, marginBottom: 6 }}>Land</label>
+                  <select value={country} onChange={e => setCountry(e.target.value)} style={{ ...iStyle, cursor: "pointer" }} onFocus={fo} onBlur={bl}>
+                    {["Deutschland", "Österreich", "Schweiz", "Andere"].map(c => <option key={c} value={c}>{c}</option>)}
+                  </select>
+                </div>
+
+                {/* Save checkbox */}
+                <label style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer", padding: "10px 14px", background: BG, borderRadius: 10, border: `1px solid ${saveAddr ? ORANGE + "50" : BORDER}`, transition: "border-color 0.2s" }}>
+                  <div onClick={() => setSaveAddr(!saveAddr)}
+                    style={{ width: 20, height: 20, borderRadius: 6, border: `2px solid ${saveAddr ? ORANGE : BORDER}`, background: saveAddr ? ORANGE : "transparent", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, cursor: "pointer", transition: "all 0.15s" }}>
+                    {saveAddr && <span style={{ color: "#fff", fontSize: 11, fontWeight: 800, lineHeight: 1 }}>✓</span>}
+                  </div>
+                  <div onClick={() => setSaveAddr(!saveAddr)}>
+                    <p style={{ fontSize: 13, fontWeight: 600, color: TEXT }}>Adresse für nächstes Mal speichern</p>
+                    <p style={{ fontSize: 11, color: TEXT3, marginTop: 2 }}>Wird lokal auf diesem Gerät gespeichert.</p>
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            {/* ── Summary ── */}
+            <div style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 16, padding: "20px 18px", marginBottom: 16 }}>
+              {[
+                { label: "Zwischensumme", value: `€${total.toFixed(2)}`,          valueColor: TEXT },
+                { label: "Lieferung",     value: "Kostenlos",                      valueColor: "#16a34a" },
+                { label: "MwSt. (19%)",   value: `€${(total * 0.19).toFixed(2)}`, valueColor: TEXT2 },
+              ].map(row => (
+                <div key={row.label} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+                  <span style={{ color: TEXT2, fontSize: 13 }}>{row.label}</span>
+                  <span style={{ color: row.valueColor, fontSize: 13, fontWeight: 600 }}>{row.value}</span>
+                </div>
+              ))}
+              <div style={{ borderTop: `1px solid ${BORDER}`, paddingTop: 14, marginTop: 4, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <span style={{ fontFamily: "'Syne',sans-serif", fontWeight: 700, fontSize: 15, color: TEXT }}>Gesamt</span>
+                <span style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 24, color: TEXT, letterSpacing: "-0.5px" }}>€{total.toFixed(2)}</span>
+              </div>
+            </div>
+
+            {/* Trust badges */}
+            <div style={{ display: "flex", gap: 10, marginBottom: 20 }}>
+              {[{ icon: "🔒", l: "SSL-verschlüsselt" }, { icon: "⚡", l: "Sofort-Zahlung" }, { icon: "↩️", l: "14 Tage Rückgabe" }].map(b => (
+                <div key={b.l} style={{ flex: 1, display: "flex", alignItems: "center", gap: 6, background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 10, padding: "10px 12px" }}>
+                  <span style={{ fontSize: 14 }}>{b.icon}</span>
+                  <span style={{ fontSize: 11, color: TEXT2, fontWeight: 500 }}>{b.l}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* CTA */}
+            <button onClick={handlePayment} disabled={paying}
+              style={{ width: "100%", background: paying ? `rgba(232,82,26,0.55)` : ORANGE, color: "#fff", border: "none", borderRadius: 12, padding: "16px", fontFamily: "'DM Sans',sans-serif", fontWeight: 700, fontSize: 15, cursor: paying ? "not-allowed" : "pointer", transition: "opacity 0.2s", marginBottom: 12, boxShadow: `0 4px 16px rgba(232,82,26,0.25)` }}>
+              {paying ? "Weiterleitung zu Stripe..." : `Jetzt kaufen — €${total.toFixed(2)}`}
             </button>
-          </div>
-        </>
-      )}
+
+            <p style={{ textAlign: "center", color: TEXT3, fontSize: 12 }}>Bezahlung sicher über Stripe · SSL-verschlüsselt</p>
+          </>
+        )}
+      </div>
     </main>
   );
 }
