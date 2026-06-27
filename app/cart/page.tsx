@@ -18,6 +18,7 @@ interface CartItem { id: string; quantity: number; products: Product; }
 export default function CartPage() {
   const [items, setItems] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [discountCode, setDiscountCode] = useState("");
   const [discount, setDiscount] = useState(0);
   const [discountMsg, setDiscountMsg] = useState<{text:string;ok:boolean}|null>(null);
@@ -25,13 +26,14 @@ export default function CartPage() {
   const fetchCart = async () => {
     try {
       setLoading(true);
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) { setLoading(false); return; }
-      const { data, error } = await supabase.from("cart_items").select(`id, quantity, products (id, name, price, image_url)`).eq("user_id", session.user.id);
+      setError(null);
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      if (authError || !user) { window.location.href = "/login"; return; }
+      const { data, error } = await supabase.from("cart_items").select(`id, quantity, products (id, name, price, image_url)`).eq("user_id", user.id);
       if (error) throw error;
       setItems((data as unknown as CartItem[]) || []);
     } catch {
-      // silently fail
+      setError("Warenkorb konnte nicht geladen werden. Bitte versuche es erneut.");
     } finally {
       setLoading(false);
     }
@@ -56,9 +58,9 @@ export default function CartPage() {
   };
 
   const removeAllCart = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) return;
-    await supabase.from("cart_items").delete().eq("user_id", session.user.id);
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    await supabase.from("cart_items").delete().eq("user_id", user.id);
     setItems([]);
   };
 
@@ -80,6 +82,20 @@ export default function CartPage() {
         <div style={{ textAlign:"center" }}>
           <div style={{ width:36, height:36, border:`3px solid ${BORDER}`, borderTopColor:ORANGE, borderRadius:"50%", animation:"spin 0.8s linear infinite", margin:"0 auto 14px" }} />
           <p style={{ color:TEXT3, fontSize:13 }}>Warenkorb laden...</p>
+        </div>
+      </main>
+    );
+  }
+
+  if (error) {
+    return (
+      <main style={{ minHeight:"100vh", background:BG, display:"flex", alignItems:"center", justifyContent:"center", fontFamily:"'DM Sans',system-ui,sans-serif" }}>
+        <div style={{ textAlign:"center", padding:"0 20px" }}>
+          <p style={{ fontSize:48, marginBottom:16 }}>⚠️</p>
+          <p style={{ color:TEXT, fontSize:15, fontWeight:600, marginBottom:8 }}>{error}</p>
+          <button onClick={fetchCart} style={{ background:ORANGE, color:"#fff", border:"none", borderRadius:10, padding:"12px 24px", fontWeight:700, fontSize:14, cursor:"pointer", marginTop:8 }}>
+            Erneut versuchen
+          </button>
         </div>
       </main>
     );
