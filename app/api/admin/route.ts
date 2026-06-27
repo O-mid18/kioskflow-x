@@ -32,5 +32,23 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: true });
   }
 
+  if (body.action === "get_conversations") {
+    const { data } = await db.from("conversations").select("id, buyer_id, supplier_id, created_at").order("created_at", { ascending: false });
+    if (!data) return NextResponse.json({ conversations: [] });
+    const ids = [...new Set([...data.map((c: any) => c.buyer_id), ...data.map((c: any) => c.supplier_id)])];
+    const { data: profs } = await db.from("profiles").select("id, full_name, company_name").in("id", ids);
+    const nameMap: Record<string, string> = {};
+    (profs ?? []).forEach((p: any) => { nameMap[p.id] = p.company_name || p.full_name || "Unbekannt"; });
+    const enriched = data.map((c: any) => ({ ...c, buyer_name: nameMap[c.buyer_id] ?? "Käufer", supplier_name: nameMap[c.supplier_id] ?? "Lieferant" }));
+    return NextResponse.json({ conversations: enriched });
+  }
+
+  if (body.action === "get_messages") {
+    const { conversationId } = body;
+    if (!conversationId) return NextResponse.json({ error: "Missing conversationId" }, { status: 400 });
+    const { data } = await db.from("messages").select("*").eq("conversation_id", conversationId).order("created_at", { ascending: true });
+    return NextResponse.json({ messages: data ?? [] });
+  }
+
   return NextResponse.json({ error: "Unknown action" }, { status: 400 });
 }

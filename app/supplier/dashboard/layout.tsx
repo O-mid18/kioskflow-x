@@ -18,8 +18,9 @@ const NAV = [
   { label: "Produkte",       href: "/supplier/dashboard/products",       icon: "📦" },
   { label: "Bestellungen",   href: "/supplier/dashboard/orders",         icon: "🧾" },
   { label: "Analytik",       href: "/supplier/dashboard/analytics",      icon: "📊" },
+  { label: "Nachrichten",    href: "/supplier/dashboard/messages",       icon: "💬" },
   { label: "Verifizierung",  href: "/supplier/dashboard/verification",   icon: "🔐" },
-  { label: "Support",        href: "/support",                           icon: "💬" },
+  { label: "Support",        href: "/support",                           icon: "🎧" },
   { label: "Profil",         href: "/supplier/dashboard/profile",        icon: "👤" },
 ];
 
