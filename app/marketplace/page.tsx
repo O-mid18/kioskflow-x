@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/lib/supabase";
 import { NotificationBell } from "@/components/ui/notification-bell";
 
-interface Product { id: number; name: string; description?: string; price: number; category?: string; image_url?: string; stock?: number; }
+interface Product { id: number; name: string; description?: string; price: number; category?: string; image_url?: string; stock?: number; supplier_id?: number; }
 interface Supplier { id: number; name: string; description?: string; logo_url?: string; }
 interface Review { id: number; product_id: number; rating: number; comment?: string; }
 interface CartItem extends Product { quantity: number; }
@@ -104,9 +104,9 @@ function CartDrawer({ open, onClose, items, onUpdateQty, onRemove, onClearAll }:
   );
 }
 
-function ProductModal({ product, reviews, onClose, onAddToCart, inWishlist, onToggleWishlist }: {
+function ProductModal({ product, reviews, onClose, onAddToCart, inWishlist, onToggleWishlist, onNegotiate }: {
   product:Product; reviews:Review[]; onClose:()=>void; onAddToCart:(p:Product)=>void;
-  inWishlist:boolean; onToggleWishlist:(p:Product)=>void;
+  inWishlist:boolean; onToggleWishlist:(p:Product)=>void; onNegotiate:(p:Product)=>void;
 }) {
   const avg = reviews.length ? reviews.reduce((s,r) => s+r.rating,0)/reviews.length : 0;
   const cat = CATS[product.category || ""] || CATS.default;
@@ -142,12 +142,112 @@ function ProductModal({ product, reviews, onClose, onAddToCart, inWishlist, onTo
               <span style={{ color:"#16a34a", fontSize:12, fontWeight:600 }}>{product.stock} auf Lager</span>
             </div>
           )}
-          <button onClick={() => { onAddToCart(product); onClose(); }} style={{ width:"100%", background:ORANGE, color:"#fff", fontWeight:700, padding:"16px", borderRadius:14, border:"none", cursor:"pointer", fontSize:15, fontFamily:"'DM Sans',sans-serif" }}>
+          <button onClick={() => { onAddToCart(product); onClose(); }} style={{ width:"100%", background:ORANGE, color:"#fff", fontWeight:700, padding:"16px", borderRadius:14, border:"none", cursor:"pointer", fontSize:15, fontFamily:"'DM Sans',sans-serif", marginBottom:10 }}>
             In den Warenkorb
+          </button>
+          <button onClick={() => { onNegotiate(product); onClose(); }} style={{ width:"100%", background:"transparent", color:ORANGE, fontWeight:700, padding:"14px", borderRadius:14, border:`2px solid ${ORANGE}`, cursor:"pointer", fontSize:14, fontFamily:"'DM Sans',sans-serif", display:"flex", alignItems:"center", justifyContent:"center", gap:8 }}>
+            🤝 Preis verhandeln
           </button>
         </div>
       </div>
     </div>
+  );
+}
+
+function OfferModal({ product, onClose, onSent }: { product: Product; onClose: () => void; onSent: () => void; }) {
+  const [qty, setQty]      = useState("1");
+  const [price, setPrice]  = useState("");
+  const [note, setNote]    = useState("");
+  const [sending, setSend] = useState(false);
+  const [err, setErr]      = useState("");
+
+  const send = async () => {
+    if (!price || !qty || Number(qty) < 1) { setErr("Bitte Menge und Angebotspreis angeben."); return; }
+    setSend(true);
+    setErr("");
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) { window.location.href = "/login"; return; }
+
+    const { data: supplier } = await supabase.from("suppliers").select("user_id").eq("id", product.supplier_id).single();
+    if (!supplier?.user_id) { setErr("Lieferant nicht gefunden."); setSend(false); return; }
+
+    const { data: conv } = await supabase.from("conversations")
+      .upsert({ buyer_id: user.id, supplier_id: supplier.user_id }, { onConflict: "buyer_id,supplier_id" })
+      .select().single();
+    if (!conv) { setErr("Fehler beim Erstellen der Unterhaltung."); setSend(false); return; }
+
+    const content = [
+      `🤝 Preisangebot`,
+      `📦 Produkt: ${product.name}`,
+      `🔢 Menge: ${qty} Stück`,
+      `💶 Mein Angebot: €${price}/Stück  (Listenpreis: €${product.price})`,
+      note ? `📝 ${note}` : null,
+    ].filter(Boolean).join("\n");
+
+    await supabase.from("messages").insert({ conversation_id: conv.id, sender_id: user.id, content });
+    setSend(false);
+    onSent();
+    window.location.href = "/messages";
+  };
+
+  return (
+    <>
+      <div onClick={onClose} style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.55)", zIndex:200, backdropFilter:"blur(6px)" }} />
+      <div style={{ position:"fixed", top:"50%", left:"50%", transform:"translate(-50%,-50%)", background:SURFACE, border:`1px solid ${BORDER}`, borderRadius:20, padding:28, width:360, zIndex:201, fontFamily:"'DM Sans',sans-serif" }}>
+
+        <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:20 }}>
+          <div>
+            <p style={{ fontFamily:"'Syne',sans-serif", fontWeight:800, fontSize:17, color:TEXT }}>Preis verhandeln</p>
+            <p style={{ fontSize:12, color:TEXT3, marginTop:2 }}>{product.name}</p>
+          </div>
+          <button onClick={onClose} style={{ width:30, height:30, background:BG, border:`1px solid ${BORDER}`, borderRadius:8, cursor:"pointer", color:TEXT2, fontSize:14 }}>✕</button>
+        </div>
+
+        <div style={{ background:`${ORANGE}12`, border:`1px solid ${ORANGE}30`, borderRadius:10, padding:"8px 12px", marginBottom:18, display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+          <span style={{ fontSize:12, color:TEXT2 }}>Listenpreis</span>
+          <span style={{ fontFamily:"'Syne',sans-serif", fontWeight:800, fontSize:16, color:ORANGE }}>€{product.price}<span style={{ fontSize:11, fontWeight:500, color:TEXT3 }}>/Stück</span></span>
+        </div>
+
+        <label style={{ display:"block", fontSize:12, fontWeight:700, color:TEXT2, marginBottom:6 }}>Menge (Stück)</label>
+        <input type="number" min="1" value={qty} onChange={e => setQty(e.target.value)} placeholder="z.B. 50"
+          style={{ width:"100%", background:BG, border:`1.5px solid ${BORDER}`, borderRadius:10, padding:"10px 14px", color:TEXT, fontSize:14, boxSizing:"border-box", marginBottom:14, fontFamily:"inherit", outline:"none" }}
+          onFocus={e => e.currentTarget.style.borderColor = ORANGE}
+          onBlur={e => e.currentTarget.style.borderColor = BORDER} />
+
+        <label style={{ display:"block", fontSize:12, fontWeight:700, color:TEXT2, marginBottom:6 }}>Mein Angebot (€/Stück)</label>
+        <div style={{ position:"relative", marginBottom:14 }}>
+          <span style={{ position:"absolute", left:13, top:"50%", transform:"translateY(-50%)", color:TEXT3, fontSize:14, fontWeight:600 }}>€</span>
+          <input type="number" min="0" step="0.01" value={price} onChange={e => setPrice(e.target.value)} placeholder="z.B. 1.20"
+            style={{ width:"100%", background:BG, border:`1.5px solid ${BORDER}`, borderRadius:10, padding:"10px 14px 10px 28px", color:TEXT, fontSize:14, boxSizing:"border-box", fontFamily:"inherit", outline:"none" }}
+            onFocus={e => e.currentTarget.style.borderColor = ORANGE}
+            onBlur={e => e.currentTarget.style.borderColor = BORDER} />
+        </div>
+
+        {price && Number(price) < product.price && (
+          <div style={{ background:"#dcfce7", borderRadius:8, padding:"6px 12px", marginBottom:14, display:"flex", alignItems:"center", gap:6 }}>
+            <span style={{ fontSize:13 }}>💡</span>
+            <span style={{ fontSize:12, color:"#16a34a", fontWeight:600 }}>
+              {((1 - Number(price) / product.price) * 100).toFixed(0)}% unter Listenpreis
+            </span>
+          </div>
+        )}
+
+        <label style={{ display:"block", fontSize:12, fontWeight:700, color:TEXT2, marginBottom:6 }}>Nachricht (optional)</label>
+        <textarea value={note} onChange={e => setNote(e.target.value)} placeholder="z.B. Ich bestelle regelmäßig und suche einen Stammlieferanten..." rows={3}
+          style={{ width:"100%", background:BG, border:`1.5px solid ${BORDER}`, borderRadius:10, padding:"10px 14px", color:TEXT, fontSize:13, boxSizing:"border-box", resize:"none", fontFamily:"inherit", outline:"none", marginBottom:16 }}
+          onFocus={e => e.currentTarget.style.borderColor = ORANGE}
+          onBlur={e => e.currentTarget.style.borderColor = BORDER} />
+
+        {err && <p style={{ color:"#ef4444", fontSize:12, marginBottom:12 }}>{err}</p>}
+
+        <button onClick={send} disabled={sending} style={{ width:"100%", background:sending ? TEXT3 : ORANGE, color:"#fff", border:"none", borderRadius:12, padding:"14px", fontWeight:700, fontSize:14, cursor:sending ? "not-allowed" : "pointer", fontFamily:"'DM Sans',sans-serif" }}>
+          {sending ? "Wird gesendet..." : "🤝 Angebot absenden"}
+        </button>
+        <p style={{ fontSize:11, color:TEXT3, textAlign:"center", marginTop:10 }}>
+          Das Angebot erscheint als Nachricht beim Lieferanten.
+        </p>
+      </div>
+    </>
   );
 }
 
@@ -168,6 +268,7 @@ export default function MarketplacePage() {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [cartOpen, setCartOpen] = useState(false);
   const [wishlist, setWishlist] = useState<Product[]>([]);
+  const [offerProduct, setOfferProduct] = useState<Product|null>(null);
 
   const showToast = useCallback((msg:string) => { setToast(msg); setTimeout(() => setToast(null),2500); },[]);
 
@@ -224,13 +325,14 @@ export default function MarketplacePage() {
         @keyframes fadeUp { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
         .pcard { animation: fadeUp 0.35s ease both; transition: transform 0.2s, box-shadow 0.2s; }
         .pcard:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba(0,0,0,0.1) !important; }
-        input:focus { outline:none; }
+        input:focus, textarea:focus { outline:none; }
         ::-webkit-scrollbar { width:4px; height:4px; } ::-webkit-scrollbar-track { background:transparent; } ::-webkit-scrollbar-thumb { background:${BORDER}; border-radius:4px; }
       `}</style>
 
       {toast && <Toast msg={toast} onClose={() => setToast(null)} />}
       <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} items={cartItems} onUpdateQty={updateQty} onRemove={id=>setCartItems(p=>p.filter(i=>i.id!==id))} onClearAll={() => setCartItems([])} />
-      {selectedProduct && <ProductModal product={selectedProduct} reviews={getReviews(selectedProduct.id)} onClose={() => setSelectedProduct(null)} onAddToCart={addToCart} inWishlist={wishlistedIds.includes(selectedProduct.id)} onToggleWishlist={toggleWishlist} />}
+      {selectedProduct && <ProductModal product={selectedProduct} reviews={getReviews(selectedProduct.id)} onClose={() => setSelectedProduct(null)} onAddToCart={addToCart} inWishlist={wishlistedIds.includes(selectedProduct.id)} onToggleWishlist={toggleWishlist} onNegotiate={p => { setSelectedProduct(null); setOfferProduct(p); }} />}
+      {offerProduct && <OfferModal product={offerProduct} onClose={() => setOfferProduct(null)} onSent={() => { setOfferProduct(null); showToast("Angebot gesendet! ✓"); }} />}
 
       {/* ── HEADER ── */}
       <header style={{ background:SURFACE, borderBottom:`1px solid ${BORDER}`, padding:"14px 20px", position:"sticky", top:0, zIndex:50 }}>
@@ -435,13 +537,19 @@ export default function MarketplacePage() {
                           <span style={{ color:TEXT3, fontSize:10 }}>({pReviews.length})</span>
                         </div>
                       )}
-                      <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between" }}>
+                      <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:8 }}>
                         <span style={{ fontFamily:"'Syne',sans-serif", color:TEXT, fontSize:18, fontWeight:800 }}>€{product.price}</span>
                         <button onClick={e => { e.stopPropagation(); addToCart(product); }}
                           style={{ background:ORANGE, color:"#fff", border:"none", fontSize:11, fontWeight:700, padding:"7px 12px", borderRadius:8, cursor:"pointer" }}>
                           + Warenkorb
                         </button>
                       </div>
+                      <button onClick={e => { e.stopPropagation(); setOfferProduct(product); }}
+                        style={{ width:"100%", background:"transparent", border:`1.5px solid ${BORDER}`, borderRadius:8, padding:"6px 0", fontSize:11, fontWeight:700, color:TEXT2, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:5, transition:"all 0.15s" }}
+                        onMouseEnter={e => { e.currentTarget.style.borderColor=ORANGE; e.currentTarget.style.color=ORANGE; }}
+                        onMouseLeave={e => { e.currentTarget.style.borderColor=BORDER; e.currentTarget.style.color=TEXT2; }}>
+                        🤝 Preis verhandeln
+                      </button>
                     </div>
                   </div>
                 );
@@ -466,9 +574,10 @@ export default function MarketplacePage() {
           { icon:"🏪", label:"Marktplatz", href:"/marketplace", active:true },
           { icon:"🛒", label:"Warenkorb", href:"/cart", active:false },
           { icon:"📦", label:"Bestellungen", href:"/orders", active:false },
+          { icon:"💬", label:"Nachrichten", href:"/messages", active:false },
           { icon:"👤", label:"Profil", href:"/profile", active:false },
         ].map(({ icon, label, href, active }) => (
-          <a key={label} href={href} style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:3, textDecoration:"none", padding:"0 12px" }}>
+          <a key={label} href={href} style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:3, textDecoration:"none", padding:"0 8px" }}>
             <span style={{ fontSize:20, lineHeight:1 }}>{icon}</span>
             <span style={{ fontSize:10, fontWeight:active?700:500, color:active?ORANGE:TEXT3 }}>{label}</span>
             {active && <div style={{ width:16, height:2, background:ORANGE, borderRadius:2, marginTop:1 }} />}
