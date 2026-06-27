@@ -71,6 +71,8 @@ export async function POST(request: Request) {
           title: "Neue Bestellung eingegangen",
           body: `Bestellung #${(order.id as string).slice(-6).toUpperCase()} wurde bezahlt.`,
           link: "/supplier/dashboard/orders",
+        }).then(({ error }) => {
+          if (error) console.warn("Notification insert skipped:", error.message);
         });
       }
     }

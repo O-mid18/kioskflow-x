@@ -47,7 +47,7 @@ export default function BuyerMessagesPage() {
     const nameMap: Record<string, string> = {};
     (profs ?? []).forEach((p: any) => { nameMap[p.id] = p.company_name || p.full_name || "Lieferant"; });
     const enriched = await Promise.all(data.map(async (c: any) => {
-      const { data: lm } = await supabase.from("messages").select("content").eq("conversation_id", c.id).order("created_at", { ascending: false }).limit(1).single();
+      const { data: lm } = await supabase.from("messages").select("content").eq("conversation_id", c.id).order("created_at", { ascending: false }).limit(1).maybeSingle();
       return { id: c.id, supplier_id: c.supplier_id, supplier_name: nameMap[c.supplier_id] ?? "Lieferant", last_message: lm?.content };
     }));
     setConvs(enriched);

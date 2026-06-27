@@ -42,7 +42,7 @@ export default function SupplierMessagesPage() {
     const nameMap: Record<string, string> = {};
     (profs ?? []).forEach((p: any) => { nameMap[p.id] = p.full_name || p.company_name || "Käufer"; });
     const enriched = await Promise.all(data.map(async (c: any) => {
-      const { data: lm } = await supabase.from("messages").select("content").eq("conversation_id", c.id).order("created_at", { ascending: false }).limit(1).single();
+      const { data: lm } = await supabase.from("messages").select("content").eq("conversation_id", c.id).order("created_at", { ascending: false }).limit(1).maybeSingle();
       return { id: c.id, buyer_id: c.buyer_id, buyer_name: nameMap[c.buyer_id] ?? "Käufer", last_message: lm?.content };
     }));
     setConvs(enriched);

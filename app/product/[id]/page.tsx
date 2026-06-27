@@ -4,165 +4,215 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 
+const BG = "var(--kf-bg)";
+const SURFACE = "var(--kf-surface)";
+const BORDER = "var(--kf-border)";
+const TEXT = "var(--kf-text)";
+const TEXT2 = "var(--kf-text2)";
+const TEXT3 = "var(--kf-text3)";
+const ORANGE = "#E8521A";
+
+function Stars({ rating, size = 12 }: { rating: number; size?: number }) {
+  return (
+    <div style={{ display: "flex", gap: 2 }}>
+      {[1, 2, 3, 4, 5].map(i => (
+        <svg key={i} width={size} height={size} viewBox="0 0 24 24" fill={i <= Math.round(rating) ? "#f59e0b" : "none"} stroke="#f59e0b" strokeWidth="2">
+          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+        </svg>
+      ))}
+    </div>
+  );
+}
+
 export default function ProductDetailsPage() {
   const params = useParams();
-
   const [product, setProduct] = useState<any>(null);
   const [reviews, setReviews] = useState<any[]>([]);
   const [comment, setComment] = useState("");
   const [rating, setRating] = useState(5);
   const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [toast, setToast] = useState<string | null>(null);
+
+  const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(null), 2500); };
 
   useEffect(() => {
-    fetchProduct();
-  }, []);
-
-  const fetchProduct = async () => {
-    try {
-      const productId = String(params.id);
-
-      const { data } = await supabase
-        .from("products")
-        .select("*")
-        .eq("id", productId)
-        .single();
-
+    const fetchProduct = async () => {
+      const { data } = await supabase.from("products").select("*").eq("id", String(params.id)).maybeSingle();
       setProduct(data);
-
-      const { data: reviewData } = await supabase
-        .from("reviews")
-        .select("*")
-        .eq("product_id", productId);
-
-      setReviews(reviewData || []);
-    } catch (error) {
-      console.log(error);
-    } finally {
+      const { data: rv } = await supabase.from("reviews").select("*").eq("product_id", String(params.id)).order("created_at", { ascending: false });
+      setReviews(rv ?? []);
       setLoading(false);
-    }
+    };
+    fetchProduct();
+  }, [params.id]);
+
+  const addToCart = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) { window.location.href = "/login"; return; }
+    await supabase.from("cart_items").insert({ user_id: user.id, product_id: product.id, quantity: 1 });
+    showToast("In den Warenkorb gelegt ✓");
   };
 
-  if (loading) {
-    return (
-      <main className="min-h-screen flex items-center justify-center bg-black text-white">
-        Loading...
-      </main>
-    );
-  }
+  const submitReview = async () => {
+    if (!comment.trim()) return;
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) { window.location.href = "/login"; return; }
+    setSubmitting(true);
+    await supabase.from("reviews").insert({ product_id: product.id, user_id: user.id, rating, comment });
+    const { data: rv } = await supabase.from("reviews").select("*").eq("product_id", product.id).order("created_at", { ascending: false });
+    setReviews(rv ?? []);
+    setComment("");
+    setRating(5);
+    setSubmitting(false);
+    showToast("Bewertung gespeichert ✓");
+  };
 
-  if (!product) {
-    return (
-      <main className="min-h-screen flex items-center justify-center bg-black text-white">
-        Product not found
-      </main>
-    );
-  }
+  const avg = reviews.length ? reviews.reduce((s, r) => s + r.rating, 0) / reviews.length : 0;
+
+  if (loading) return (
+    <main style={{ minHeight: "100vh", background: BG, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'DM Sans',system-ui,sans-serif" }}>
+      <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
+      <div style={{ textAlign: "center" }}>
+        <div style={{ width: 36, height: 36, border: `3px solid ${BORDER}`, borderTopColor: ORANGE, borderRadius: "50%", animation: "spin 0.8s linear infinite", margin: "0 auto 14px" }} />
+        <p style={{ color: TEXT3, fontSize: 13 }}>Produkt wird geladen...</p>
+      </div>
+    </main>
+  );
+
+  if (!product) return (
+    <main style={{ minHeight: "100vh", background: BG, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 16, fontFamily: "'DM Sans',system-ui,sans-serif" }}>
+      <p style={{ fontSize: 48 }}>📦</p>
+      <p style={{ color: TEXT, fontSize: 18, fontWeight: 700 }}>Produkt nicht gefunden</p>
+      <a href="/marketplace" style={{ color: ORANGE, fontWeight: 600, fontSize: 14, textDecoration: "none" }}>← Zurück zum Marktplatz</a>
+    </main>
+  );
 
   return (
-    <main className="min-h-screen bg-black text-white p-8">
-      <div className="grid md:grid-cols-2 gap-10">
-        <div>
-          <h1 className="text-5xl font-bold">
-            {product.name}
-          </h1>
+    <main style={{ minHeight: "100vh", background: BG, fontFamily: "'DM Sans','Helvetica Neue',system-ui,sans-serif", color: TEXT }}>
+      <style>{`@import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600;700&display=swap'); @keyframes spin{to{transform:rotate(360deg)}}`}</style>
 
-          <p className="mt-6 text-gray-400 text-lg">
-            {product.description}
-          </p>
+      {/* Toast */}
+      {toast && (
+        <div style={{ position: "fixed", bottom: 24, right: 24, zIndex: 999, background: SURFACE, border: `1px solid ${BORDER}`, color: TEXT, fontSize: 13, padding: "12px 18px", borderRadius: 12, display: "flex", alignItems: "center", gap: 8, boxShadow: "0 4px 24px rgba(0,0,0,0.15)" }}>
+          <span style={{ width: 18, height: 18, background: "#22c55e", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 9, fontWeight: 900, color: "#fff" }}>✓</span>
+          {toast}
+        </div>
+      )}
 
-          <p className="mt-8 text-4xl font-bold text-green-500">
-            €{product.price}
-          </p>
+      {/* Header */}
+      <header style={{ background: SURFACE, borderBottom: `1px solid ${BORDER}`, padding: "0 20px", height: 60, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <div style={{ width: 30, height: 30, background: ORANGE, borderRadius: 7, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 900, fontSize: 14, color: "#fff", fontFamily: "'Syne',sans-serif" }}>K</div>
+          <span style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 15, color: TEXT, letterSpacing: "-0.3px" }}>KioskFlow</span>
+        </div>
+        <a href="/marketplace" style={{ color: TEXT2, fontSize: 13, fontWeight: 500, textDecoration: "none" }}>← Marktplatz</a>
+      </header>
 
-          <button
-            onClick={async () => {
-              const { data: userData } =
-                await supabase.auth.getUser();
+      <div style={{ maxWidth: 900, margin: "0 auto", padding: "32px 20px" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 40 }}>
 
-              if (!userData.user) {
-                alert("Please login first");
-                return;
-              }
-
-              await supabase.from("cart_items").insert({
-                user_id: userData.user.id,
-                product_id: product.id,
-                quantity: 1,
-              });
-
-              alert("Added to cart 🛒");
-            }}
-            className="mt-8 bg-red-600 px-8 py-4 rounded-2xl text-white"
-          >
-            Add To Cart
-          </button>
-
-          <div className="mt-12">
-            <h2 className="text-3xl font-bold mb-6">
-              Reviews
-            </h2>
-
-            <textarea
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
-              placeholder="Write your review..."
-              className="w-full p-4 rounded-2xl text-black"
+          {/* LEFT — image */}
+          <div style={{ borderRadius: 20, overflow: "hidden", background: SURFACE, border: `1px solid ${BORDER}`, aspectRatio: "1", position: "relative" }}>
+            <img
+              src={product.image_url || "https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?w=800&q=80"}
+              alt={product.name}
+              style={{ width: "100%", height: "100%", objectFit: "cover" }}
             />
+          </div>
 
-            <input
-              type="number"
-              min="1"
-              max="5"
-              value={rating}
-              onChange={(e) =>
-                setRating(Number(e.target.value))
-              }
-              className="mt-4 p-3 rounded-xl text-black"
-            />
+          {/* RIGHT — details */}
+          <div>
+            <p style={{ fontSize: 11, fontWeight: 700, color: TEXT3, letterSpacing: "2px", textTransform: "uppercase", marginBottom: 8 }}>{product.category || "Produkt"}</p>
+            <h1 style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 28, color: TEXT, letterSpacing: "-0.8px", lineHeight: 1.15, marginBottom: 16 }}>{product.name}</h1>
 
-            <button
-              onClick={async () => {
-                const { data: userData } =
-                  await supabase.auth.getUser();
+            {reviews.length > 0 && (
+              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16 }}>
+                <Stars rating={avg} size={14} />
+                <span style={{ color: TEXT2, fontSize: 13 }}>{avg.toFixed(1)} ({reviews.length} Bewertungen)</span>
+              </div>
+            )}
 
-                if (!userData.user) {
-                  alert("Please login first");
-                  return;
-                }
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 20 }}>
+              <span style={{ fontFamily: "'Syne',sans-serif", fontSize: 36, fontWeight: 800, color: ORANGE }}>€{product.price}</span>
+              <span style={{ color: TEXT3, fontSize: 13 }}>/Stück</span>
+            </div>
 
-                await supabase.from("reviews").insert({
-                  product_id: product.id,
-                  user_id: userData.user.id,
-                  rating,
-                  comment,
-                });
+            {product.stock !== undefined && (
+              <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: product.stock > 0 ? "#dcfce7" : "#fee2e2", borderRadius: 8, padding: "5px 12px", marginBottom: 20 }}>
+                <div style={{ width: 6, height: 6, borderRadius: "50%", background: product.stock > 0 ? "#16a34a" : "#ef4444" }} />
+                <span style={{ color: product.stock > 0 ? "#16a34a" : "#ef4444", fontSize: 12, fontWeight: 600 }}>
+                  {product.stock > 0 ? `${product.stock} auf Lager` : "Nicht auf Lager"}
+                </span>
+              </div>
+            )}
 
-                alert("Review added ⭐");
+            {product.description && (
+              <p style={{ color: TEXT2, fontSize: 14, lineHeight: 1.8, marginBottom: 28 }}>{product.description}</p>
+            )}
 
-                location.reload();
-              }}
-              className="mt-4 bg-yellow-500 px-6 py-3 rounded-xl text-black font-bold"
-            >
-              Submit Review
+            <button onClick={addToCart} style={{ width: "100%", background: ORANGE, color: "#fff", border: "none", borderRadius: 14, padding: "16px", fontWeight: 700, fontSize: 15, cursor: "pointer", fontFamily: "'DM Sans',sans-serif", marginBottom: 10 }}>
+              🛒 In den Warenkorb
             </button>
+            <a href="/marketplace" style={{ display: "block", textAlign: "center", color: TEXT2, fontSize: 13, textDecoration: "none", padding: "10px", fontWeight: 500 }}>
+              ← Weiter einkaufen
+            </a>
+          </div>
+        </div>
 
-            <div className="mt-10 space-y-4">
-              {reviews.map((review) => (
-                <div
-                  key={review.id}
-                  className="bg-white text-black p-4 rounded-2xl"
-                >
-                  <p className="font-bold">
-                    ⭐ {review.rating}/5
-                  </p>
+        {/* Reviews section */}
+        <div style={{ marginTop: 52, borderTop: `1px solid ${BORDER}`, paddingTop: 40 }}>
+          <h2 style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 22, color: TEXT, marginBottom: 28 }}>
+            Bewertungen {reviews.length > 0 && <span style={{ fontSize: 14, fontWeight: 500, color: TEXT3 }}>({reviews.length})</span>}
+          </h2>
 
-                  <p className="mt-2">
-                    {review.comment}
-                  </p>
+          {/* Leave review */}
+          <div style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 16, padding: 24, marginBottom: 32 }}>
+            <p style={{ fontWeight: 700, fontSize: 14, color: TEXT, marginBottom: 16 }}>Bewertung schreiben</p>
+
+            {/* Star selector */}
+            <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 14 }}>
+              <span style={{ color: TEXT2, fontSize: 13, marginRight: 4 }}>Sterne:</span>
+              {[1, 2, 3, 4, 5].map(n => (
+                <button key={n} onClick={() => setRating(n)} style={{ background: "none", border: "none", cursor: "pointer", padding: 2 }}>
+                  <svg width={22} height={22} viewBox="0 0 24 24" fill={n <= rating ? "#f59e0b" : "none"} stroke="#f59e0b" strokeWidth="2">
+                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                  </svg>
+                </button>
+              ))}
+              <span style={{ color: TEXT3, fontSize: 12, marginLeft: 4 }}>{rating}/5</span>
+            </div>
+
+            <textarea value={comment} onChange={e => setComment(e.target.value)} placeholder="Deine Bewertung..." rows={4}
+              style={{ width: "100%", background: BG, border: `1.5px solid ${BORDER}`, borderRadius: 10, padding: "10px 14px", color: TEXT, fontSize: 14, fontFamily: "inherit", resize: "none", boxSizing: "border-box", outline: "none", marginBottom: 12 }}
+              onFocus={e => e.currentTarget.style.borderColor = ORANGE}
+              onBlur={e => e.currentTarget.style.borderColor = BORDER} />
+
+            <button onClick={submitReview} disabled={submitting || !comment.trim()} style={{ background: submitting || !comment.trim() ? TEXT3 : ORANGE, color: "#fff", border: "none", borderRadius: 10, padding: "11px 22px", fontWeight: 700, fontSize: 14, cursor: submitting || !comment.trim() ? "not-allowed" : "pointer", fontFamily: "'DM Sans',sans-serif" }}>
+              {submitting ? "Wird gespeichert..." : "Bewertung abgeben ⭐"}
+            </button>
+          </div>
+
+          {/* Review list */}
+          {reviews.length === 0 ? (
+            <div style={{ textAlign: "center", padding: "48px 0" }}>
+              <p style={{ fontSize: 40, marginBottom: 10 }}>⭐</p>
+              <p style={{ color: TEXT3, fontSize: 14 }}>Noch keine Bewertungen. Sei der Erste!</p>
+            </div>
+          ) : (
+            <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+              {reviews.map(r => (
+                <div key={r.id} style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 14, padding: "16px 20px" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+                    <Stars rating={r.rating} />
+                    <span style={{ fontFamily: "'Syne',sans-serif", fontWeight: 700, fontSize: 13, color: TEXT }}>{r.rating}/5</span>
+                    <span style={{ color: TEXT3, fontSize: 11, marginLeft: "auto" }}>{new Date(r.created_at).toLocaleDateString("de-DE")}</span>
+                  </div>
+                  {r.comment && <p style={{ color: TEXT2, fontSize: 14, lineHeight: 1.7 }}>{r.comment}</p>}
                 </div>
               ))}
             </div>
-          </div>
+          )}
         </div>
       </div>
     </main>

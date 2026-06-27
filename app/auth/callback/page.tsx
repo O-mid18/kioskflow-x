@@ -74,7 +74,7 @@ export default function AuthCallbackPage() {
       }
 
       // No pending data — just redirect based on role
-      const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
+      const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).maybeSingle();
       const role = profile?.role;
       window.location.href = role === "supplier" ? "/supplier/dashboard" : role === "admin" ? "/admin/dashboard" : "/marketplace";
     };
