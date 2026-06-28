@@ -284,9 +284,9 @@ export default function MarketplacePage({ initialProducts = [], initialSuppliers
   },[]);
 
   const addToCart = useCallback(async (product: Product) => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (session) {
-      await supabase.from("cart_items").insert({ user_id: session.user.id, product_id: product.id, quantity: 1 });
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      await supabase.from("cart_items").insert({ user_id: user.id, product_id: product.id, quantity: 1 });
     }
     setCartItems(prev => {
       const existing = prev.find(i => i.id === product.id);

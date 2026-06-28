@@ -68,12 +68,12 @@ export default function CheckoutPage() {
   const fetchCart = async () => {
     try {
       setLoading(true);
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) { setLoading(false); return; }
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) { setLoading(false); return; }
       const { data, error } = await supabase
         .from("cart_items")
         .select("id, quantity, products (name, price)")
-        .eq("user_id", session.user.id);
+        .eq("user_id", user.id);
       if (error) throw error;
       if (data) {
         const cartItems = data as unknown as CartItem[];

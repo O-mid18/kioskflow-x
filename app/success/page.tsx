@@ -24,9 +24,9 @@ export default function SuccessPage() {
 
   const clearCart = async () => {
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) return;
-      await supabase.from("cart_items").delete().eq("user_id", session.user.id);
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      await supabase.from("cart_items").delete().eq("user_id", user.id);
       setCleared(true);
     } catch {
       // silent
