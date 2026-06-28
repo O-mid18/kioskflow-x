@@ -125,10 +125,14 @@ export default function OrdersPage() {
           <div style={{ width: 30, height: 30, background: ORANGE, borderRadius: 7, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 900, fontSize: 14, color: "#fff", fontFamily: "'Syne',sans-serif" }}>K</div>
           <span style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 14, color: TEXT }}>KioskFlow</span>
         </a>
-        <div style={{ display: "flex", gap: 6 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
           <a href="/marketplace" style={{ fontSize: 13, color: TEXT2, textDecoration: "none", fontWeight: 500, padding: "6px 14px", borderRadius: 8 }}>Marktplatz</a>
           <a href="/cart" style={{ fontSize: 13, color: TEXT2, textDecoration: "none", fontWeight: 500, padding: "6px 14px", borderRadius: 8 }}>Warenkorb</a>
           <a href="/profile" style={{ fontSize: 13, color: TEXT2, textDecoration: "none", fontWeight: 500, padding: "6px 14px", borderRadius: 8 }}>Profil</a>
+          <button onClick={async () => { await supabase.auth.signOut(); window.location.href = "/login"; }}
+            style={{ marginLeft: 8, background: "none", border: `1.5px solid ${BORDER}`, borderRadius: 8, padding: "6px 14px", color: TEXT2, fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
+            Abmelden
+          </button>
         </div>
       </nav>
 
