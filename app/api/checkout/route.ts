@@ -22,7 +22,7 @@ export async function POST(request: Request) {
   try {
     const { data: cartItems, error: cartError } = await supabase
       .from("cart_items")
-      .select("quantity, products(id, name, price, supplier_id)")
+      .select("quantity, products(id, name, price, supplier_id, stock)")
       .eq("user_id", user.id);
 
     if (cartError) {
@@ -32,6 +32,20 @@ export async function POST(request: Request) {
 
     if (!cartItems || cartItems.length === 0) {
       return NextResponse.json({ error: "Cart is empty" }, { status: 400 });
+    }
+
+    // Validate stock server-side — the UI disables out-of-stock buttons, but
+    // that's bypassable, and stock can also change between page load and
+    // checkout. Reject the whole checkout if any item exceeds available stock.
+    const insufficient = (cartItems as any[]).filter(
+      (item) => (item.products?.stock ?? 0) < item.quantity
+    );
+    if (insufficient.length > 0) {
+      const names = insufficient.map((i: any) => i.products?.name ?? "?").join(", ");
+      return NextResponse.json(
+        { error: `Nicht genug Lagerbestand für: ${names}. Bitte Menge im Warenkorb anpassen.` },
+        { status: 409 }
+      );
     }
 
     const totalCents = cartItems.reduce((sum: number, item: any) => {

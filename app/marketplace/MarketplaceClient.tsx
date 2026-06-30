@@ -137,13 +137,15 @@ function ProductModal({ product, reviews, onClose, onAddToCart, inWishlist, onTo
           )}
           {product.description && <p style={{ color:TEXT2, fontSize:14, lineHeight:1.7, marginBottom:20 }}>{product.description}</p>}
           {product.stock !== undefined && (
-            <div style={{ display:"inline-flex", alignItems:"center", gap:6, background:"#dcfce7", borderRadius:8, padding:"5px 10px", marginBottom:20 }}>
-              <div style={{ width:6, height:6, borderRadius:"50%", background:"#16a34a" }} />
-              <span style={{ color:"#16a34a", fontSize:12, fontWeight:600 }}>{product.stock} auf Lager</span>
+            <div style={{ display:"inline-flex", alignItems:"center", gap:6, background:product.stock > 0 ? "#dcfce7" : "#fef2f2", borderRadius:8, padding:"5px 10px", marginBottom:20 }}>
+              <div style={{ width:6, height:6, borderRadius:"50%", background:product.stock > 0 ? "#16a34a" : "#ef4444" }} />
+              <span style={{ color:product.stock > 0 ? "#16a34a" : "#ef4444", fontSize:12, fontWeight:600 }}>{product.stock > 0 ? `${product.stock} auf Lager` : "Nicht auf Lager"}</span>
             </div>
           )}
-          <button onClick={() => { onAddToCart(product); onClose(); }} style={{ width:"100%", background:ORANGE, color:"#fff", fontWeight:700, padding:"16px", borderRadius:14, border:"none", cursor:"pointer", fontSize:15, fontFamily:"'DM Sans',sans-serif", marginBottom:10 }}>
-            In den Warenkorb
+          <button onClick={() => { if ((product.stock ?? 0) > 0) { onAddToCart(product); onClose(); } }}
+            disabled={(product.stock ?? 0) <= 0}
+            style={{ width:"100%", background:(product.stock ?? 0) <= 0 ? BORDER : ORANGE, color:(product.stock ?? 0) <= 0 ? TEXT3 : "#fff", fontWeight:700, padding:"16px", borderRadius:14, border:"none", cursor:(product.stock ?? 0) <= 0 ? "not-allowed" : "pointer", fontSize:15, fontFamily:"'DM Sans',sans-serif", marginBottom:10 }}>
+            {(product.stock ?? 0) <= 0 ? "Ausverkauft" : "In den Warenkorb"}
           </button>
           <button onClick={() => { onNegotiate(product); onClose(); }} style={{ width:"100%", background:"transparent", color:ORANGE, fontWeight:700, padding:"14px", borderRadius:14, border:`2px solid ${ORANGE}`, cursor:"pointer", fontSize:14, fontFamily:"'DM Sans',sans-serif", display:"flex", alignItems:"center", justifyContent:"center", gap:8 }}>
             🤝 Preis verhandeln
@@ -449,7 +451,11 @@ export default function MarketplacePage({ initialProducts = [], initialSuppliers
                       <span style={{ background:cat.color, color:"#fff", fontSize:9, fontWeight:800, padding:"3px 8px", borderRadius:100, marginBottom:6, display:"inline-block" }}>{cat.emoji} {p.category}</span>
                       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center" }}>
                         <h3 style={{ color:"#fff", fontFamily:"'Syne',sans-serif", fontWeight:700, fontSize:16 }}>{p.name}</h3>
-                        <button onClick={e => { e.stopPropagation(); addToCart(p); }} style={{ background:ORANGE, color:"#fff", border:"none", fontSize:11, fontWeight:700, padding:"7px 13px", borderRadius:8, cursor:"pointer" }}>+ Warenkorb</button>
+                        <button onClick={e => { e.stopPropagation(); if ((p.stock ?? 0) > 0) addToCart(p); }}
+                          disabled={(p.stock ?? 0) <= 0}
+                          style={{ background:(p.stock ?? 0) <= 0 ? "rgba(255,255,255,0.2)" : ORANGE, color:"#fff", border:"none", fontSize:11, fontWeight:700, padding:"7px 13px", borderRadius:8, cursor:(p.stock ?? 0) <= 0 ? "not-allowed" : "pointer" }}>
+                          {(p.stock ?? 0) <= 0 ? "Ausverkauft" : "+ Warenkorb"}
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -541,9 +547,10 @@ export default function MarketplacePage({ initialProducts = [], initialSuppliers
                       )}
                       <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:8 }}>
                         <span style={{ fontFamily:"'Syne',sans-serif", color:TEXT, fontSize:18, fontWeight:800 }}>€{product.price}</span>
-                        <button onClick={e => { e.stopPropagation(); addToCart(product); }}
-                          style={{ background:ORANGE, color:"#fff", border:"none", fontSize:11, fontWeight:700, padding:"7px 12px", borderRadius:8, cursor:"pointer" }}>
-                          + Warenkorb
+                        <button onClick={e => { e.stopPropagation(); if ((product.stock ?? 0) > 0) addToCart(product); }}
+                          disabled={(product.stock ?? 0) <= 0}
+                          style={{ background:(product.stock ?? 0) <= 0 ? BORDER : ORANGE, color:(product.stock ?? 0) <= 0 ? TEXT3 : "#fff", border:"none", fontSize:11, fontWeight:700, padding:"7px 12px", borderRadius:8, cursor:(product.stock ?? 0) <= 0 ? "not-allowed" : "pointer" }}>
+                          {(product.stock ?? 0) <= 0 ? "Ausverkauft" : "+ Warenkorb"}
                         </button>
                       </div>
                       <button onClick={e => { e.stopPropagation(); setOfferProduct(product); }}
