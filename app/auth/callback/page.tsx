@@ -16,13 +16,22 @@ export default function AuthCallbackPage() {
 
   useEffect(() => {
     const run = async () => {
-      const code = new URLSearchParams(window.location.search).get("code");
-      if (!code) { setStatus("error"); return; }
+      // If a session already exists (e.g. retry after a profile-save failure),
+      // skip re-exchanging the code since it's single-use and would fail.
+      const { data: { user: existingUser } } = await supabase.auth.getUser();
+      let user = existingUser;
 
-      const { error } = await supabase.auth.exchangeCodeForSession(code);
-      if (error) { setStatus("error"); return; }
+      if (!user) {
+        const code = new URLSearchParams(window.location.search).get("code");
+        if (!code) { setStatus("error"); return; }
 
-      const { data: { user } } = await supabase.auth.getUser();
+        const { error } = await supabase.auth.exchangeCodeForSession(code);
+        if (error) { setStatus("error"); return; }
+
+        const { data: { user: newUser } } = await supabase.auth.getUser();
+        if (!newUser) { setStatus("error"); return; }
+        user = newUser;
+      }
       if (!user) { setStatus("error"); return; }
 
       // Apply pending signup data stored before email confirmation
@@ -32,7 +41,7 @@ export default function AuthCallbackPage() {
           const pending = JSON.parse(raw);
 
           if (pending.type === "buyer") {
-            await supabase.from("profiles").upsert({
+            const { error: upsertErr } = await supabase.from("profiles").upsert({
               id: user.id,
               role: "buyer",
               status: "active",
@@ -43,13 +52,14 @@ export default function AuthCallbackPage() {
               city: pending.city,
               phone: pending.phone,
             });
+            if (upsertErr) { setStatus("error"); return; }
             localStorage.removeItem(LS_KEY);
             window.location.href = "/marketplace";
             return;
           }
 
           if (pending.type === "supplier") {
-            await supabase.from("profiles").upsert({
+            const { error: profileErr } = await supabase.from("profiles").upsert({
               id: user.id,
               role: "supplier",
               status: "pending",
@@ -60,17 +70,19 @@ export default function AuthCallbackPage() {
               phone: pending.phone,
               product_category: pending.productCategory,
             });
-            await supabase.from("suppliers").insert({
+            if (profileErr) { setStatus("error"); return; }
+            const { error: supplierErr } = await supabase.from("suppliers").insert({
               user_id: user.id,
               name: pending.companyName,
               phone: pending.phone,
               city: pending.city,
             });
+            if (supplierErr) { setStatus("error"); return; }
             localStorage.removeItem(LS_KEY);
             window.location.href = "/supplier/dashboard";
             return;
           }
-        } catch {}
+        } catch { setStatus("error"); return; }
       }
 
       // No pending data — just redirect based on role
@@ -91,10 +103,16 @@ export default function AuthCallbackPage() {
           <p style={{ color: TEXT3, fontSize: 14 }}>E-Mail wird bestätigt...</p>
         </div>
       ) : (
-        <div style={{ textAlign: "center" }}>
-          <p style={{ fontSize: 36, marginBottom: 12 }}>❌</p>
-          <p style={{ color: TEXT, fontSize: 15, fontWeight: 600, marginBottom: 8 }}>Link ungültig oder abgelaufen.</p>
-          <a href="/signup" style={{ color: ORANGE, fontWeight: 700, fontSize: 14 }}>Erneut registrieren →</a>
+        <div style={{ textAlign: "center", padding: "0 20px" }}>
+          <p style={{ fontSize: 36, marginBottom: 12 }}>⚠️</p>
+          <p style={{ color: TEXT, fontSize: 15, fontWeight: 600, marginBottom: 8 }}>Bestätigung fehlgeschlagen.</p>
+          <p style={{ color: TEXT3, fontSize: 13, marginBottom: 20 }}>Der Link ist ungültig/abgelaufen, oder dein Profil konnte nicht gespeichert werden.</p>
+          <div style={{ display: "flex", gap: 10, justifyContent: "center" }}>
+            <button onClick={() => window.location.reload()} style={{ background: ORANGE, color: "#fff", border: "none", borderRadius: 9, padding: "10px 18px", fontWeight: 700, fontSize: 13, cursor: "pointer" }}>
+              Erneut versuchen
+            </button>
+            <a href="/signup" style={{ color: ORANGE, fontWeight: 700, fontSize: 13, alignSelf: "center" }}>Neu registrieren →</a>
+          </div>
         </div>
       )}
     </main>
