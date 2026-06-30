@@ -50,10 +50,27 @@ export default function SupplierOrdersPage() {
     cancelled: "❌ Deine Bestellung wurde storniert",
   };
 
-  const updateStatus = async (orderId: string, newStatus: string, buyerId: string) => {
+  const updateStatus = async (orderId: string, newStatus: string, buyerId: string, oldStatus: string) => {
     setUpdating(orderId);
     const { error } = await supabase.from("orders").update({ status: newStatus }).eq("id", orderId);
     if (!error) {
+      // If cancelling an order that was already paid/shipped, stock was already
+      // deducted at payment time (via the Stripe webhook) — restore it now,
+      // otherwise every cancellation permanently shrinks inventory.
+      if (newStatus === "cancelled" && (oldStatus === "paid" || oldStatus === "shipped")) {
+        const { data: orderItems } = await supabase
+          .from("order_items")
+          .select("product_id, quantity")
+          .eq("order_id", orderId);
+        if (orderItems) {
+          await Promise.all(orderItems.map(async (oi: any) => {
+            const { data: product } = await supabase.from("products").select("stock").eq("id", oi.product_id).single();
+            if (product) {
+              await supabase.from("products").update({ stock: (product.stock ?? 0) + oi.quantity }).eq("id", oi.product_id);
+            }
+          }));
+        }
+      }
       setItems(prev => prev.map(item =>
         item.orders?.id === orderId ? { ...item, orders: { ...item.orders!, status: newStatus } } : item
       ));
@@ -193,7 +210,7 @@ export default function SupplierOrdersPage() {
                         <select
                           value=""
                           disabled={updating === item.orders?.id}
-                          onChange={e => { if (e.target.value && item.orders?.id) updateStatus(item.orders.id, e.target.value, item.orders.buyer_id); }}
+                          onChange={e => { if (e.target.value && item.orders?.id) updateStatus(item.orders.id, e.target.value, item.orders.buyer_id, item.orders.status); }}
                           style={{ background:SURFACE, border:`1.5px solid ${BORDER}`, borderRadius:8, padding:"6px 10px", color:TEXT2, fontSize:12, fontWeight:600, cursor:"pointer", outline:"none" }}
                         >
                           <option value="">Status ändern</option>
