@@ -95,7 +95,7 @@ export default function AddProductPage() {
     });
     setIsLoading(false);
     if (error) setErrorMsg(error.message);
-    else window.location.href = "/supplier";
+    else window.location.href = "/supplier/dashboard/products";
   };
 
   return (
@@ -112,7 +112,7 @@ export default function AddProductPage() {
           <div style={{ width:30, height:30, background:ORANGE, borderRadius:7, display:"flex", alignItems:"center", justifyContent:"center", fontWeight:900, fontSize:14, color:"#fff", fontFamily:"'Syne',sans-serif" }}>K</div>
           <span style={{ fontFamily:"'Syne',sans-serif", fontWeight:800, fontSize:14, color:TEXT, letterSpacing:"-0.3px" }}>KioskFlow</span>
         </div>
-        <a href="/supplier" style={{ color:TEXT2, fontSize:13, textDecoration:"none", display:"flex", alignItems:"center", gap:6, fontWeight:500 }}>← Zurück zum Dashboard</a>
+        <a href="/supplier/dashboard/products" style={{ color:TEXT2, fontSize:13, textDecoration:"none", display:"flex", alignItems:"center", gap:6, fontWeight:500 }}>← Zurück zum Dashboard</a>
       </nav>
 
       <div style={{ maxWidth:680, margin:"0 auto", padding:"36px 24px" }}>
@@ -205,7 +205,7 @@ export default function AddProductPage() {
 
           {/* Actions */}
           <div style={{ display:"flex", justifyContent:"flex-end", gap:10, paddingTop:4 }}>
-            <a href="/supplier" style={{ background:"none", border:`1.5px solid ${BORDER}`, color:TEXT2, borderRadius:10, padding:"12px 22px", fontSize:14, fontWeight:600, textDecoration:"none", display:"inline-flex", alignItems:"center" }}>Abbrechen</a>
+            <a href="/supplier/dashboard/products" style={{ background:"none", border:`1.5px solid ${BORDER}`, color:TEXT2, borderRadius:10, padding:"12px 22px", fontSize:14, fontWeight:600, textDecoration:"none", display:"inline-flex", alignItems:"center" }}>Abbrechen</a>
             <button onClick={addProduct} disabled={isLoading}
               style={{ background:isLoading?"rgba(232,82,26,0.55)":ORANGE, color:"#fff", border:"none", borderRadius:10, padding:"12px 28px", fontSize:14, fontFamily:"inherit", fontWeight:700, cursor:isLoading?"not-allowed":"pointer", transition:"opacity 0.2s", boxShadow:`0 4px 14px rgba(232,82,26,0.25)`, display:"flex", alignItems:"center", gap:8 }}>
               {isLoading && <div style={{ width:14, height:14, border:"2px solid rgba(255,255,255,0.4)", borderTopColor:"#fff", borderRadius:"50%", animation:"spin 0.8s linear infinite" }} />}

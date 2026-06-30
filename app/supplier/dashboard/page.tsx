@@ -135,7 +135,7 @@ export default function SupplierDashboardPage() {
           <a href="/add-product" style={{ display:"inline-flex", alignItems:"center", gap:8, background:ORANGE, color:"#fff", fontWeight:700, padding:"11px 20px", borderRadius:11, fontSize:14, boxShadow:`0 4px 14px rgba(232,82,26,0.25)` }}>
             <span style={{ fontSize:18, lineHeight:1 }}>+</span> Produkt hinzufügen
           </a>
-          <a href="/supplier" style={{ display:"inline-flex", alignItems:"center", gap:8, background:SURFACE, border:`1.5px solid ${BORDER}`, color:TEXT2, fontWeight:600, padding:"11px 18px", borderRadius:11, fontSize:14 }}>
+          <a href="/supplier/dashboard/products" style={{ display:"inline-flex", alignItems:"center", gap:8, background:SURFACE, border:`1.5px solid ${BORDER}`, color:TEXT2, fontWeight:600, padding:"11px 18px", borderRadius:11, fontSize:14 }}>
             Alle Produkte
           </a>
         </div>
@@ -156,7 +156,7 @@ export default function SupplierDashboardPage() {
               )}
             </div>
           </div>
-          <a href="/supplier" style={{ fontSize:13, color:ORANGE, fontWeight:700 }}>Verwalten →</a>
+          <a href="/supplier/dashboard/products" style={{ fontSize:13, color:ORANGE, fontWeight:700 }}>Verwalten →</a>
         </div>
       )}
 
@@ -239,7 +239,7 @@ export default function SupplierDashboardPage() {
         <div style={{ background:SURFACE, border:`1px solid ${BORDER}`, borderRadius:18, overflow:"hidden" }}>
           <div style={{ padding:"20px 22px 14px", borderBottom:`1px solid ${BORDER}`, display:"flex", justifyContent:"space-between", alignItems:"center" }}>
             <h2 style={{ fontFamily:"'Syne',sans-serif", fontWeight:800, fontSize:16, color:TEXT }}>Top Produkte</h2>
-            <a href="/supplier" style={{ fontSize:13, color:ORANGE, fontWeight:700 }}>Alle →</a>
+            <a href="/supplier/dashboard/products" style={{ fontSize:13, color:ORANGE, fontWeight:700 }}>Alle →</a>
           </div>
           {topProducts.length === 0 ? (
             <div style={{ padding:"40px 24px", textAlign:"center" }}>
@@ -276,7 +276,7 @@ export default function SupplierDashboardPage() {
         <div style={{ background:SURFACE, border:`1px solid ${BORDER}`, borderRadius:18, overflow:"hidden" }}>
           <div style={{ padding:"20px 22px 14px", borderBottom:`1px solid ${BORDER}`, display:"flex", justifyContent:"space-between", alignItems:"center" }}>
             <h2 style={{ fontFamily:"'Syne',sans-serif", fontWeight:800, fontSize:16, color:TEXT }}>Lagerbestand</h2>
-            <a href="/supplier" style={{ fontSize:13, color:ORANGE, fontWeight:700 }}>Verwalten →</a>
+            <a href="/supplier/dashboard/products" style={{ fontSize:13, color:ORANGE, fontWeight:700 }}>Verwalten →</a>
           </div>
 
           {/* Category breakdown */}
