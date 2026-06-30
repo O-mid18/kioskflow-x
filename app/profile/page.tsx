@@ -260,7 +260,7 @@ export default function ProfilePage() {
 
   const bottomNav = role === "supplier"
     ? [{ icon: "🏪", label: "Marktplatz", href: "/marketplace", active: false }, { icon: "📦", label: "Produkte", href: "/supplier", active: false }, { icon: "🧾", label: "Bestellungen", href: "/supplier/dashboard/orders", active: false }, { icon: "👤", label: "Profil", href: "/profile", active: true }]
-    : [{ icon: "🏪", label: "Marktplatz", href: "/marketplace", active: false }, { icon: "🛒", label: "Warenkorb", href: "/cart", active: false }, { icon: "📦", label: "Bestellungen", href: "/orders", active: false }, { icon: "👤", label: "Profil", href: "/profile", active: true }];
+    : [{ icon: "🏪", label: "Marktplatz", href: "/marketplace", active: false }, { icon: "🛒", label: "Warenkorb", href: "/cart", active: false }, { icon: "📦", label: "Bestellungen", href: "/orders", active: false }, { icon: "💬", label: "Nachrichten", href: "/messages", active: false }, { icon: "👤", label: "Profil", href: "/profile", active: true }];
 
   return (
     <main style={{ minHeight: "100vh", background: BG, fontFamily: "'DM Sans','Helvetica Neue',system-ui,sans-serif", color: TEXT, paddingBottom: 80 }}>
