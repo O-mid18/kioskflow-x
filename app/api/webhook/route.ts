@@ -24,6 +24,25 @@ export async function POST(request: Request) {
     const session = event.data.object as Stripe.Checkout.Session;
     const db = createAdminClient();
 
+    // Idempotency guard: Stripe can deliver the same webhook event more than
+    // once (retries, network blips). Without this check, a duplicate delivery
+    // would deduct product stock a second time for an order that was already paid.
+    const { data: existingOrder } = await db
+      .from("orders")
+      .select("id, status, buyer_id, suppliers(user_id)")
+      .eq("stripe_session_id", session.id)
+      .single();
+
+    if (!existingOrder) {
+      console.error("Webhook: no order found for session", session.id);
+      return NextResponse.json({ received: true });
+    }
+
+    if (existingOrder.status === "paid") {
+      // Already processed on a prior delivery of this same event — skip.
+      return NextResponse.json({ received: true, alreadyProcessed: true });
+    }
+
     const { error } = await db
       .from("orders")
       .update({ status: "paid" })
@@ -34,11 +53,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "DB update failed" }, { status: 500 });
     }
 
-    const { data: order } = await db
-      .from("orders")
-      .select("id, buyer_id, suppliers(user_id)")
-      .eq("stripe_session_id", session.id)
-      .single();
+    const order = existingOrder;
 
     if (order) {
       // Deduct stock for each purchased product
