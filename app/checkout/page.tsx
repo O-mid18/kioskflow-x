@@ -98,8 +98,10 @@ export default function CheckoutPage() {
     }
     try {
       setPaying(true);
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) { setError("Bitte zuerst einloggen."); setPaying(false); return; }
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session) { setError("Bitte zuerst einloggen."); setPaying(false); return; }
+      if (!session) { setError("Sitzung abgelaufen. Bitte erneut einloggen."); setPaying(false); return; }
       const res = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json", "Authorization": `Bearer ${session.access_token}` },

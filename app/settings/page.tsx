@@ -79,6 +79,8 @@ export default function SettingsPage() {
       return;
     }
     setDeleting(true);
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) { setDeleting(false); setDeleteMsg({ text: "Nicht eingeloggt.", ok: false }); return; }
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) { setDeleting(false); setDeleteMsg({ text: "Nicht eingeloggt.", ok: false }); return; }
 

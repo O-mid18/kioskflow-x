@@ -159,6 +159,8 @@ export default function AdminDashboard() {
   };
 
   const adminFetch = async (body: object) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) { window.location.href = "/login"; return new Response(null, { status: 401 }); }
     const { data: { session } } = await supabase.auth.getSession();
     const res = await fetch("/api/admin", {
       method: "POST",

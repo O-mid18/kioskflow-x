@@ -27,7 +27,9 @@ export default function AdminMessagesPage() {
   };
 
   useEffect(() => {
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
+    supabase.auth.getUser().then(async ({ data: { user } }) => {
+      if (!user) { window.location.href = "/login"; return; }
+      const { data: { session } } = await supabase.auth.getSession();
       if (!session) { window.location.href = "/login"; return; }
       setToken(session.access_token);
       const json = await adminFetch(session.access_token, { action: "get_conversations" });
