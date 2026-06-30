@@ -33,6 +33,8 @@ export default function ProductDetailsPage() {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
+  const [canReview, setCanReview] = useState(false);
+  const [alreadyReviewed, setAlreadyReviewed] = useState(false);
 
   const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(null), 2500); };
 
@@ -42,6 +44,22 @@ export default function ProductDetailsPage() {
       setProduct(data);
       const { data: rv } = await supabase.from("reviews").select("*").eq("product_id", String(params.id)).order("created_at", { ascending: false });
       setReviews(rv ?? []);
+
+      // Only verified buyers (a paid order containing this product) may leave a review
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        if ((rv ?? []).some((r: any) => r.user_id === user.id)) setAlreadyReviewed(true);
+        const { data: purchase } = await supabase
+          .from("order_items")
+          .select("id, orders!inner(buyer_id, status)")
+          .eq("product_id", String(params.id))
+          .eq("orders.buyer_id", user.id)
+          .eq("orders.status", "paid")
+          .limit(1)
+          .maybeSingle();
+        setCanReview(!!purchase);
+      }
+
       setLoading(false);
     };
     fetchProduct();
@@ -55,11 +73,13 @@ export default function ProductDetailsPage() {
   };
 
   const submitReview = async () => {
-    if (!comment.trim()) return;
+    if (!comment.trim() || !canReview || alreadyReviewed) return;
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { window.location.href = "/login"; return; }
     setSubmitting(true);
-    await supabase.from("reviews").insert({ product_id: product.id, user_id: user.id, rating, comment });
+    const { error } = await supabase.from("reviews").insert({ product_id: product.id, user_id: user.id, rating, comment });
+    if (error) { showToast("Fehler beim Speichern der Bewertung."); setSubmitting(false); return; }
+    setAlreadyReviewed(true);
     const { data: rv } = await supabase.from("reviews").select("*").eq("product_id", product.id).order("created_at", { ascending: false });
     setReviews(rv ?? []);
     setComment("");
@@ -166,32 +186,42 @@ export default function ProductDetailsPage() {
             Bewertungen {reviews.length > 0 && <span style={{ fontSize: 14, fontWeight: 500, color: TEXT3 }}>({reviews.length})</span>}
           </h2>
 
-          {/* Leave review */}
-          <div style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 16, padding: 24, marginBottom: 32 }}>
-            <p style={{ fontWeight: 700, fontSize: 14, color: TEXT, marginBottom: 16 }}>Bewertung schreiben</p>
+          {/* Leave review — only for verified buyers */}
+          {canReview && !alreadyReviewed ? (
+            <div style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 16, padding: 24, marginBottom: 32 }}>
+              <p style={{ fontWeight: 700, fontSize: 14, color: TEXT, marginBottom: 16 }}>Bewertung schreiben</p>
 
-            {/* Star selector */}
-            <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 14 }}>
-              <span style={{ color: TEXT2, fontSize: 13, marginRight: 4 }}>Sterne:</span>
-              {[1, 2, 3, 4, 5].map(n => (
-                <button key={n} onClick={() => setRating(n)} style={{ background: "none", border: "none", cursor: "pointer", padding: 2 }}>
-                  <svg width={22} height={22} viewBox="0 0 24 24" fill={n <= rating ? "#f59e0b" : "none"} stroke="#f59e0b" strokeWidth="2">
-                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                  </svg>
-                </button>
-              ))}
-              <span style={{ color: TEXT3, fontSize: 12, marginLeft: 4 }}>{rating}/5</span>
+              {/* Star selector */}
+              <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 14 }}>
+                <span style={{ color: TEXT2, fontSize: 13, marginRight: 4 }}>Sterne:</span>
+                {[1, 2, 3, 4, 5].map(n => (
+                  <button key={n} onClick={() => setRating(n)} style={{ background: "none", border: "none", cursor: "pointer", padding: 2 }}>
+                    <svg width={22} height={22} viewBox="0 0 24 24" fill={n <= rating ? "#f59e0b" : "none"} stroke="#f59e0b" strokeWidth="2">
+                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                    </svg>
+                  </button>
+                ))}
+                <span style={{ color: TEXT3, fontSize: 12, marginLeft: 4 }}>{rating}/5</span>
+              </div>
+
+              <textarea value={comment} onChange={e => setComment(e.target.value)} placeholder="Deine Bewertung..." rows={4}
+                style={{ width: "100%", background: BG, border: `1.5px solid ${BORDER}`, borderRadius: 10, padding: "10px 14px", color: TEXT, fontSize: 14, fontFamily: "inherit", resize: "none", boxSizing: "border-box", outline: "none", marginBottom: 12 }}
+                onFocus={e => e.currentTarget.style.borderColor = ORANGE}
+                onBlur={e => e.currentTarget.style.borderColor = BORDER} />
+
+              <button onClick={submitReview} disabled={submitting || !comment.trim()} style={{ background: submitting || !comment.trim() ? TEXT3 : ORANGE, color: "#fff", border: "none", borderRadius: 10, padding: "11px 22px", fontWeight: 700, fontSize: 14, cursor: submitting || !comment.trim() ? "not-allowed" : "pointer", fontFamily: "'DM Sans',sans-serif" }}>
+                {submitting ? "Wird gespeichert..." : "Bewertung abgeben ⭐"}
+              </button>
             </div>
-
-            <textarea value={comment} onChange={e => setComment(e.target.value)} placeholder="Deine Bewertung..." rows={4}
-              style={{ width: "100%", background: BG, border: `1.5px solid ${BORDER}`, borderRadius: 10, padding: "10px 14px", color: TEXT, fontSize: 14, fontFamily: "inherit", resize: "none", boxSizing: "border-box", outline: "none", marginBottom: 12 }}
-              onFocus={e => e.currentTarget.style.borderColor = ORANGE}
-              onBlur={e => e.currentTarget.style.borderColor = BORDER} />
-
-            <button onClick={submitReview} disabled={submitting || !comment.trim()} style={{ background: submitting || !comment.trim() ? TEXT3 : ORANGE, color: "#fff", border: "none", borderRadius: 10, padding: "11px 22px", fontWeight: 700, fontSize: 14, cursor: submitting || !comment.trim() ? "not-allowed" : "pointer", fontFamily: "'DM Sans',sans-serif" }}>
-              {submitting ? "Wird gespeichert..." : "Bewertung abgeben ⭐"}
-            </button>
-          </div>
+          ) : alreadyReviewed ? (
+            <div style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 16, padding: 20, marginBottom: 32 }}>
+              <p style={{ color: TEXT2, fontSize: 13 }}>✓ Du hast dieses Produkt bereits bewertet.</p>
+            </div>
+          ) : (
+            <div style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 16, padding: 20, marginBottom: 32 }}>
+              <p style={{ color: TEXT2, fontSize: 13 }}>Nur Käufer mit einer bezahlten Bestellung können dieses Produkt bewerten.</p>
+            </div>
+          )}
 
           {/* Review list */}
           {reviews.length === 0 ? (
