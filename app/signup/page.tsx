@@ -1,8 +1,5 @@
 "use client";
 
-import { useState } from "react";
-import { supabase } from "@/lib/supabase";
-
 const BG = "var(--kf-bg)";
 const SURFACE = "var(--kf-surface)";
 const BORDER = "var(--kf-border)";
@@ -12,19 +9,6 @@ const TEXT3 = "var(--kf-text3)";
 const ORANGE = "#E8521A";
 
 export default function SignupPage() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [msg, setMsg] = useState<{ text: string; ok: boolean } | null>(null);
-
-  const handleSignup = async () => {
-    if (!email || !password) { setMsg({ text: "E-Mail und Passwort erforderlich.", ok: false }); return; }
-    setLoading(true);
-    const { error } = await supabase.auth.signUp({ email, password });
-    setLoading(false);
-    if (error) setMsg({ text: error.message, ok: false });
-    else { setMsg({ text: "Konto erstellt! Weiterleitung...", ok: true }); setTimeout(() => window.location.href = "/login", 1200); }
-  };
 
   return (
     <main style={{ minHeight: "100vh", background: BG, display: "flex", fontFamily: "'DM Sans','Helvetica Neue',system-ui,sans-serif" }}>
@@ -66,12 +50,6 @@ export default function SignupPage() {
           <h2 style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 28, color: TEXT, letterSpacing: "-0.5px", marginBottom: 8 }}>Konto erstellen</h2>
           <p style={{ color: TEXT2, fontSize: 14, marginBottom: 32 }}>Tritt KioskFlow kostenlos bei.</p>
 
-          {msg && (
-            <div style={{ background: msg.ok ? "#f0fdf4" : "#fef2f2", border: `1.5px solid ${msg.ok ? "#bbf7d0" : "#fca5a5"}`, borderRadius: 10, padding: "12px 16px", marginBottom: 24 }}>
-              <p style={{ color: msg.ok ? "#16a34a" : "#dc2626", fontSize: 13 }}>{msg.text}</p>
-            </div>
-          )}
-
           {/* Role choice */}
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 24 }}>
             {[
@@ -86,29 +64,6 @@ export default function SignupPage() {
                 <p style={{ fontSize: 12, color: TEXT3, textAlign: "center" }}>{opt.sub}</p>
               </a>
             ))}
-          </div>
-
-          <div style={{ display: "flex", alignItems: "center", gap: 14, margin: "0 0 20px" }}>
-            <div style={{ flex: 1, height: 1, background: BORDER }} />
-            <span style={{ color: TEXT3, fontSize: 12 }}>oder schnell registrieren</span>
-            <div style={{ flex: 1, height: 1, background: BORDER }} />
-          </div>
-
-          <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-            <input type="email" placeholder="E-Mail" value={email} onChange={e => setEmail(e.target.value)}
-              onKeyDown={e => e.key === "Enter" && handleSignup()}
-              style={{ width: "100%", background: SURFACE, border: `1.5px solid ${BORDER}`, borderRadius: 11, padding: "12px 15px", color: TEXT, fontSize: 14, boxSizing: "border-box" }}
-              onFocus={e => { e.currentTarget.style.borderColor = ORANGE; e.currentTarget.style.boxShadow = "0 0 0 3px rgba(232,82,26,0.1)"; }}
-              onBlur={e => { e.currentTarget.style.borderColor = BORDER; e.currentTarget.style.boxShadow = "none"; }} />
-            <input type="password" placeholder="Passwort" value={password} onChange={e => setPassword(e.target.value)}
-              onKeyDown={e => e.key === "Enter" && handleSignup()}
-              style={{ width: "100%", background: SURFACE, border: `1.5px solid ${BORDER}`, borderRadius: 11, padding: "12px 15px", color: TEXT, fontSize: 14, boxSizing: "border-box" }}
-              onFocus={e => { e.currentTarget.style.borderColor = ORANGE; e.currentTarget.style.boxShadow = "0 0 0 3px rgba(232,82,26,0.1)"; }}
-              onBlur={e => { e.currentTarget.style.borderColor = BORDER; e.currentTarget.style.boxShadow = "none"; }} />
-            <button onClick={handleSignup} disabled={loading}
-              style={{ background: loading ? "rgba(232,82,26,0.55)" : ORANGE, color: "#fff", border: "none", borderRadius: 11, padding: "14px", fontWeight: 700, fontSize: 15, cursor: loading ? "not-allowed" : "pointer", boxShadow: "0 4px 14px rgba(232,82,26,0.25)" }}>
-              {loading ? "Wird erstellt..." : "Konto erstellen →"}
-            </button>
           </div>
 
           <p style={{ color: TEXT2, fontSize: 13, textAlign: "center", marginTop: 24 }}>
