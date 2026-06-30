@@ -207,7 +207,7 @@ function SupplierProfile({ email, supplierId }: { email: string; supplierId: str
 
       {/* Supplier quick links */}
       <div style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 18, overflow: "hidden", marginBottom: 20 }}>
-        {[{ icon: "◉", label: "Dashboard Übersicht", href: "/supplier/dashboard" }, { icon: "📦", label: "Meine Produkte", href: "/supplier" }, { icon: "🧾", label: "Bestellungen", href: "/supplier/dashboard/orders" }, { icon: "📊", label: "Analytik", href: "/supplier/dashboard/analytics" }, { icon: "⚙️", label: "Einstellungen", href: "/settings" }].map(({ icon, label, href }, i, arr) => (
+        {[{ icon: "◉", label: "Dashboard Übersicht", href: "/supplier/dashboard" }, { icon: "📦", label: "Meine Produkte", href: "/supplier/dashboard/products" }, { icon: "🧾", label: "Bestellungen", href: "/supplier/dashboard/orders" }, { icon: "📊", label: "Analytik", href: "/supplier/dashboard/analytics" }, { icon: "⚙️", label: "Einstellungen", href: "/settings" }].map(({ icon, label, href }, i, arr) => (
           <a key={href} href={href} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "15px 22px", textDecoration: "none", borderBottom: i < arr.length - 1 ? `1px solid ${BORDER}` : "none" }}
             onMouseEnter={e => e.currentTarget.style.background = BG} onMouseLeave={e => e.currentTarget.style.background = "transparent"}>
             <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
@@ -259,7 +259,7 @@ export default function ProfilePage() {
   }, []);
 
   const bottomNav = role === "supplier"
-    ? [{ icon: "🏪", label: "Marktplatz", href: "/marketplace", active: false }, { icon: "📦", label: "Produkte", href: "/supplier", active: false }, { icon: "🧾", label: "Bestellungen", href: "/supplier/dashboard/orders", active: false }, { icon: "👤", label: "Profil", href: "/profile", active: true }]
+    ? [{ icon: "🏪", label: "Marktplatz", href: "/marketplace", active: false }, { icon: "📦", label: "Produkte", href: "/supplier/dashboard/products", active: false }, { icon: "🧾", label: "Bestellungen", href: "/supplier/dashboard/orders", active: false }, { icon: "👤", label: "Profil", href: "/profile", active: true }]
     : [{ icon: "🏪", label: "Marktplatz", href: "/marketplace", active: false }, { icon: "🛒", label: "Warenkorb", href: "/cart", active: false }, { icon: "📦", label: "Bestellungen", href: "/orders", active: false }, { icon: "💬", label: "Nachrichten", href: "/messages", active: false }, { icon: "👤", label: "Profil", href: "/profile", active: true }];
 
   return (
