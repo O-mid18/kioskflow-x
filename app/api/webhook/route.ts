@@ -59,7 +59,7 @@ export async function POST(request: Request) {
       // Deduct stock for each purchased product
       const { data: orderItems } = await db
         .from("order_items")
-        .select("product_id, quantity")
+        .select("product_id, quantity, supplier_id")
         .eq("order_id", order.id);
 
       if (orderItems && orderItems.length > 0) {
@@ -77,18 +77,45 @@ export async function POST(request: Request) {
         }));
       }
 
-      // Notify supplier of new paid order
-      const supplierUserId = (order.suppliers as any)?.user_id;
-      if (supplierUserId) {
-        await db.from("notifications").insert({
-          user_id: supplierUserId,
-          type: "new_order",
-          title: "Neue Bestellung eingegangen",
-          body: `Bestellung #${(order.id as string).slice(-6).toUpperCase()} wurde bezahlt.`,
-          link: "/supplier/dashboard/orders",
-        }).then(({ error }) => {
-          if (error) console.warn("Notification insert skipped:", error.message);
-        });
+      // Notify every supplier whose products are part of this order — not just
+      // the first one. A single cart/order can span multiple suppliers, and
+      // each one needs to know a product of theirs was sold so they can ship it.
+      const distinctSupplierIds = Array.from(
+        new Set((orderItems ?? []).map((i: any) => i.supplier_id).filter(Boolean))
+      );
+
+      if (distinctSupplierIds.length > 0) {
+        const { data: supplierRows } = await db
+          .from("suppliers")
+          .select("id, user_id")
+          .in("id", distinctSupplierIds);
+
+        await Promise.all((supplierRows ?? []).map(async (s: any) => {
+          if (!s.user_id) return;
+          await db.from("notifications").insert({
+            user_id: s.user_id,
+            type: "new_order",
+            title: "Neue Bestellung eingegangen",
+            body: `Bestellung #${(order.id as string).slice(-6).toUpperCase()} wurde bezahlt.`,
+            link: "/supplier/dashboard/orders",
+          }).then(({ error }) => {
+            if (error) console.warn("Notification insert skipped:", error.message);
+          });
+        }));
+      } else {
+        // Fallback: no per-item supplier_id available, notify the order-level supplier
+        const supplierUserId = (order.suppliers as any)?.user_id;
+        if (supplierUserId) {
+          await db.from("notifications").insert({
+            user_id: supplierUserId,
+            type: "new_order",
+            title: "Neue Bestellung eingegangen",
+            body: `Bestellung #${(order.id as string).slice(-6).toUpperCase()} wurde bezahlt.`,
+            link: "/supplier/dashboard/orders",
+          }).then(({ error }) => {
+            if (error) console.warn("Notification insert skipped:", error.message);
+          });
+        }
       }
     }
   }
