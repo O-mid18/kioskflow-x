@@ -186,5 +186,16 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: true });
   }
 
+  if (body.action === "change_role") {
+    const allowed = ["buyer", "supplier", "admin"];
+    if (!allowed.includes(body.role)) {
+      return NextResponse.json({ error: "Ungültige Rolle" }, { status: 400 });
+    }
+    const db = createAdminClient();
+    const { error } = await db.from("profiles").update({ role: body.role }).eq("id", body.userId);
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ ok: true });
+  }
+
   return NextResponse.json({ error: "Unknown action" }, { status: 400 });
 }

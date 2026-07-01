@@ -121,6 +121,11 @@ export default function OwnerDashboard() {
     setSuppliers(prev => prev.map(s => s.id === id ? { ...s, verified: true } : s));
   };
 
+  const changeRole = async (userId: string, role: string) => {
+    await fetch("/api/owner", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "change_role", userId, role }) });
+    setUsers(prev => prev.map(u => u.id === userId ? { ...u, role } : u));
+  };
+
   const changePassword = async () => {
     if (newPw !== confPw) { setPwMsg({ text: "Passwörter stimmen nicht überein", ok: false }); return; }
     if (newPw.length < 6) { setPwMsg({ text: "Mindestens 6 Zeichen erforderlich", ok: false }); return; }
@@ -219,7 +224,7 @@ export default function OwnerDashboard() {
             </div>
             <div style={{ overflowX: "auto" }}>
               <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                <thead><tr><TH ch="Name" /><TH ch="E-Mail" /><TH ch="Rolle" /><TH ch="Stadt" /><TH ch="Registriert" /></tr></thead>
+                <thead><tr><TH ch="Name" /><TH ch="E-Mail" /><TH ch="Rolle" /><TH ch="Stadt" /><TH ch="Registriert" /><TH ch="Rolle ändern" /></tr></thead>
                 <tbody>
                   {users.map((u: any) => (
                     <tr key={u.id}>
@@ -228,6 +233,22 @@ export default function OwnerDashboard() {
                       <TD><Badge v={u.role || "—"} /></TD>
                       <TD>{u.city || "—"}</TD>
                       <TD>{fmt(u.created_at)}</TD>
+                      <td style={{ padding: "8px 14px", borderBottom: `1px solid ${BORDER}`, whiteSpace: "nowrap" }}>
+                        <div style={{ display: "flex", gap: 6 }}>
+                          {u.role !== "admin" && (
+                            <button onClick={() => changeRole(u.id, "admin")}
+                              style={{ background: "#fef3c7", color: "#d97706", border: "none", borderRadius: 7, padding: "4px 10px", fontSize: 11, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>
+                              Admin ↑
+                            </button>
+                          )}
+                          {u.role === "admin" && (
+                            <button onClick={() => changeRole(u.id, "buyer")}
+                              style={{ background: "#fee2e2", color: "#dc2626", border: "none", borderRadius: 7, padding: "4px 10px", fontSize: 11, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>
+                              Admin ✕
+                            </button>
+                          )}
+                        </div>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
