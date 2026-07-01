@@ -416,9 +416,9 @@ export default function MarketplacePage({ initialProducts = [], initialSuppliers
             </div>
             <div style={{ display:"flex", gap:12, overflowX:"auto", scrollbarWidth:"none" }}>
               {suppliers.slice(0,5).map(s => (
-                <div key={s.id} style={{ flexShrink:0, background:SURFACE, border:`1px solid ${BORDER}`, borderRadius:14, padding:"14px 18px", display:"flex", alignItems:"center", gap:12, cursor:"pointer", transition:"box-shadow 0.2s", minWidth:200 }}
-                  onMouseEnter={e => e.currentTarget.style.boxShadow="0 4px 20px rgba(0,0,0,0.08)"}
-                  onMouseLeave={e => e.currentTarget.style.boxShadow="none"}>
+                <a key={s.id} href={`/supplier/${s.id}`} style={{ flexShrink:0, background:SURFACE, border:`1px solid ${BORDER}`, borderRadius:14, padding:"14px 18px", display:"flex", alignItems:"center", gap:12, cursor:"pointer", transition:"box-shadow 0.2s", minWidth:200, textDecoration:"none" }}
+                  onMouseEnter={e => (e.currentTarget as HTMLElement).style.boxShadow="0 4px 20px rgba(0,0,0,0.08)"}
+                  onMouseLeave={e => (e.currentTarget as HTMLElement).style.boxShadow="none"}>
                   <div style={{ width:40, height:40, borderRadius:10, overflow:"hidden", flexShrink:0, background:BG }}>
                     <img src={s.logo_url||"https://images.unsplash.com/photo-1560250097-0b93528c311a?w=200&q=80"} alt={s.name} style={{ width:"100%", height:"100%", objectFit:"cover" }} />
                   </div>
@@ -426,7 +426,7 @@ export default function MarketplacePage({ initialProducts = [], initialSuppliers
                     <p style={{ color:TEXT, fontWeight:600, fontSize:13 }}>{s.name}</p>
                     {s.description && <p style={{ color:TEXT3, fontSize:11, marginTop:2 }}>{s.description.slice(0,30)}...</p>}
                   </div>
-                </div>
+                </a>
               ))}
             </div>
           </div>
