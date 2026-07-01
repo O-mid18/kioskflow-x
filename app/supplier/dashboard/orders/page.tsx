@@ -64,7 +64,7 @@ export default function SupplierOrdersPage() {
           .eq("order_id", orderId);
         if (orderItems) {
           await Promise.all(orderItems.map(async (oi: any) => {
-            const { data: product } = await supabase.from("products").select("stock").eq("id", oi.product_id).single();
+            const { data: product } = await supabase.from("products").select("stock").eq("id", oi.product_id).maybeSingle();
             if (product) {
               await supabase.from("products").update({ stock: (product.stock ?? 0) + oi.quantity }).eq("id", oi.product_id);
             }

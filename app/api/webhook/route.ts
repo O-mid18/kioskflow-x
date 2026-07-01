@@ -68,7 +68,7 @@ export async function POST(request: Request) {
             .from("products")
             .select("stock")
             .eq("id", item.product_id)
-            .single();
+            .maybeSingle();
           if (product != null) {
             await db.from("products")
               .update({ stock: Math.max(0, (product.stock ?? 0) - item.quantity) })

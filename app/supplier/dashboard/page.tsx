@@ -65,8 +65,8 @@ export default function SupplierDashboardPage() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { window.location.href = "/login"; return; }
 
-    const { data: supplier } = await supabase.from("suppliers").select("id,name").eq("user_id", user.id).single();
-    if (!supplier) { setLoading(false); return; }
+    const { data: supplier } = await supabase.from("suppliers").select("id,name").eq("user_id", user.id).maybeSingle();
+    if (!supplier) { window.location.href = "/marketplace"; return; }
     setSupplierName(supplier.name ?? "");
 
     const [{ data: prods }, { data: items }] = await Promise.all([

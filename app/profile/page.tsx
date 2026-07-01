@@ -52,7 +52,7 @@ function BuyerProfile({ email, buyerId, userId }: { email: string; buyerId: stri
   const [msg, setMsg]                 = useState<{ text: string; ok: boolean } | null>(null);
 
   useEffect(() => {
-    supabase.from("profiles").select("*").eq("id", buyerId).single().then(({ data }) => {
+    supabase.from("profiles").select("*").eq("id", buyerId).maybeSingle().then(({ data }) => {
       if (data) {
         setFullName(data.full_name ?? "");
         setCompanyName(data.company_name ?? "");
@@ -154,7 +154,7 @@ function SupplierProfile({ email, supplierId }: { email: string; supplierId: str
   const [msg, setMsg]                 = useState<{ text: string; ok: boolean } | null>(null);
 
   useEffect(() => {
-    supabase.from("suppliers").select("*").eq("id", supplierId).single().then(({ data }) => {
+    supabase.from("suppliers").select("*").eq("id", supplierId).maybeSingle().then(({ data }) => {
       if (data) {
         setName(data.name ?? "");
         setDescription(data.description ?? "");

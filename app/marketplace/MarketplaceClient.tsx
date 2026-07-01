@@ -170,12 +170,12 @@ function OfferModal({ product, onClose, onSent }: { product: Product; onClose: (
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { window.location.href = "/login"; return; }
 
-    const { data: supplier } = await supabase.from("suppliers").select("user_id").eq("id", product.supplier_id).single();
+    const { data: supplier } = await supabase.from("suppliers").select("user_id").eq("id", product.supplier_id).maybeSingle();
     if (!supplier?.user_id) { setErr("Lieferant nicht gefunden."); setSend(false); return; }
 
     const { data: conv } = await supabase.from("conversations")
       .upsert({ buyer_id: user.id, supplier_id: supplier.user_id }, { onConflict: "buyer_id,supplier_id" })
-      .select().single();
+      .select().maybeSingle();
     if (!conv) { setErr("Fehler beim Erstellen der Unterhaltung."); setSend(false); return; }
 
     const content = [
