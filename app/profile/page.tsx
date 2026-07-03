@@ -248,7 +248,7 @@ export default function ProfilePage() {
       setEmail(user.email ?? "");
       setUserId(user.id);
 
-      const { data: supplier } = await supabase.from("suppliers").select("id").eq("user_id", user.id).single();
+      const { data: supplier } = await supabase.from("suppliers").select("id").eq("user_id", user.id).maybeSingle();
       if (supplier) { setRole("supplier"); setRoleId(supplier.id); setLoading(false); return; }
 
       setRole("buyer");
