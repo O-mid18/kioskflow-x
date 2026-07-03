@@ -65,8 +65,20 @@ export default function SupplierDashboardPage() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { window.location.href = "/login"; return; }
 
-    const { data: supplier } = await supabase.from("suppliers").select("id,name").eq("user_id", user.id).maybeSingle();
-    if (!supplier) { window.location.href = "/marketplace"; return; }
+    let { data: supplier } = await supabase.from("suppliers").select("id,name").eq("user_id", user.id).maybeSingle();
+    if (!supplier) {
+      // Supplier record missing — auto-create from profile so the dashboard loads
+      const { data: profile } = await supabase.from("profiles").select("company_name, full_name, city, phone, role").eq("id", user.id).maybeSingle();
+      if (profile?.role !== "supplier") { window.location.href = "/marketplace"; return; }
+      const { data: created } = await supabase.from("suppliers").insert({
+        user_id: user.id,
+        name: profile?.company_name || profile?.full_name || "Mein Unternehmen",
+        city: profile?.city ?? null,
+        phone: profile?.phone ?? null,
+      }).select("id,name").maybeSingle();
+      if (!created) { window.location.href = "/marketplace"; return; }
+      supplier = created;
+    }
     setSupplierName(supplier.name ?? "");
 
     const [{ data: prods }, { data: items }] = await Promise.all([
