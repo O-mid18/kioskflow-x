@@ -80,8 +80,9 @@ export default function SupplierDashboardPage() {
         setLoading(false);
         return;
       }
-      supplier = json.supplier;
+      supplier = json.supplier as { id: string; name: string };
     }
+    if (!supplier) { setLoading(false); return; }
     setSupplierName(supplier.name ?? "");
 
     const [{ data: prods }, { data: items }] = await Promise.all([
