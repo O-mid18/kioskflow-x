@@ -32,12 +32,8 @@ export default function SupplierDashboardLayout({ children }: { children: React.
   useEffect(() => {
     supabase.auth.getUser().then(async ({ data: { user } }) => {
       if (!user) { window.location.href = "/login"; return; }
-      const [{ data: profile }, { data: supplierRow }] = await Promise.all([
-        supabase.from("profiles").select("role").eq("id", user.id).maybeSingle(),
-        supabase.from("suppliers").select("name").eq("user_id", user.id).maybeSingle(),
-      ]);
-      const isSupplier = profile?.role === "supplier" || !!supplierRow;
-      if (!isSupplier) { window.location.href = "/marketplace"; return; }
+      const { data: supplierRow } = await supabase
+        .from("suppliers").select("name").eq("user_id", user.id).maybeSingle();
       setSupplierName(supplierRow?.name ?? user.email ?? "Lieferant");
     });
   }, []);
