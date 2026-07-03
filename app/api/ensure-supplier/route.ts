@@ -5,7 +5,6 @@ export async function POST(req: NextRequest) {
   const token = req.headers.get("authorization")?.replace("Bearer ", "");
   if (!token) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  // Verify the user with their JWT
   const userClient = createServerClient(token);
   const { data: { user }, error: authError } = await userClient.auth.getUser();
   if (authError || !user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -19,27 +18,27 @@ export async function POST(req: NextRequest) {
     .eq("user_id", user.id)
     .maybeSingle();
 
-  if (existing) return NextResponse.json({ supplier: existing });
+  if (existing) {
+    // Also ensure profile role is synced
+    await db.from("profiles").update({ role: "supplier" }).eq("id", user.id).eq("role", "buyer");
+    return NextResponse.json({ supplier: existing });
+  }
 
-  // No supplier record — check profile role first
+  // No supplier record — fetch profile to get name/city/phone
   const { data: profile } = await db
     .from("profiles")
     .select("role, company_name, full_name, city, phone")
     .eq("id", user.id)
     .maybeSingle();
 
-  if (profile?.role !== "supplier") {
-    return NextResponse.json({ error: "Kein Lieferant-Konto" }, { status: 403 });
-  }
-
-  // Create supplier record (admin client bypasses RLS)
+  // Create supplier record regardless of role (admin client bypasses RLS)
   const { data: created, error: insertError } = await db
     .from("suppliers")
     .insert({
       user_id: user.id,
-      name: profile.company_name || profile.full_name || "Mein Unternehmen",
-      city: profile.city ?? null,
-      phone: profile.phone ?? null,
+      name: profile?.company_name || profile?.full_name || user.email?.split("@")[0] || "Mein Unternehmen",
+      city: profile?.city ?? null,
+      phone: profile?.phone ?? null,
     })
     .select("id, name")
     .maybeSingle();
@@ -47,6 +46,9 @@ export async function POST(req: NextRequest) {
   if (insertError || !created) {
     return NextResponse.json({ error: "Fehler beim Erstellen des Lieferanten" }, { status: 500 });
   }
+
+  // Fix the role to supplier
+  await db.from("profiles").update({ role: "supplier" }).eq("id", user.id);
 
   return NextResponse.json({ supplier: created });
 }

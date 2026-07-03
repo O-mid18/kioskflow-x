@@ -74,9 +74,12 @@ export default function SupplierDashboardPage() {
         method: "POST",
         headers: { Authorization: `Bearer ${session.access_token}` },
       });
-      if (!res.ok) { window.location.href = "/marketplace"; return; }
-      const json = await res.json();
-      if (!json.supplier) { window.location.href = "/marketplace"; return; }
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok || !json.supplier) {
+        console.error("ensure-supplier failed", res.status, json);
+        setLoading(false);
+        return;
+      }
       supplier = json.supplier;
     }
     setSupplierName(supplier.name ?? "");
