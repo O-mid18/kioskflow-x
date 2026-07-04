@@ -205,7 +205,75 @@ export default function VerificationPage() {
             {saving ? "Wird gespeichert..." : "Daten einreichen →"}
           </button>
         </div>
+
+        {/* Stripe Connect */}
+        <StripeConnectCard supabase={supabase} />
       </div>
+    </div>
+  );
+}
+
+function StripeConnectCard({ supabase }: { supabase: any }) {
+  const [status, setStatus] = useState<"loading" | "connected" | "not_connected">("loading");
+  const [connecting, setConnecting] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) { setStatus("not_connected"); return; }
+        const res = await fetch("/api/connect", { headers: { Authorization: `Bearer ${session.access_token}` } });
+        const json = await res.json();
+        setStatus(json.onboarded ? "connected" : "not_connected");
+      } catch { setStatus("not_connected"); }
+    })();
+  }, []);
+
+  const handleConnect = async () => {
+    setConnecting(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+      const res = await fetch("/api/connect", { method: "POST", headers: { Authorization: `Bearer ${session.access_token}` } });
+      const json = await res.json();
+      if (json.url) window.location.href = json.url;
+      else setConnecting(false);
+    } catch { setConnecting(false); }
+  };
+
+  return (
+    <div style={{ background: "var(--kf-surface)", border: "1px solid var(--kf-border)", borderRadius: 16, padding: "24px" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
+        <div style={{ width: 36, height: 36, background: "#635BFF15", borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>💳</div>
+        <div style={{ flex: 1 }}>
+          <h2 style={{ fontFamily: "'Syne',sans-serif", fontWeight: 700, fontSize: 14, color: "var(--kf-text)" }}>Auszahlungen einrichten</h2>
+          <p style={{ fontSize: 12, color: "var(--kf-text3)" }}>Verbinde dein Bankkonto um Zahlungen zu empfangen</p>
+        </div>
+        {status === "connected" && (
+          <div style={{ background: "#dcfce7", color: "#16a34a", fontSize: 11, fontWeight: 700, padding: "4px 12px", borderRadius: 100 }}>✓ Verbunden</div>
+        )}
+      </div>
+      {status === "loading" && <p style={{ fontSize: 13, color: "var(--kf-text3)" }}>Status wird geladen...</p>}
+      {status === "connected" && (
+        <p style={{ fontSize: 13, color: "var(--kf-text2)", lineHeight: 1.6 }}>
+          Dein Stripe-Konto ist verbunden. Nach einem Verkauf erhältst du <strong>95%</strong> automatisch — KioskFlow behält 5%.
+        </p>
+      )}
+      {status === "not_connected" && (
+        <div>
+          <p style={{ fontSize: 13, color: "var(--kf-text2)", lineHeight: 1.6, marginBottom: 16 }}>
+            Verbinde dein Bankkonto über Stripe. Du erhältst <strong>95%</strong> jedes Verkaufs direkt auf dein Konto — KioskFlow behält 5% als Plattformgebühr.
+          </p>
+          <button
+            onClick={handleConnect}
+            disabled={connecting}
+            style={{ background: connecting ? "#8B85FF" : "#635BFF", color: "#fff", border: "none", borderRadius: 10, padding: "12px 24px", fontSize: 14, fontWeight: 700, cursor: connecting ? "not-allowed" : "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", gap: 8 }}
+          >
+            {connecting && <div style={{ width: 14, height: 14, border: "2px solid rgba(255,255,255,0.4)", borderTopColor: "#fff", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />}
+            {connecting ? "Wird verbunden..." : "Mit Stripe verbinden →"}
+          </button>
+        </div>
+      )}
     </div>
   );
 }

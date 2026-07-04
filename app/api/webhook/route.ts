@@ -24,9 +24,6 @@ export async function POST(request: Request) {
     const session = event.data.object as Stripe.Checkout.Session;
     const db = createAdminClient();
 
-    // Idempotency guard: Stripe can deliver the same webhook event more than
-    // once (retries, network blips). Without this check, a duplicate delivery
-    // would deduct product stock a second time for an order that was already paid.
     const { data: existingOrder } = await db
       .from("orders")
       .select("id, status, buyer_id, suppliers(user_id)")
@@ -39,7 +36,6 @@ export async function POST(request: Request) {
     }
 
     if (existingOrder.status === "paid") {
-      // Already processed on a prior delivery of this same event — skip.
       return NextResponse.json({ received: true, alreadyProcessed: true });
     }
 
@@ -56,10 +52,9 @@ export async function POST(request: Request) {
     const order = existingOrder;
 
     if (order) {
-      // Deduct stock for each purchased product
       const { data: orderItems } = await db
         .from("order_items")
-        .select("product_id, quantity, supplier_id")
+        .select("product_id, quantity, supplier_id, price_at_purchase")
         .eq("order_id", order.id);
 
       if (orderItems && orderItems.length > 0) {
@@ -77,9 +72,6 @@ export async function POST(request: Request) {
         }));
       }
 
-      // Notify every supplier whose products are part of this order — not just
-      // the first one. A single cart/order can span multiple suppliers, and
-      // each one needs to know a product of theirs was sold so they can ship it.
       const distinctSupplierIds = Array.from(
         new Set((orderItems ?? []).map((i: any) => i.supplier_id).filter(Boolean))
       );
@@ -87,10 +79,35 @@ export async function POST(request: Request) {
       if (distinctSupplierIds.length > 0) {
         const { data: supplierRows } = await db
           .from("suppliers")
-          .select("id, user_id")
+          .select("id, user_id, stripe_account_id, stripe_onboarded")
           .in("id", distinctSupplierIds);
 
+        const PLATFORM_FEE_PERCENT = 0.05;
+
         await Promise.all((supplierRows ?? []).map(async (s: any) => {
+          // Auto-transfer 95% to supplier if they have Stripe Connect set up
+          if (s.stripe_account_id && s.stripe_onboarded) {
+            const supplierItems = (orderItems ?? []).filter((i: any) => i.supplier_id === s.id);
+            const supplierTotal = supplierItems.reduce(
+              (sum: number, i: any) => sum + Math.round((i.price_at_purchase ?? 0) * 100) * i.quantity,
+              0
+            );
+            const transferAmount = Math.floor(supplierTotal * (1 - PLATFORM_FEE_PERCENT));
+            if (transferAmount > 0) {
+              try {
+                await stripe.transfers.create({
+                  amount: transferAmount,
+                  currency: "eur",
+                  destination: s.stripe_account_id,
+                  transfer_group: order.id,
+                  metadata: { order_id: order.id, supplier_id: s.id },
+                });
+              } catch (transferErr: any) {
+                console.error("[webhook] transfer failed:", s.id, transferErr?.message);
+              }
+            }
+          }
+
           if (!s.user_id) return;
           await db.from("notifications").insert({
             user_id: s.user_id,
@@ -103,7 +120,6 @@ export async function POST(request: Request) {
           });
         }));
       } else {
-        // Fallback: no per-item supplier_id available, notify the order-level supplier
         const supplierUserId = (order.suppliers as any)?.user_id;
         if (supplierUserId) {
           await db.from("notifications").insert({
