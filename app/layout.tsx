@@ -15,7 +15,29 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "KioskFlow — Direkt vom Hersteller zum Kiosk",
-  description: "B2B Marktplatz für lokale Marken und Kiosk-Betreiber in Frankfurt.",
+  description: "B2B Marktplatz fuer lokale Marken und Kiosk-Betreiber in Frankfurt. Keine Mindestmengen. Keine Zwischenhaendler.",
+  keywords: ["Kiosk", "Spaeti", "Grosshandel", "Frankfurt", "B2B", "Getraenke", "Snacks"],
+  authors: [{ name: "KioskFlow" }],
+  metadataBase: new URL("https://kioskflow-x.vercel.app"),
+  openGraph: {
+    title: "KioskFlow — Direkt vom Hersteller zum Kiosk",
+    description: "B2B Marktplatz fuer lokale Marken und Kiosk-Betreiber in Frankfurt.",
+    url: "https://kioskflow-x.vercel.app",
+    siteName: "KioskFlow",
+    locale: "de_DE",
+    type: "website",
+    images: [{ url: "/og-image.svg", width: 1200, height: 630, alt: "KioskFlow" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "KioskFlow — Direkt vom Hersteller zum Kiosk",
+    description: "B2B Marktplatz fuer lokale Marken und Kiosk-Betreiber in Frankfurt.",
+    images: ["/og-image.svg"],
+  },
+  icons: {
+    icon: [{ url: "/favicon.ico", sizes: "any" }, { url: "/icon.svg", type: "image/svg+xml" }],
+    apple: "/apple-touch-icon.png",
+  },
 };
 
 export default function RootLayout({
