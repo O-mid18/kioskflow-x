@@ -11,7 +11,6 @@ export async function POST(req: NextRequest) {
 
   const db = createAdminClient();
 
-  // Check if supplier record already exists
   const { data: existing } = await db
     .from("suppliers")
     .select("id, name")
@@ -19,19 +18,20 @@ export async function POST(req: NextRequest) {
     .maybeSingle();
 
   if (existing) {
-    // Also ensure profile role is synced
-    await db.from("profiles").update({ role: "supplier" }).eq("id", user.id).eq("role", "buyer");
     return NextResponse.json({ supplier: existing });
   }
 
-  // No supplier record — fetch profile to get name/city/phone
   const { data: profile } = await db
     .from("profiles")
     .select("role, company_name, full_name, city, phone")
     .eq("id", user.id)
     .maybeSingle();
 
-  // Create supplier record regardless of role (admin client bypasses RLS)
+  // Only allow users who already have role="supplier" to create a supplier record.
+  if (profile?.role !== "supplier") {
+    return NextResponse.json({ error: "Forbidden: not a supplier account" }, { status: 403 });
+  }
+
   const { data: created, error: insertError } = await db
     .from("suppliers")
     .insert({
@@ -46,9 +46,6 @@ export async function POST(req: NextRequest) {
   if (insertError || !created) {
     return NextResponse.json({ error: "Fehler beim Erstellen des Lieferanten" }, { status: 500 });
   }
-
-  // Fix the role to supplier
-  await db.from("profiles").update({ role: "supplier" }).eq("id", user.id);
 
   return NextResponse.json({ supplier: created });
 }
