@@ -373,6 +373,10 @@ export default function MarketplacePage({ initialProducts = [], initialSuppliers
           </div>
           <div style={{ display:"flex", alignItems:"center", gap:8 }}>
             <NotificationBell />
+            <a href="/wishlist" style={{ position:"relative", display:"flex", alignItems:"center", gap:5, background:"none", border:`1.5px solid ${BORDER}`, borderRadius:10, padding:"9px 14px", color:TEXT2, fontWeight:600, fontSize:13, textDecoration:"none", cursor:"pointer" }}>
+              ❤️
+              {wishlist.length > 0 && <span style={{ background:ORANGE, color:"#fff", fontSize:10, fontWeight:800, padding:"1px 6px", borderRadius:100 }}>{wishlist.length}</span>}
+            </a>
             <button onClick={() => setCartOpen(true)} style={{ position:"relative", display:"flex", alignItems:"center", gap:7, background:ORANGE, border:"none", borderRadius:10, padding:"9px 16px", color:"#fff", fontWeight:700, fontSize:13, cursor:"pointer", fontFamily:"'DM Sans',sans-serif" }}>
               🛒 Warenkorb
               {cartCount > 0 && <span style={{ background:"rgba(0,0,0,0.2)", fontSize:11, fontWeight:800, padding:"1px 6px", borderRadius:100 }}>{cartCount}</span>}
