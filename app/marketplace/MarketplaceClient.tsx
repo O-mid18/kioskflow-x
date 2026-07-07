@@ -358,12 +358,19 @@ export default function MarketplacePage({ initialProducts = [], initialSuppliers
 
       {/* ── HEADER ── */}
       <header style={{ background:SURFACE, borderBottom:`1px solid ${BORDER}`, padding:"14px 20px", position:"sticky", top:0, zIndex:50 }}>
+        <style>{`
+          @media (max-width: 640px) {
+            .kf-search-bar { display: none !important; }
+            .kf-wishlist-btn { display: none !important; }
+            .kf-cart-label { display: none !important; }
+          }
+        `}</style>
         <div style={{ maxWidth:1100, margin:"0 auto", display:"flex", alignItems:"center", justifyContent:"space-between", gap:14 }}>
           <div style={{ display:"flex", alignItems:"center", gap:8 }}>
             <div style={{ width:32, height:32, background:ORANGE, borderRadius:8, display:"flex", alignItems:"center", justifyContent:"center", fontFamily:"'Syne',sans-serif", fontWeight:800, fontSize:15, color:"#fff" }}>K</div>
             <span style={{ fontFamily:"'Syne',sans-serif", fontWeight:800, fontSize:16, color:TEXT, letterSpacing:"-0.3px" }}>KioskFlow</span>
           </div>
-          <div style={{ flex:1, maxWidth:380, position:"relative" }}>
+          <div className="kf-search-bar" style={{ flex:1, maxWidth:380, position:"relative" }}>
             <svg style={{ position:"absolute", left:12, top:"50%", transform:"translateY(-50%)" }} width={14} height={14} fill="none" stroke={TEXT3} strokeWidth="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
             <input type="text" placeholder="Produkte suchen..." value={search} onChange={e => setSearch(e.target.value)}
               style={{ width:"100%", background:BG, border:`1.5px solid ${BORDER}`, borderRadius:10, padding:"9px 14px 9px 34px", color:TEXT, fontSize:13, boxSizing:"border-box", transition:"border-color 0.2s" }}
@@ -373,12 +380,12 @@ export default function MarketplacePage({ initialProducts = [], initialSuppliers
           </div>
           <div style={{ display:"flex", alignItems:"center", gap:8 }}>
             <NotificationBell />
-            <a href="/wishlist" style={{ position:"relative", display:"flex", alignItems:"center", gap:5, background:"none", border:`1.5px solid ${BORDER}`, borderRadius:10, padding:"9px 14px", color:TEXT2, fontWeight:600, fontSize:13, textDecoration:"none", cursor:"pointer" }}>
+            <a className="kf-wishlist-btn" href="/wishlist" style={{ position:"relative", display:"flex", alignItems:"center", gap:5, background:"none", border:`1.5px solid ${BORDER}`, borderRadius:10, padding:"9px 14px", color:TEXT2, fontWeight:600, fontSize:13, textDecoration:"none", cursor:"pointer" }}>
               ❤️
               {wishlist.length > 0 && <span style={{ background:ORANGE, color:"#fff", fontSize:10, fontWeight:800, padding:"1px 6px", borderRadius:100 }}>{wishlist.length}</span>}
             </a>
             <button onClick={() => setCartOpen(true)} style={{ position:"relative", display:"flex", alignItems:"center", gap:7, background:ORANGE, border:"none", borderRadius:10, padding:"9px 16px", color:"#fff", fontWeight:700, fontSize:13, cursor:"pointer", fontFamily:"'DM Sans',sans-serif" }}>
-              🛒 Warenkorb
+              🛒 <span className="kf-cart-label">Warenkorb</span>
               {cartCount > 0 && <span style={{ background:"rgba(0,0,0,0.2)", fontSize:11, fontWeight:800, padding:"1px 6px", borderRadius:100 }}>{cartCount}</span>}
             </button>
           </div>
