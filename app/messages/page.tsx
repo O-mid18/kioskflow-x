@@ -30,8 +30,6 @@ export default function BuyerMessagesPage() {
   useEffect(() => {
     supabase.auth.getUser().then(async ({ data: { user } }) => {
       if (!user) { window.location.href = "/login"; return; }
-      const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
-      if (profile?.role !== "buyer") { window.location.href = "/marketplace"; return; }
       setUserId(user.id);
       await loadConvs(user.id);
       setLoading(false);
