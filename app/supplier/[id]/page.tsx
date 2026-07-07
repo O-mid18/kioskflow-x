@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 
@@ -18,8 +18,17 @@ export default function SupplierProfilePage() {
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [toast, setToast] = useState<string | null>(null);
+  const [cartCount, setCartCount] = useState(0);
+  const [chatting, setChatting] = useState(false);
 
   const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(null), 2500); };
+
+  const loadCartCount = useCallback(async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    const { data } = await supabase.from("cart_items").select("quantity").eq("user_id", user.id);
+    setCartCount((data ?? []).reduce((s: number, i: any) => s + (i.quantity ?? 1), 0));
+  }, []);
 
   useEffect(() => {
     const fetchSupplier = async () => {
@@ -31,13 +40,31 @@ export default function SupplierProfilePage() {
       setLoading(false);
     };
     fetchSupplier();
-  }, [params.id]);
+    loadCartCount();
+  }, [params.id, loadCartCount]);
 
   const addToCart = async (productId: string) => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { window.location.href = "/login"; return; }
-    await supabase.from("cart_items").insert({ user_id: user.id, product_id: productId, quantity: 1 });
+    const { data: existing } = await supabase.from("cart_items").select("id, quantity").eq("user_id", user.id).eq("product_id", productId).maybeSingle();
+    if (existing) {
+      await supabase.from("cart_items").update({ quantity: existing.quantity + 1 }).eq("id", existing.id);
+    } else {
+      await supabase.from("cart_items").insert({ user_id: user.id, product_id: productId, quantity: 1 });
+    }
+    await loadCartCount();
     showToast("In den Warenkorb gelegt ✓");
+  };
+
+  const startChat = async () => {
+    if (!supplier?.user_id) return;
+    setChatting(true);
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) { window.location.href = "/login"; return; }
+    await supabase.from("conversations")
+      .upsert({ buyer_id: user.id, supplier_id: supplier.user_id }, { onConflict: "buyer_id,supplier_id" })
+      .select().single();
+    window.location.href = "/messages";
   };
 
   if (loading) return (
@@ -72,20 +99,28 @@ export default function SupplierProfilePage() {
 
       {/* Header */}
       <header style={{ background: SURFACE, borderBottom: `1px solid ${BORDER}`, padding: "0 20px", height: 60, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <a href="/marketplace" style={{ display: "flex", alignItems: "center", gap: 8, textDecoration: "none" }}>
           <div style={{ width: 30, height: 30, background: ORANGE, borderRadius: 7, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 900, fontSize: 14, color: "#fff", fontFamily: "'Syne',sans-serif" }}>K</div>
           <span style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 15, color: TEXT, letterSpacing: "-0.3px" }}>KioskFlow</span>
+        </a>
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <a href="/marketplace" style={{ color: TEXT2, fontSize: 13, fontWeight: 500, textDecoration: "none" }}>← Marktplatz</a>
+          <a href="/cart" style={{ position: "relative", display: "flex", alignItems: "center", gap: 6, background: ORANGE, color: "#fff", fontWeight: 700, fontSize: 13, textDecoration: "none", padding: "7px 14px", borderRadius: 9 }}>
+            🛒 Warenkorb
+            {cartCount > 0 && (
+              <span style={{ background: "#fff", color: ORANGE, fontSize: 10, fontWeight: 900, borderRadius: "50%", width: 18, height: 18, display: "flex", alignItems: "center", justifyContent: "center" }}>{cartCount}</span>
+            )}
+          </a>
         </div>
-        <a href="/marketplace" style={{ color: TEXT2, fontSize: 13, fontWeight: 500, textDecoration: "none" }}>← Marktplatz</a>
       </header>
 
       {/* Supplier hero */}
       <div style={{ background: SURFACE, borderBottom: `1px solid ${BORDER}`, padding: "32px 20px" }}>
-        <div style={{ maxWidth: 900, margin: "0 auto", display: "flex", alignItems: "center", gap: 20 }}>
+        <div style={{ maxWidth: 900, margin: "0 auto", display: "flex", alignItems: "center", gap: 20, flexWrap: "wrap" }}>
           <div style={{ width: 72, height: 72, borderRadius: 16, overflow: "hidden", flexShrink: 0, background: BG, border: `1px solid ${BORDER}` }}>
             <img src={supplier.logo_url || "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=200&q=80"} alt={supplier.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
           </div>
-          <div style={{ flex: 1 }}>
+          <div style={{ flex: 1, minWidth: 200 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
               <h1 style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 24, color: TEXT, letterSpacing: "-0.5px" }}>{supplier.name}</h1>
               {supplier.verified && (
@@ -95,9 +130,20 @@ export default function SupplierProfilePage() {
             {supplier.city && <p style={{ color: TEXT3, fontSize: 13 }}>📍 {supplier.city}</p>}
             {supplier.description && <p style={{ color: TEXT2, fontSize: 14, marginTop: 8, lineHeight: 1.6 }}>{supplier.description}</p>}
           </div>
-          <div style={{ textAlign: "right", flexShrink: 0 }}>
-            <p style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 28, color: ORANGE }}>{products.length}</p>
-            <p style={{ color: TEXT3, fontSize: 12 }}>Produkte</p>
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 10, flexShrink: 0 }}>
+            <div style={{ textAlign: "right" }}>
+              <p style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 28, color: ORANGE }}>{products.length}</p>
+              <p style={{ color: TEXT3, fontSize: 12 }}>Produkte</p>
+            </div>
+            <button
+              onClick={startChat}
+              disabled={chatting}
+              style={{ background: chatting ? TEXT3 : "#1a1a2e", color: "#fff", border: "none", borderRadius: 10, padding: "10px 18px", fontSize: 13, fontWeight: 700, cursor: chatting ? "not-allowed" : "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", gap: 7 }}
+            >
+              {chatting
+                ? <><div style={{ width: 12, height: 12, border: "2px solid rgba(255,255,255,0.4)", borderTopColor: "#fff", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} /> Öffnet...</>
+                : <>💬 Nachricht senden</>}
+            </button>
           </div>
         </div>
       </div>
@@ -119,16 +165,15 @@ export default function SupplierProfilePage() {
               const img = product.image_url?.trim() ? product.image_url : "https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?w=400&q=80";
               return (
                 <div key={product.id} style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 16, overflow: "hidden" }}>
-                  <a href={`/product/${product.id}`} style={{ display: "block", height: 160, overflow: "hidden" }}>
+                  <div style={{ height: 160, overflow: "hidden" }}>
                     <img src={img} alt={product.name} style={{ width: "100%", height: "100%", objectFit: "cover", transition: "transform 0.3s" }}
                       onMouseEnter={e => (e.currentTarget.style.transform = "scale(1.05)")}
                       onMouseLeave={e => (e.currentTarget.style.transform = "scale(1)")} />
-                  </a>
+                  </div>
                   <div style={{ padding: "14px 16px" }}>
-                    <a href={`/product/${product.id}`} style={{ textDecoration: "none" }}>
-                      <p style={{ color: TEXT, fontWeight: 600, fontSize: 14, marginBottom: 8 }}>{product.name}</p>
-                    </a>
-                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                    <p style={{ color: TEXT, fontWeight: 600, fontSize: 14, marginBottom: 4 }}>{product.name}</p>
+                    {product.description && <p style={{ color: TEXT3, fontSize: 12, marginBottom: 8, lineHeight: 1.5, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{product.description}</p>}
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: 8 }}>
                       <span style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 18, color: ORANGE }}>€{product.price}</span>
                       <button onClick={() => addToCart(product.id)}
                         style={{ background: ORANGE, color: "#fff", border: "none", fontSize: 12, fontWeight: 700, padding: "7px 14px", borderRadius: 8, cursor: "pointer" }}>
@@ -146,11 +191,11 @@ export default function SupplierProfilePage() {
       {/* Bottom nav */}
       <nav style={{ position: "fixed", bottom: 0, left: 0, right: 0, background: SURFACE, borderTop: `1px solid ${BORDER}`, display: "flex", justifyContent: "space-around", padding: "10px 0 14px", zIndex: 50 }}>
         {[
-          { icon: "🏪", label: "Marktplatz",  href: "/marketplace" },
-          { icon: "🛒", label: "Warenkorb",   href: "/cart" },
+          { icon: "🏪", label: "Marktplatz", href: "/marketplace" },
+          { icon: "🛒", label: "Warenkorb",  href: "/cart" },
           { icon: "📦", label: "Bestellungen", href: "/orders" },
           { icon: "💬", label: "Nachrichten", href: "/messages" },
-          { icon: "🤝", label: "Profil",      href: "/profile" },
+          { icon: "👤", label: "Profil",     href: "/profile" },
         ].map(({ icon, label, href }) => (
           <a key={label} href={href} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 3, textDecoration: "none", padding: "0 12px" }}>
             <span style={{ fontSize: 20, lineHeight: 1 }}>{icon}</span>
