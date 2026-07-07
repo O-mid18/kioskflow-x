@@ -48,6 +48,7 @@ export default function SupplierDashboardPage() {
   const [products,   setProducts]   = useState<Product[]>([]);
   const [orderItems, setOrderItems] = useState<OrderItem[]>([]);
   const [loading,    setLoading]    = useState(true);
+  const [initError,  setInitError]  = useState<string | null>(null);
   const [supplierName, setSupplierName] = useState("");
   const [greeting,   setGreeting]   = useState("Guten Tag");
 
@@ -77,6 +78,7 @@ export default function SupplierDashboardPage() {
       const json = await res.json().catch(() => ({}));
       if (!res.ok || !json.supplier) {
         console.error("ensure-supplier failed", res.status, json);
+        setInitError("Lieferantenkonto konnte nicht geladen werden. Bitte Seite neu laden.");
         setLoading(false);
         return;
       }
@@ -131,6 +133,18 @@ export default function SupplierDashboardPage() {
       <div style={{ display:"flex", alignItems:"center", justifyContent:"center", height:"100vh", background:BG }}>
         <style>{`@keyframes spin { to { transform:rotate(360deg); } }`}</style>
         <div style={{ width:36, height:36, border:`3px solid ${BORDER}`, borderTopColor:ORANGE, borderRadius:"50%", animation:"spin 0.8s linear infinite" }} />
+      </div>
+    );
+  }
+
+  if (initError) {
+    return (
+      <div style={{ display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", height:"100vh", background:BG, gap:16, padding:"0 24px" }}>
+        <p style={{ fontSize:48 }}>⚠️</p>
+        <p style={{ color:"var(--kf-text)", fontWeight:700, fontSize:16, textAlign:"center" }}>{initError}</p>
+        <button onClick={() => window.location.reload()} style={{ background:ORANGE, color:"#fff", border:"none", borderRadius:10, padding:"12px 24px", fontWeight:700, fontSize:14, cursor:"pointer" }}>
+          Seite neu laden
+        </button>
       </div>
     );
   }
