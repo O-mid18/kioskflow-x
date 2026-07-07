@@ -52,7 +52,12 @@ export async function GET(request: Request) {
   const { data: supplier } = await db.from("suppliers").select("stripe_account_id, stripe_onboarded").eq("user_id", user.id).maybeSingle();
   if (!supplier?.stripe_account_id) return NextResponse.json({ onboarded: false });
 
-  const account = await stripe.accounts.retrieve(supplier.stripe_account_id);
+  let account;
+  try {
+    account = await stripe.accounts.retrieve(supplier.stripe_account_id);
+  } catch {
+    return NextResponse.json({ onboarded: false });
+  }
   const onboarded = !!(account.details_submitted && !account.requirements?.currently_due?.length);
   if (onboarded && !supplier.stripe_onboarded) {
     await db.from("suppliers").update({ stripe_onboarded: true }).eq("user_id", user.id);

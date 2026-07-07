@@ -30,6 +30,8 @@ export default function BuyerMessagesPage() {
   useEffect(() => {
     supabase.auth.getUser().then(async ({ data: { user } }) => {
       if (!user) { window.location.href = "/login"; return; }
+      const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).maybeSingle();
+      if (profile?.role === "supplier") { window.location.href = "/supplier/dashboard/messages"; return; }
       setUserId(user.id);
       await loadConvs(user.id);
       setLoading(false);
@@ -80,7 +82,8 @@ export default function BuyerMessagesPage() {
 
   const startConv = async (suppId: string, suppName: string) => {
     if (!userId) return;
-    const { data } = await supabase.from("conversations").upsert({ buyer_id: userId, supplier_id: suppId }, { onConflict: "buyer_id,supplier_id" }).select().maybeSingle();
+    await supabase.from("conversations").upsert({ buyer_id: userId, supplier_id: suppId }, { onConflict: "buyer_id,supplier_id" });
+    const { data } = await supabase.from("conversations").select("id").eq("buyer_id", userId).eq("supplier_id", suppId).maybeSingle();
     setShowNew(false);
     if (data) {
       await loadConvs(userId);

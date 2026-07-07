@@ -61,9 +61,9 @@ export default function SupplierProfilePage() {
     setChatting(true);
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { window.location.href = "/login"; return; }
-    await supabase.from("conversations")
-      .upsert({ buyer_id: user.id, supplier_id: supplier.user_id }, { onConflict: "buyer_id,supplier_id" })
-      .select().maybeSingle();
+    const { error } = await supabase.from("conversations")
+      .upsert({ buyer_id: user.id, supplier_id: supplier.user_id }, { onConflict: "buyer_id,supplier_id" });
+    if (error) { setChatting(false); showToast("Fehler beim Öffnen des Chats"); return; }
     window.location.href = "/messages";
   };
 
