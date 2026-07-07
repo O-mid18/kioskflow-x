@@ -90,7 +90,7 @@ export default function SupplierProfilePage() {
           <div style={{ position:"relative" }}>
             {logoUrl ? (
               <div style={{ width:72, height:72, borderRadius:16, overflow:"hidden", border:`2px solid ${BORDER}` }}>
-                <img src={logoUrl} alt="Logo" style={{ width:"100%", height:"100%", objectFit:"cover" }}
+                <img loading="lazy" decoding="async" src={logoUrl} alt="Logo" style={{ width:"100%", height:"100%", objectFit:"cover" }}
                   onError={e => { (e.currentTarget as HTMLImageElement).style.display="none"; }} />
               </div>
             ) : (

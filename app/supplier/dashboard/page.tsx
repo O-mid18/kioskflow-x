@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
@@ -336,7 +336,7 @@ export default function SupplierDashboardPage() {
               {products.slice(0,5).map((p, i) => (
                 <div key={p.id} style={{ display:"flex", alignItems:"center", gap:12, padding:"10px 0", borderBottom:i<4?`1px solid ${BORDER}`:"none" }}>
                   <div style={{ width:40, height:40, borderRadius:9, overflow:"hidden", flexShrink:0, background:BG }}>
-                    <img src={p.image_url || "https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?w=120&q=60"} alt={p.name} style={{ width:"100%", height:"100%", objectFit:"cover" }} />
+                    <img loading="lazy" decoding="async" src={p.image_url || "https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?w=120&q=60"} alt={p.name} style={{ width:"100%", height:"100%", objectFit:"cover" }} />
                   </div>
                   <div style={{ flex:1, minWidth:0 }}>
                     <p style={{ fontSize:13, fontWeight:600, color:TEXT, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{p.name}</p>

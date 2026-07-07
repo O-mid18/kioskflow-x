@@ -395,7 +395,7 @@ export default function AdminDashboard() {
                           {products.filter(p => p.supplier_id === s.id).slice(0, 6).map(p => (
                             <div key={p.id} style={{ display: "flex", alignItems: "center", gap: 8, background: BG, borderRadius: 10, padding: "7px 12px", border: `1px solid ${BORDER}` }}>
                               <div style={{ width: 28, height: 28, borderRadius: 6, overflow: "hidden", flexShrink: 0, background: BORDER }}>
-                                <img src={p.image_url || "https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?w=60&q=50"} alt={p.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                                <img loading="lazy" decoding="async" src={p.image_url || "https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?w=60&q=50"} alt={p.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                               </div>
                               <div><p style={{ fontSize: 12, fontWeight: 600, color: TEXT }}>{p.name}</p><p style={{ fontSize: 11, color: TEXT3 }}>€{Number(p.price).toFixed(2)} · {p.stock} Stk.</p></div>
                             </div>
@@ -556,7 +556,7 @@ export default function AdminDashboard() {
                   onMouseLeave={e => e.currentTarget.style.background = "transparent"}>
                   <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                     <div style={{ width: 36, height: 36, borderRadius: 8, overflow: "hidden", flexShrink: 0, background: BG }}>
-                      <img src={p.image_url || "https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?w=80&q=60"} alt={p.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                      <img loading="lazy" decoding="async" src={p.image_url || "https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?w=80&q=60"} alt={p.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                     </div>
                     <p style={{ fontSize: 13, fontWeight: 600, color: TEXT, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.name}</p>
                   </div>

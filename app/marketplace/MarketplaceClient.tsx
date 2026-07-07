@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/lib/supabase";
@@ -74,7 +74,7 @@ function CartDrawer({ open, onClose, items, onUpdateQty, onRemove, onClearAll }:
           ) : items.map(item => (
             <div key={item.id} style={{ display:"flex", alignItems:"center", gap:12, padding:"14px 0", borderBottom:`1px solid ${BORDER}` }}>
               <div style={{ width:52, height:52, borderRadius:10, overflow:"hidden", flexShrink:0, background:BG }}>
-                <img src={item.image_url || "https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?w=200&q=80"} alt={item.name} style={{ width:"100%", height:"100%", objectFit:"cover" }} />
+                <img loading="lazy" decoding="async" src={item.image_url || "https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?w=200&q=80"} alt={item.name} style={{ width:"100%", height:"100%", objectFit:"cover" }} />
               </div>
               <div style={{ flex:1, minWidth:0 }}>
                 <p style={{ color:TEXT, fontSize:13, fontWeight:600, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{item.name}</p>
@@ -114,7 +114,7 @@ function ProductModal({ product, reviews, onClose, onAddToCart, inWishlist, onTo
     <div onClick={onClose} style={{ position:"fixed", inset:0, background:"rgba(26,23,20,0.5)", zIndex:150, display:"flex", alignItems:"flex-end", justifyContent:"center", backdropFilter:"blur(8px)" }}>
       <div onClick={e => e.stopPropagation()} style={{ background:SURFACE, borderRadius:"24px 24px 0 0", width:"100%", maxWidth:560, maxHeight:"90vh", overflowY:"auto", boxShadow:"0 -20px 60px rgba(0,0,0,0.15)" }}>
         <div style={{ position:"relative", height:280, overflow:"hidden", borderRadius:"24px 24px 0 0" }}>
-          <img src={product.image_url || "https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?w=800&q=80"} alt={product.name} style={{ width:"100%", height:"100%", objectFit:"cover" }} />
+          <img loading="lazy" decoding="async" src={product.image_url || "https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?w=800&q=80"} alt={product.name} style={{ width:"100%", height:"100%", objectFit:"cover" }} />
           <div style={{ position:"absolute", inset:0, background:"linear-gradient(to top,rgba(0,0,0,0.3),transparent 50%)" }} />
           <button onClick={onClose} style={{ position:"absolute", top:16, left:16, width:36, height:36, background:"rgba(255,255,255,0.9)", border:"none", borderRadius:"50%", cursor:"pointer", fontSize:16, display:"flex", alignItems:"center", justifyContent:"center" }}>←</button>
           <button onClick={() => onToggleWishlist(product)} style={{ position:"absolute", top:16, right:16, width:36, height:36, background:"rgba(255,255,255,0.9)", border:"none", borderRadius:"50%", cursor:"pointer", fontSize:16, display:"flex", alignItems:"center", justifyContent:"center" }}>
@@ -448,7 +448,7 @@ export default function MarketplacePage({ initialProducts = [], initialSuppliers
                 const cat = CATS[p.category||""] || CATS.default;
                 return (
                   <div key={p.id} onClick={() => { if (p.supplier_id) window.location.href = `/supplier/${p.supplier_id}`; }} style={{ position:"relative", height:200, borderRadius:16, overflow:"hidden", cursor:"pointer" }}>
-                    <img src={p.image_url||"https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?w=600&q=80"} alt={p.name} style={{ width:"100%", height:"100%", objectFit:"cover", transition:"transform 0.4s" }}
+                    <img loading="lazy" decoding="async" src={p.image_url||"https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?w=600&q=80"} alt={p.name} style={{ width:"100%", height:"100%", objectFit:"cover", transition:"transform 0.4s" }}
                       onMouseEnter={e => e.currentTarget.style.transform="scale(1.05)"}
                       onMouseLeave={e => e.currentTarget.style.transform="scale(1)"} />
                     <div style={{ position:"absolute", inset:0, background:"linear-gradient(to top,rgba(0,0,0,0.65) 0%,transparent 60%)" }} />
@@ -529,7 +529,7 @@ export default function MarketplacePage({ initialProducts = [], initialSuppliers
                   <div key={product.id} className="pcard" style={{ animationDelay:`${i*0.03}s`, background:SURFACE, border:`1px solid ${BORDER}`, borderRadius:16, overflow:"hidden", cursor:"pointer", boxShadow:"0 2px 8px rgba(0,0,0,0.04)" }}
                     onClick={() => { if (product.supplier_id) window.location.href = `/supplier/${product.supplier_id}`; }}>
                     <div style={{ position:"relative", height:160, overflow:"hidden" }}>
-                      <img src={product.image_url||"https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?w=400&q=80"} alt={product.name}
+                      <img loading="lazy" decoding="async" src={product.image_url||"https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?w=400&q=80"} alt={product.name}
                         style={{ width:"100%", height:"100%", objectFit:"cover", transition:"transform 0.4s" }}
                         onMouseEnter={e => e.currentTarget.style.transform="scale(1.05)"}
                         onMouseLeave={e => e.currentTarget.style.transform="scale(1)"} />

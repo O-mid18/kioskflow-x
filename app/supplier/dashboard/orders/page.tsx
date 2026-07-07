@@ -185,7 +185,7 @@ export default function SupplierOrdersPage() {
                     <td style={{ padding:"14px 20px" }}>
                       <div style={{ display:"flex", alignItems:"center", gap:10 }}>
                         <div style={{ width:36, height:36, borderRadius:8, overflow:"hidden", flexShrink:0, background:BG }}>
-                          <img src={item.products?.image_url || "https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?w=100&q=60"} alt="" style={{ width:"100%", height:"100%", objectFit:"cover" }} />
+                          <img loading="lazy" decoding="async" src={item.products?.image_url || "https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?w=100&q=60"} alt="" style={{ width:"100%", height:"100%", objectFit:"cover" }} />
                         </div>
                         <div>
                           <p style={{ fontSize:13, fontWeight:600, color:TEXT }}>{item.products?.name ?? "—"}</p>

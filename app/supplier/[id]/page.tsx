@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState, useCallback } from "react";
 import { useParams } from "next/navigation";
@@ -118,7 +118,7 @@ export default function SupplierProfilePage() {
       <div style={{ background: SURFACE, borderBottom: `1px solid ${BORDER}`, padding: "32px 20px" }}>
         <div style={{ maxWidth: 900, margin: "0 auto", display: "flex", alignItems: "center", gap: 20, flexWrap: "wrap" }}>
           <div style={{ width: 72, height: 72, borderRadius: 16, overflow: "hidden", flexShrink: 0, background: BG, border: `1px solid ${BORDER}` }}>
-            <img src={supplier.logo_url || "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=200&q=80"} alt={supplier.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+            <img loading="lazy" decoding="async" src={supplier.logo_url || "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=200&q=80"} alt={supplier.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
           </div>
           <div style={{ flex: 1, minWidth: 200 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
@@ -166,7 +166,7 @@ export default function SupplierProfilePage() {
               return (
                 <div key={product.id} style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 16, overflow: "hidden" }}>
                   <a href={`/product/${product.id}`} style={{ display: "block", height: 160, overflow: "hidden", textDecoration: "none" }}>
-                    <img src={img} alt={product.name} style={{ width: "100%", height: "100%", objectFit: "cover", transition: "transform 0.3s" }}
+                    <img loading="lazy" decoding="async" src={img} alt={product.name} style={{ width: "100%", height: "100%", objectFit: "cover", transition: "transform 0.3s" }}
                       onMouseEnter={e => (e.currentTarget.style.transform = "scale(1.05)")}
                       onMouseLeave={e => (e.currentTarget.style.transform = "scale(1)")} />
                   </a>

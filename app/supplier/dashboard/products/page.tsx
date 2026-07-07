@@ -201,7 +201,7 @@ export default function SupplierProductsPage() {
                 {/* Product info */}
                 <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                   <div style={{ width: 44, height: 44, borderRadius: 10, overflow: "hidden", flexShrink: 0, background: BG }}>
-                    <img src={product.image_url || "https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?w=100&q=60"} alt={product.name}
+                    <img loading="lazy" decoding="async" src={product.image_url || "https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?w=100&q=60"} alt={product.name}
                       style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                   </div>
                   <div style={{ minWidth: 0 }}>

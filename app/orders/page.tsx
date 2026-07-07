@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
@@ -229,7 +229,7 @@ export default function OrdersPage() {
                             {order.order_items!.map(item => (
                               <div key={item.id} style={{ display: "flex", alignItems: "center", gap: 12, background: BG, borderRadius: 12, padding: "12px 14px" }}>
                                 <div style={{ width: 44, height: 44, borderRadius: 10, overflow: "hidden", flexShrink: 0, background: BORDER }}>
-                                  <img src={(item.products as any)?.image_url || "https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?w=80&q=60"} alt={(item.products as any)?.name}
+                                  <img loading="lazy" decoding="async" src={(item.products as any)?.image_url || "https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?w=80&q=60"} alt={(item.products as any)?.name}
                                     style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                                 </div>
                                 <div style={{ flex: 1 }}>

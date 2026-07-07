@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
@@ -187,7 +187,7 @@ export default function EditProductPage() {
             {shownPreview ? (
               <div style={{ display:"flex", alignItems:"flex-start", gap:16 }}>
                 <div style={{ width:120, height:120, borderRadius:14, overflow:"hidden", border:`1.5px solid ${BORDER}`, flexShrink:0 }}>
-                  <img src={shownPreview} alt="Vorschau" style={{ width:"100%", height:"100%", objectFit:"cover" }}
+                  <img loading="lazy" decoding="async" src={shownPreview} alt="Vorschau" style={{ width:"100%", height:"100%", objectFit:"cover" }}
                     onError={e => { e.currentTarget.src = "https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?w=200&q=80"; }} />
                 </div>
                 <div style={{ flex:1 }}>

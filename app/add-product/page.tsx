@@ -156,7 +156,7 @@ export default function AddProductPage() {
             {imagePreview ? (
               <div style={{ display:"flex", alignItems:"flex-start", gap:16 }}>
                 <div style={{ width:120, height:120, borderRadius:14, overflow:"hidden", border:`1.5px solid ${BORDER}`, flexShrink:0 }}>
-                  <img src={imagePreview} alt="Vorschau" style={{ width:"100%", height:"100%", objectFit:"cover" }} />
+                  <img loading="lazy" decoding="async" src={imagePreview} alt="Vorschau" style={{ width:"100%", height:"100%", objectFit:"cover" }} />
                 </div>
                 <div style={{ flex:1 }}>
                   <p style={{ fontSize:13, fontWeight:600, color:TEXT, marginBottom:4 }}>{imageFile?.name}</p>

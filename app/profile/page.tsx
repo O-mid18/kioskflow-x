@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
@@ -180,7 +180,7 @@ function SupplierProfile({ email, supplierId }: { email: string; supplierId: str
         <div style={{ display: "flex", alignItems: "center", gap: 20, marginBottom: 24, paddingBottom: 24, borderBottom: `1px solid ${BORDER}` }}>
           <div style={{ width: 64, height: 64, borderRadius: 16, overflow: "hidden", flexShrink: 0, background: `${ORANGE}20`, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 22, color: ORANGE }}>
             {logoUrl ? (
-              <img src={logoUrl} alt="Logo" style={{ width: "100%", height: "100%", objectFit: "cover" }}
+              <img loading="lazy" decoding="async" src={logoUrl} alt="Logo" style={{ width: "100%", height: "100%", objectFit: "cover" }}
                 onError={e => { e.currentTarget.style.display = "none"; }} />
             ) : initials}
           </div>

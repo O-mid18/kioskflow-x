@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
@@ -157,7 +157,7 @@ export default function CartPage() {
                 return (
                   <div key={item.id} className="cart-item" style={{ background:SURFACE, border:`1px solid ${BORDER}`, borderRadius:14, padding:"16px", display:"flex", alignItems:"center", gap:14 }}>
                     <div style={{ width:72, height:72, borderRadius:10, overflow:"hidden", flexShrink:0 }}>
-                      <img src={img} alt={item.products.name} style={{ width:"100%", height:"100%", objectFit:"cover" }} />
+                      <img loading="lazy" decoding="async" src={img} alt={item.products.name} style={{ width:"100%", height:"100%", objectFit:"cover" }} />
                     </div>
                     <div className="cart-item-info" style={{ flex:1, minWidth:0 }}>
                       <p style={{ color:TEXT, fontWeight:600, fontSize:14, marginBottom:4, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{item.products.name}</p>
