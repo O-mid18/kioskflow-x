@@ -58,6 +58,7 @@ export default function CartPage() {
   };
 
   const removeAllCart = async () => {
+    if (!window.confirm("Warenkorb leeren? Alle Artikel werden entfernt.")) return;
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
     await supabase.from("cart_items").delete().eq("user_id", user.id);
