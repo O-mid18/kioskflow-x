@@ -26,7 +26,18 @@ export default function LoginPage() {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     setLoading(false);
     if (error) setErrorMsg(error.message);
-    else router.push("/marketplace");
+    else {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).maybeSingle();
+        const role = profile?.role;
+        if (role === "admin") router.push("/admin/dashboard");
+        else if (role === "supplier") router.push("/supplier/dashboard");
+        else router.push("/marketplace");
+      } else {
+        router.push("/marketplace");
+      }
+    }
   };
 
   return (
