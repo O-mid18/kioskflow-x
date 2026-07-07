@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 
@@ -35,8 +35,16 @@ export default function ProductDetailsPage() {
   const [toast, setToast] = useState<string | null>(null);
   const [canReview, setCanReview] = useState(false);
   const [alreadyReviewed, setAlreadyReviewed] = useState(false);
+  const [cartCount, setCartCount] = useState(0);
 
   const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(null), 2500); };
+
+  const loadCartCount = useCallback(async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    const { data } = await supabase.from("cart_items").select("quantity").eq("user_id", user.id);
+    setCartCount((data ?? []).reduce((s: number, i: any) => s + (i.quantity ?? 1), 0));
+  }, []);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -63,12 +71,19 @@ export default function ProductDetailsPage() {
       setLoading(false);
     };
     fetchProduct();
-  }, [params.id]);
+    loadCartCount();
+  }, [params.id, loadCartCount]);
 
   const addToCart = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { window.location.href = "/login"; return; }
-    await supabase.from("cart_items").insert({ user_id: user.id, product_id: product.id, quantity: 1 });
+    const { data: existing } = await supabase.from("cart_items").select("id, quantity").eq("user_id", user.id).eq("product_id", product.id).maybeSingle();
+    if (existing) {
+      await supabase.from("cart_items").update({ quantity: existing.quantity + 1 }).eq("id", existing.id);
+    } else {
+      await supabase.from("cart_items").insert({ user_id: user.id, product_id: product.id, quantity: 1 });
+    }
+    await loadCartCount();
     showToast("In den Warenkorb gelegt ✓");
   };
 
@@ -126,7 +141,12 @@ export default function ProductDetailsPage() {
           <div style={{ width: 30, height: 30, background: ORANGE, borderRadius: 7, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 900, fontSize: 14, color: "#fff", fontFamily: "'Syne',sans-serif" }}>K</div>
           <span style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 15, color: TEXT, letterSpacing: "-0.3px" }}>KioskFlow</span>
         </div>
-        <a href="/marketplace" style={{ color: TEXT2, fontSize: 13, fontWeight: 500, textDecoration: "none" }}>← Marktplatz</a>
+        <a href="/cart" style={{ position: "relative", display: "flex", alignItems: "center", gap: 6, background: ORANGE, color: "#fff", fontWeight: 700, fontSize: 13, textDecoration: "none", padding: "7px 14px", borderRadius: 9 }}>
+          🛒 Warenkorb
+          {cartCount > 0 && (
+            <span style={{ background: "#fff", color: ORANGE, fontSize: 10, fontWeight: 900, borderRadius: "50%", width: 18, height: 18, display: "flex", alignItems: "center", justifyContent: "center" }}>{cartCount}</span>
+          )}
+        </a>
       </header>
 
       <div style={{ maxWidth: 900, margin: "0 auto", padding: "32px 20px" }}>
