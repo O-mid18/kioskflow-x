@@ -411,7 +411,7 @@ export default function AdminDashboard() {
                           const { error } = await supabase.from("suppliers").update({ verified: true }).eq("id", s.id);
                           if (error) { flash(error.message, false); return; }
                           flash("Lieferant verifiziert ✅", true);
-                          fetch("/api/notify", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ user_id: s.user_id, type: "info", title: "✅ Ihr Konto wurde verifiziert", body: "KioskFlow hat Ihr Unternehmen bestätigt. Sie können jetzt Produkte verkaufen.", link: "/supplier/dashboard/verification" }) });
+                          supabase.auth.getSession().then(({ data: { session } }) => { if (session) fetch("/api/notify", { method: "POST", headers: { "Content-Type": "application/json", "Authorization": `Bearer ${session.access_token}` }, body: JSON.stringify({ user_id: s.user_id, type: "info", title: "✅ Ihr Konto wurde verifiziert", body: "KioskFlow hat Ihr Unternehmen bestätigt. Sie können jetzt Produkte verkaufen.", link: "/supplier/dashboard/verification" }) }); });
                           fetchAll();
                         }} style={{ background: "#16a34a", color: "#fff", border: "none", borderRadius: 8, padding: "7px 16px", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
                           Verifizieren ✅
@@ -421,7 +421,7 @@ export default function AdminDashboard() {
                           const { error } = await supabase.from("suppliers").update({ verified: false }).eq("id", s.id);
                           if (error) { flash(error.message, false); return; }
                           flash("Verifizierung widerrufen", true);
-                          fetch("/api/notify", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ user_id: s.user_id, type: "info", title: "⚠️ Verifizierung widerrufen", body: "Ihre Unternehmensverifizierung wurde vom Admin widerrufen.", link: "/supplier/dashboard/verification" }) });
+                          supabase.auth.getSession().then(({ data: { session } }) => { if (session) fetch("/api/notify", { method: "POST", headers: { "Content-Type": "application/json", "Authorization": `Bearer ${session.access_token}` }, body: JSON.stringify({ user_id: s.user_id, type: "info", title: "⚠️ Verifizierung widerrufen", body: "Ihre Unternehmensverifizierung wurde vom Admin widerrufen.", link: "/supplier/dashboard/verification" }) }); });
                           fetchAll();
                         }} style={{ background: "#fef2f2", color: "#dc2626", border: "1px solid #fca5a5", borderRadius: 8, padding: "7px 16px", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
                           Widerrufen

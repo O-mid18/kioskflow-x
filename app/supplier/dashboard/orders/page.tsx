@@ -76,16 +76,19 @@ export default function SupplierOrdersPage() {
       ));
       const notifTitle = STATUS_NOTIFY[newStatus];
       if (notifTitle && buyerId) {
-        fetch("/api/notify", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            user_id: buyerId,
-            type: "status_update",
-            title: notifTitle,
-            body: `Bestell-ID: #${orderId.slice(-6).toUpperCase()}`,
-            link: "/orders",
-          }),
+        supabase.auth.getSession().then(({ data: { session } }) => {
+          if (!session) return;
+          fetch("/api/notify", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "Authorization": `Bearer ${session.access_token}` },
+            body: JSON.stringify({
+              user_id: buyerId,
+              type: "status_update",
+              title: notifTitle,
+              body: `Bestell-ID: #${orderId.slice(-6).toUpperCase()}`,
+              link: "/orders",
+            }),
+          });
         });
       }
     }
