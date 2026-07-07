@@ -20,7 +20,7 @@ export async function POST(request: Request) {
     const { orderId, status } = body;
     if (!orderId || !status) return NextResponse.json({ error: "Missing params" }, { status: 400 });
     const { error } = await db.from("orders").update({ status }).eq("id", orderId);
-    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    if (error) return NextResponse.json({ error: "Internal server error" }, { status: 500 });
     return NextResponse.json({ ok: true });
   }
 
@@ -28,7 +28,7 @@ export async function POST(request: Request) {
     const { productId } = body;
     if (!productId) return NextResponse.json({ error: "Missing productId" }, { status: 400 });
     const { error } = await db.from("products").delete().eq("id", productId);
-    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    if (error) return NextResponse.json({ error: "Internal server error" }, { status: 500 });
     return NextResponse.json({ ok: true });
   }
 
