@@ -96,8 +96,9 @@ export async function POST(request: Request) {
       .single();
 
     if (orderError || !order) {
+      try { await stripe.checkout.sessions.expire(stripeSession.id); } catch {}
       console.error("[checkout] order error:", orderError?.message, orderError?.code);
-      return NextResponse.json({ error: orderError?.message ?? "Order insert failed" }, { status: 500 });
+      return NextResponse.json({ error: "Bestellung konnte nicht erstellt werden. Bitte erneut versuchen." }, { status: 500 });
     }
 
     const { error: itemsError } = await supabase.from("order_items").insert(
@@ -110,7 +111,10 @@ export async function POST(request: Request) {
       }))
     );
     if (itemsError) {
+      try { await stripe.checkout.sessions.expire(stripeSession.id); } catch {}
+      await supabase.from("orders").delete().eq("id", order.id);
       console.error("[checkout] order_items error:", itemsError.message, itemsError.code);
+      return NextResponse.json({ error: "Bestellpositionen konnten nicht gespeichert werden. Bitte erneut versuchen." }, { status: 500 });
     }
 
     return NextResponse.json({ url: stripeSession.url });
