@@ -165,13 +165,15 @@ export default function SupplierProfilePage() {
               const img = product.image_url?.trim() ? product.image_url : "https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?w=400&q=80";
               return (
                 <div key={product.id} style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 16, overflow: "hidden" }}>
-                  <div style={{ height: 160, overflow: "hidden" }}>
+                  <a href={`/product/${product.id}`} style={{ display: "block", height: 160, overflow: "hidden", textDecoration: "none" }}>
                     <img src={img} alt={product.name} style={{ width: "100%", height: "100%", objectFit: "cover", transition: "transform 0.3s" }}
                       onMouseEnter={e => (e.currentTarget.style.transform = "scale(1.05)")}
                       onMouseLeave={e => (e.currentTarget.style.transform = "scale(1)")} />
-                  </div>
+                  </a>
                   <div style={{ padding: "14px 16px" }}>
-                    <p style={{ color: TEXT, fontWeight: 600, fontSize: 14, marginBottom: 4 }}>{product.name}</p>
+                    <a href={`/product/${product.id}`} style={{ textDecoration: "none" }}>
+                      <p style={{ color: TEXT, fontWeight: 600, fontSize: 14, marginBottom: 4 }}>{product.name}</p>
+                    </a>
                     {product.description && <p style={{ color: TEXT3, fontSize: 12, marginBottom: 8, lineHeight: 1.5, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{product.description}</p>}
                     <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: 8 }}>
                       <span style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 18, color: ORANGE }}>€{product.price}</span>

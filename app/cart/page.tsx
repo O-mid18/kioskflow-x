@@ -103,7 +103,7 @@ export default function CartPage() {
 
   return (
     <main style={{ minHeight:"100vh", background:BG, fontFamily:"'DM Sans','Helvetica Neue',system-ui,sans-serif", color:TEXT, paddingBottom:80 }}>
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600;700&display=swap'); @keyframes spin { to { transform:rotate(360deg); } }`}</style>
+      <style>{`@import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600;700&display=swap'); @keyframes spin { to { transform:rotate(360deg); } } @media(max-width:640px){.cart-grid{grid-template-columns:1fr !important}.cart-item{flex-wrap:wrap}.cart-item-info{min-width:0;flex:1}.cart-qty{margin-left:auto}}`}</style>
 
       {/* Header */}
       <header style={{ background:SURFACE, borderBottom:`1px solid ${BORDER}`, padding:"0 20px", height:60, display:"flex", alignItems:"center", justifyContent:"space-between" }}>
@@ -147,29 +147,26 @@ export default function CartPage() {
             <a href="/marketplace" style={{ display:"inline-block", background:ORANGE, color:"#fff", fontWeight:700, padding:"13px 28px", borderRadius:12, textDecoration:"none", fontSize:14 }}>Zum Marktplatz →</a>
           </div>
         ) : (
-          <div style={{ display:"grid", gridTemplateColumns:"1fr 340px", gap:20, alignItems:"start" }}>
+          <div className="cart-grid" style={{ display:"grid", gridTemplateColumns:"1fr 340px", gap:20, alignItems:"start" }}>
 
             {/* Item list */}
             <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
               {items.map(item => {
                 const img = item.products.image_url && item.products.image_url.trim() !== "" ? item.products.image_url : "https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?w=300&q=80";
                 return (
-                  <div key={item.id} style={{ background:SURFACE, border:`1px solid ${BORDER}`, borderRadius:14, padding:"16px", display:"flex", alignItems:"center", gap:14 }}>
+                  <div key={item.id} className="cart-item" style={{ background:SURFACE, border:`1px solid ${BORDER}`, borderRadius:14, padding:"16px", display:"flex", alignItems:"center", gap:14 }}>
                     <div style={{ width:72, height:72, borderRadius:10, overflow:"hidden", flexShrink:0 }}>
                       <img src={img} alt={item.products.name} style={{ width:"100%", height:"100%", objectFit:"cover" }} />
                     </div>
-                    <div style={{ flex:1 }}>
-                      <p style={{ color:TEXT, fontWeight:600, fontSize:14, marginBottom:4 }}>{item.products.name}</p>
+                    <div className="cart-item-info" style={{ flex:1, minWidth:0 }}>
+                      <p style={{ color:TEXT, fontWeight:600, fontSize:14, marginBottom:4, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{item.products.name}</p>
                       <p style={{ color:ORANGE, fontWeight:700, fontSize:14 }}>€{item.products.price.toFixed(2)} / Stück</p>
                     </div>
-                    <div style={{ display:"flex", alignItems:"center", gap:6, flexShrink:0 }}>
-                      <button onClick={() => decreaseQuantity(item.id, item.quantity)} style={{ width:30, height:30, background:BG, border:`1px solid ${BORDER}`, borderRadius:7, color:TEXT, cursor:"pointer", fontSize:15, fontWeight:700, display:"flex", alignItems:"center", justifyContent:"center" }}>−</button>
-                      <span style={{ width:28, textAlign:"center", color:TEXT, fontWeight:700, fontSize:14 }}>{item.quantity}</span>
-                      <button onClick={() => increaseQuantity(item.id, item.quantity)} style={{ width:30, height:30, background:ORANGE, border:"none", borderRadius:7, color:"#fff", cursor:"pointer", fontSize:15, fontWeight:700, display:"flex", alignItems:"center", justifyContent:"center" }}>+</button>
-                    </div>
-                    <div style={{ flexShrink:0, textAlign:"right", minWidth:70 }}>
-                      <p style={{ color:TEXT, fontWeight:700, fontSize:15 }}>€{(item.products.price*item.quantity).toFixed(2)}</p>
-                      <button onClick={() => removeItem(item.id)} style={{ background:"none", border:"none", color:TEXT3, cursor:"pointer", fontSize:12, marginTop:6 }}>Entfernen</button>
+                    <div className="cart-qty" style={{ display:"flex", alignItems:"center", gap:6, flexShrink:0 }}>
+                      <button onClick={() => decreaseQuantity(item.id, item.quantity)} style={{ width:34, height:34, background:BG, border:`1px solid ${BORDER}`, borderRadius:8, color:TEXT, cursor:"pointer", fontSize:16, fontWeight:700, display:"flex", alignItems:"center", justifyContent:"center" }}>−</button>
+                      <span style={{ width:30, textAlign:"center", color:TEXT, fontWeight:700, fontSize:14 }}>{item.quantity}</span>
+                      <button onClick={() => increaseQuantity(item.id, item.quantity)} style={{ width:34, height:34, background:ORANGE, border:"none", borderRadius:8, color:"#fff", cursor:"pointer", fontSize:16, fontWeight:700, display:"flex", alignItems:"center", justifyContent:"center" }}>+</button>
+                      <button onClick={() => removeItem(item.id)} style={{ width:34, height:34, background:"none", border:`1px solid ${BORDER}`, borderRadius:8, color:TEXT3, cursor:"pointer", fontSize:14, display:"flex", alignItems:"center", justifyContent:"center" }}>✕</button>
                     </div>
                   </div>
                 );
