@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useRef, useState } from "react";
 import { supabase } from "@/lib/supabase";
@@ -80,7 +80,7 @@ export default function AddProductPage() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { setErrorMsg("Bitte zuerst einloggen."); setIsLoading(false); return; }
 
-    const { data: supplier, error: supplierError } = await supabase.from("suppliers").select("*").eq("user_id", user.id).single();
+    const { data: supplier, error: supplierError } = await supabase.from("suppliers").select("*").eq("user_id", user.id).maybeSingle();
     if (supplierError || !supplier) { setErrorMsg("Lieferantenkonto nicht gefunden."); setIsLoading(false); return; }
 
     const imageUrl = await uploadImage(user.id);

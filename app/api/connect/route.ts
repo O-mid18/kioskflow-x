@@ -1,4 +1,4 @@
-import Stripe from "stripe";
+﻿import Stripe from "stripe";
 import { NextResponse } from "next/server";
 import { createServerClient, createAdminClient } from "@/lib/supabase";
 
@@ -14,7 +14,7 @@ export async function POST(request: Request) {
   if (authError || !user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const db = createAdminClient();
-  const { data: supplier } = await db.from("suppliers").select("id, stripe_account_id").eq("user_id", user.id).single();
+  const { data: supplier } = await db.from("suppliers").select("id, stripe_account_id").eq("user_id", user.id).maybeSingle();
   if (!supplier) return NextResponse.json({ error: "Supplier not found" }, { status: 404 });
 
   let accountId = supplier.stripe_account_id;
@@ -49,7 +49,7 @@ export async function GET(request: Request) {
   if (authError || !user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const db = createAdminClient();
-  const { data: supplier } = await db.from("suppliers").select("stripe_account_id, stripe_onboarded").eq("user_id", user.id).single();
+  const { data: supplier } = await db.from("suppliers").select("stripe_account_id, stripe_onboarded").eq("user_id", user.id).maybeSingle();
   if (!supplier?.stripe_account_id) return NextResponse.json({ onboarded: false });
 
   const account = await stripe.accounts.retrieve(supplier.stripe_account_id);

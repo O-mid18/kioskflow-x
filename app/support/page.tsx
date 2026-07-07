@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/lib/supabase";
@@ -58,14 +58,14 @@ export default function SupportPage() {
       .from("support_conversations")
       .select("id")
       .eq("user_id", user.id)
-      .single();
+      .maybeSingle();
 
     if (!conv) {
       const { data: nc } = await supabase
         .from("support_conversations")
         .insert({ user_id: user.id })
         .select("id")
-        .single();
+        .maybeSingle();
       conv = nc;
     }
 

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/lib/supabase";
@@ -134,7 +134,7 @@ export default function AdminDashboard() {
     if (!user) { window.location.href = "/login"; return; }
     adminIdRef.current = user.id;
 
-    const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
+    const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).maybeSingle();
     if (profile?.role !== "admin") { window.location.href = "/marketplace"; return; }
 
     const [{ data: supData }, { data: profData }, { data: ordData }, { data: prodData }, { data: convData }] = await Promise.all([

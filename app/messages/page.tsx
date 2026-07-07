@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState, useRef } from "react";
 import { supabase } from "@/lib/supabase";
@@ -80,7 +80,7 @@ export default function BuyerMessagesPage() {
 
   const startConv = async (suppId: string, suppName: string) => {
     if (!userId) return;
-    const { data } = await supabase.from("conversations").upsert({ buyer_id: userId, supplier_id: suppId }, { onConflict: "buyer_id,supplier_id" }).select().single();
+    const { data } = await supabase.from("conversations").upsert({ buyer_id: userId, supplier_id: suppId }, { onConflict: "buyer_id,supplier_id" }).select().maybeSingle();
     setShowNew(false);
     if (data) {
       await loadConvs(userId);

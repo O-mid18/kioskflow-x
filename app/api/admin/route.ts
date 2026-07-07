@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+﻿import { NextResponse } from "next/server";
 import { createAdminClient, createServerClient } from "@/lib/supabase";
 
 export async function POST(request: Request) {
@@ -10,7 +10,7 @@ export async function POST(request: Request) {
   const { data: { user }, error: authError } = await userClient.auth.getUser();
   if (authError || !user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { data: profile } = await userClient.from("profiles").select("role").eq("id", user.id).single();
+  const { data: profile } = await userClient.from("profiles").select("role").eq("id", user.id).maybeSingle();
   if (profile?.role !== "admin") return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const db = createAdminClient();

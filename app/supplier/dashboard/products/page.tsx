@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
@@ -43,7 +43,7 @@ export default function SupplierProductsPage() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { window.location.href = "/login"; return; }
 
-    const { data: supplier } = await supabase.from("suppliers").select("id").eq("user_id", user.id).single();
+    const { data: supplier } = await supabase.from("suppliers").select("id").eq("user_id", user.id).maybeSingle();
     if (!supplier) { setLoading(false); return; }
 
     // Products
