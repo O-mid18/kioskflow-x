@@ -33,7 +33,7 @@ export default function SupplierProfilePage() {
   useEffect(() => {
     const fetchSupplier = async () => {
       const supplierId = String(params.id);
-      const { data: supplierData } = await supabase.from("suppliers").select("*").eq("id", supplierId).single();
+      const { data: supplierData } = await supabase.from("suppliers").select("*").eq("id", supplierId).maybeSingle();
       setSupplier(supplierData ?? null);
       const { data: productData } = await supabase.from("products").select("*").eq("supplier_id", supplierId).gt("stock", 0).order("created_at", { ascending: false });
       setProducts(productData || []);
@@ -63,7 +63,7 @@ export default function SupplierProfilePage() {
     if (!user) { window.location.href = "/login"; return; }
     await supabase.from("conversations")
       .upsert({ buyer_id: user.id, supplier_id: supplier.user_id }, { onConflict: "buyer_id,supplier_id" })
-      .select().single();
+      .select().maybeSingle();
     window.location.href = "/messages";
   };
 
