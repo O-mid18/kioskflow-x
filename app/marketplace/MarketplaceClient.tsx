@@ -275,7 +275,14 @@ export default function MarketplacePage({ initialProducts = [], initialSuppliers
   const showToast = useCallback((msg:string) => { setToast(msg); setTimeout(() => setToast(null),2500); },[]);
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => setUser(data.user ?? null));
+    supabase.auth.getUser().then(async ({ data }) => {
+      const user = data.user ?? null;
+      setUser(user);
+      if (user) {
+        const { data: wl } = await supabase.from("wishlist").select("products(id, name, price, image_url, stock, category, supplier_id)").eq("user_id", user.id);
+        if (wl) setWishlist((wl as any[]).map(w => w.products).filter(Boolean));
+      }
+    });
     if (initialProducts.length === 0) {
       Promise.all([
         supabase.from("products").select("*"),
@@ -300,7 +307,18 @@ export default function MarketplacePage({ initialProducts = [], initialSuppliers
   }, [showToast]);
 
   const updateQty = (id:number,qty:number) => { if(qty<1) return setCartItems(p=>p.filter(i=>i.id!==id)); setCartItems(p=>p.map(i=>i.id===id?{...i,quantity:qty}:i)); };
-  const toggleWishlist = useCallback((product:Product) => { setWishlist(prev => prev.some(w=>w.id===product.id)?prev.filter(w=>w.id!==product.id):[...prev,product]); },[]);
+  const toggleWishlist = useCallback(async (product: Product) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) { window.location.href = "/login"; return; }
+    const isWishlisted = wishlist.some(w => w.id === product.id);
+    if (isWishlisted) {
+      setWishlist(prev => prev.filter(w => w.id !== product.id));
+      await supabase.from("wishlist").delete().eq("user_id", user.id).eq("product_id", product.id);
+    } else {
+      setWishlist(prev => [...prev, product]);
+      await supabase.from("wishlist").upsert({ user_id: user.id, product_id: product.id }, { onConflict: "user_id,product_id" });
+    }
+  }, [wishlist]);
 
   const getReviews = (id:number) => reviews.filter(r=>r.product_id===id);
   const getAvg = (id:number) => { const r=getReviews(id); return r.length?r.reduce((s,r)=>s+r.rating,0)/r.length:0; };
