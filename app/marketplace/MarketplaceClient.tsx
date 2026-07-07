@@ -271,6 +271,7 @@ export default function MarketplacePage({ initialProducts = [], initialSuppliers
   const [cartOpen, setCartOpen] = useState(false);
   const [wishlist, setWishlist] = useState<Product[]>([]);
   const [offerProduct, setOfferProduct] = useState<Product|null>(null);
+  const [visibleCount, setVisibleCount] = useState(20);
 
   const showToast = useCallback((msg:string) => { setToast(msg); setTimeout(() => setToast(null),2500); },[]);
 
@@ -518,7 +519,7 @@ export default function MarketplacePage({ initialProducts = [], initialSuppliers
             </div>
           ) : (
             <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(200px,1fr))", gap:14 }}>
-              {filtered.map((product, i) => {
+              {filtered.slice(0, visibleCount).map((product, i) => {
                 const cat = CATS[product.category||""] || CATS.default;
                 const pReviews = getReviews(product.id);
                 const avg = getAvg(product.id);
@@ -571,6 +572,17 @@ export default function MarketplacePage({ initialProducts = [], initialSuppliers
             </div>
           )}
         </div>
+
+        {/* ── LOAD MORE ── */}
+        {!loading && filtered.length > visibleCount && (
+          <div style={{ textAlign:"center", margin:"32px 0" }}>
+            <button
+              onClick={() => setVisibleCount(prev => prev + 20)}
+              style={{ background:SURFACE, border:`1.5px solid ${BORDER}`, borderRadius:12, padding:"12px 32px", color:TEXT, fontWeight:600, fontSize:14, cursor:"pointer" }}>
+              Mehr laden ({filtered.length - visibleCount} weitere)
+            </button>
+          </div>
+        )}
 
         {/* ── BOTTOM CTA ── */}
         {!loading && (
