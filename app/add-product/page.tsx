@@ -74,6 +74,8 @@ export default function AddProductPage() {
   const addProduct = async () => {
     setErrorMsg("");
     if (!name || !price || !stock) { setErrorMsg("Name, Preis und Lagerbestand sind Pflichtfelder."); return; }
+    if (Number(price) <= 0) { setErrorMsg("Der Preis muss größer als 0 sein."); return; }
+    if (Number(stock) < 0) { setErrorMsg("Der Lagerbestand darf nicht negativ sein."); return; }
     setIsLoading(true);
 
     const { data: { user } } = await supabase.auth.getUser();

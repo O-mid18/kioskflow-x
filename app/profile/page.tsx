@@ -67,7 +67,7 @@ function BuyerProfile({ email, buyerId, userId }: { email: string; buyerId: stri
     setSaving(true);
     const { error } = await supabase.from("profiles").update({ full_name: fullName, company_name: companyName, address, city, phone }).eq("id", buyerId);
     setSaving(false);
-    setMsg(error ? { text: error.message, ok: false } : { text: "Profil gespeichert!", ok: true });
+    setMsg(error ? { text: "Profil konnte nicht gespeichert werden. Bitte erneut versuchen.", ok: false } : { text: "Profil gespeichert!", ok: true });
     setTimeout(() => setMsg(null), 3000);
   };
 
@@ -167,7 +167,7 @@ function SupplierProfile({ email, supplierId }: { email: string; supplierId: str
     setSaving(true);
     const { error } = await supabase.from("suppliers").update({ name, description, logo_url: logoUrl || null }).eq("id", supplierId);
     setSaving(false);
-    setMsg(error ? { text: error.message, ok: false } : { text: "Profil gespeichert!", ok: true });
+    setMsg(error ? { text: "Profil konnte nicht gespeichert werden. Bitte erneut versuchen.", ok: false } : { text: "Profil gespeichert!", ok: true });
     setTimeout(() => setMsg(null), 3000);
   };
 

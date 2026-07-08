@@ -11,7 +11,7 @@ const TEXT2 = "var(--kf-text2)";
 const TEXT3 = "var(--kf-text3)";
 const ORANGE = "#E8521A";
 
-type WishItem = { id: string; products: { id: string; name: string; price: number; image_url: string | null } };
+type WishItem = { id: string; products: { id: string; name: string; price: number; image_url: string | null; stock?: number; category?: string } };
 
 export default function WishlistPage() {
   const [items, setItems] = useState<WishItem[]>([]);
@@ -23,7 +23,7 @@ export default function WishlistPage() {
     setLoading(true);
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { window.location.href = "/login"; return; }
-    const { data } = await supabase.from("wishlist").select("id, products(id, name, price, image_url)").eq("user_id", user.id);
+    const { data } = await supabase.from("wishlist").select("id, products(id, name, price, image_url, stock, category)").eq("user_id", user.id);
     setItems((data as unknown as WishItem[]) ?? []);
     setLoading(false);
   };
@@ -97,12 +97,15 @@ export default function WishlistPage() {
                   <h2 style={{ fontFamily: "'Syne',sans-serif", fontWeight: 700, fontSize: 15, color: TEXT, marginBottom: 6, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                     {item.products?.name ?? "—"}
                   </h2>
-                  <p style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 20, color: TEXT, marginBottom: 14 }}>
+                  <p style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 20, color: TEXT, marginBottom: 8 }}>
                     €{item.products?.price?.toFixed(2) ?? "—"}
                   </p>
+                  {(item.products?.stock ?? 1) <= 0 && (
+                    <span style={{ display:"inline-block", fontSize:11, fontWeight:700, color:"#ef4444", background:"#fef2f2", padding:"2px 8px", borderRadius:6, marginBottom:8 }}>Ausverkauft</span>
+                  )}
                   <div style={{ display: "flex", gap: 8 }}>
-                    <a href="/cart" style={{ flex: 1, background: ORANGE, color: "#fff", textAlign: "center", fontSize: 13, fontWeight: 700, padding: "9px", borderRadius: 9, textDecoration: "none" }}>
-                      In den Warenkorb
+                    <a href={`/product/${item.products?.id}`} style={{ flex: 1, background: (item.products?.stock ?? 1) <= 0 ? BORDER : ORANGE, color: (item.products?.stock ?? 1) <= 0 ? TEXT3 : "#fff", textAlign: "center", fontSize: 13, fontWeight: 700, padding: "9px", borderRadius: 9, textDecoration: "none" }}>
+                      {(item.products?.stock ?? 1) <= 0 ? "Nicht verfügbar" : "Zum Produkt →"}
                     </a>
                     <button onClick={() => remove(item.id)}
                       style={{ width: 38, background: BG, border: `1px solid ${BORDER}`, color: TEXT3, borderRadius: 9, cursor: "pointer", fontSize: 16, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
