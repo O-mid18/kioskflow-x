@@ -43,12 +43,14 @@ export default function CheckoutPage() {
   useEffect(() => {
     fetchCart();
     const saved = localStorage.getItem(LS_KEY);
+    let savedEmail = "";
     if (saved) {
       try {
         const a = JSON.parse(saved);
         setFirstName(a.firstName ?? "");
         setLastName(a.lastName ?? "");
-        setEmail(a.email ?? "");
+        savedEmail = a.email ?? "";
+        setEmail(savedEmail);
         setStreet(a.street ?? "");
         setPostalCode(a.postalCode ?? "");
         setCity(a.city ?? "");
@@ -56,12 +58,9 @@ export default function CheckoutPage() {
         setSaveAddr(true);
       } catch {}
     }
-  }, []);
-
-  // Pre-fill email from Supabase auth
-  useEffect(() => {
+    // Pre-fill email from Supabase auth only if no saved address email exists
     supabase.auth.getUser().then(({ data: { user } }) => {
-      if (user?.email && !email) setEmail(user.email);
+      if (user?.email && !savedEmail) setEmail(user.email);
     });
   }, []);
 

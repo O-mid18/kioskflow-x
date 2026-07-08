@@ -14,6 +14,10 @@ export async function POST(request: Request) {
   if (!user_id || !title) {
     return NextResponse.json({ error: "Missing user_id or title" }, { status: 400 });
   }
+  // Only allow sending notifications to yourself (prevents cross-user notification injection)
+  if (user_id !== user.id) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
 
   const db = createAdminClient();
   const { error } = await db.from("notifications").insert({ user_id, type, title, body, link });

@@ -24,11 +24,16 @@ export async function POST(request: Request) {
     const session = event.data.object as Stripe.Checkout.Session;
     const db = createAdminClient();
 
-    const { data: existingOrder } = await db
+    const { data: existingOrder, error: orderLookupErr } = await db
       .from("orders")
       .select("id, status, buyer_id, suppliers(user_id)")
       .eq("stripe_session_id", session.id)
-      .single();
+      .maybeSingle();
+
+    if (orderLookupErr) {
+      console.error("Webhook: DB error looking up order", orderLookupErr.message);
+      return NextResponse.json({ error: "DB error" }, { status: 500 });
+    }
 
     if (!existingOrder) {
       console.error("Webhook: no order found for session", session.id);
