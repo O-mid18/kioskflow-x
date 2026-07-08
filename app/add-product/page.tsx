@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { supabase } from "@/lib/supabase";
+import { CATEGORIES } from "@/lib/categories";
 
 const BG = "var(--kf-bg)";
 const SURFACE = "var(--kf-surface)";
@@ -10,8 +11,6 @@ const TEXT = "var(--kf-text)";
 const TEXT2 = "var(--kf-text2)";
 const TEXT3 = "var(--kf-text3)";
 const ORANGE = "#E8521A";
-
-const CATEGORIES = ["Energy","Cola","Bio","Snacks","Limo","Getränke"];
 
 function Field({ label, required, children }: { label:string; required?:boolean; children:React.ReactNode }) {
   return (

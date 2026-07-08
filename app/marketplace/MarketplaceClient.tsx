@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/lib/supabase";
 import { NotificationBell } from "@/components/ui/notification-bell";
+import { CATEGORY_MAP, DEFAULT_CATEGORY } from "@/lib/categories";
 
 interface Product { id: number; name: string; description?: string; price: number; category?: string; image_url?: string; stock?: number; supplier_id?: number; }
 interface Supplier { id: number; name: string; description?: string; logo_url?: string; }
@@ -10,13 +11,8 @@ interface Review { id: number; product_id: number; rating: number; comment?: str
 interface CartItem extends Product { quantity: number; }
 
 const CATS: Record<string, { color: string; bg: string; emoji: string }> = {
-  Energy:   { color: "#d97706", bg: "#fef3c7", emoji: "⚡" },
-  Cola:     { color: "#2563eb", bg: "#dbeafe", emoji: "🥤" },
-  Bio:      { color: "#16a34a", bg: "#dcfce7", emoji: "🌿" },
-  Snacks:   { color: "#9333ea", bg: "#f3e8ff", emoji: "🍬" },
-  Limo:     { color: "#db2777", bg: "#fce7f3", emoji: "🍋" },
-  Getränke: { color: "#0891b2", bg: "#cffafe", emoji: "💧" },
-  default:  { color: "#e8521a", bg: "#fff1ec", emoji: "📦" },
+  ...CATEGORY_MAP,
+  default: DEFAULT_CATEGORY,
 };
 
 const BG = "var(--kf-bg)";
