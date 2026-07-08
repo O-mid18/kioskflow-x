@@ -75,7 +75,12 @@ export default function BuyerMessagesPage() {
   };
 
   const loadSuppliers = async () => {
-    const { data } = await supabase.from("suppliers").select("user_id, name");
+    const { data } = await supabase
+      .from("suppliers")
+      .select("user_id, name")
+      .eq("verified", true)
+      .order("name", { ascending: true })
+      .limit(50);
     setSuppliers((data ?? []).map((s: any) => ({ id: s.user_id, name: s.name })));
     setShowNew(true);
   };
