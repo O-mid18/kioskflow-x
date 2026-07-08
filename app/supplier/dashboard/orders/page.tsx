@@ -55,20 +55,15 @@ export default function SupplierOrdersPage() {
     const { error } = await supabase.from("orders").update({ status: newStatus }).eq("id", orderId);
     if (!error) {
       // If cancelling an order that was already paid/shipped, stock was already
-      // deducted at payment time (via the Stripe webhook) — restore it now,
-      // otherwise every cancellation permanently shrinks inventory.
+      // deducted at payment time (via the Stripe webhook) — restore it atomically server-side.
       if (newStatus === "cancelled" && (oldStatus === "paid" || oldStatus === "shipped")) {
-        const { data: orderItems } = await supabase
-          .from("order_items")
-          .select("product_id, quantity")
-          .eq("order_id", orderId);
-        if (orderItems) {
-          await Promise.all(orderItems.map(async (oi: any) => {
-            const { data: product } = await supabase.from("products").select("stock").eq("id", oi.product_id).maybeSingle();
-            if (product) {
-              await supabase.from("products").update({ stock: (product.stock ?? 0) + oi.quantity }).eq("id", oi.product_id);
-            }
-          }));
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+          await fetch("/api/restore-stock", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "Authorization": `Bearer ${session.access_token}` },
+            body: JSON.stringify({ orderId }),
+          });
         }
       }
       setItems(prev => prev.map(item =>

@@ -39,6 +39,9 @@ export default function CheckoutPage() {
   const [country,    setCountry]    = useState("Deutschland");
   const [saveAddr,   setSaveAddr]   = useState(false);
   const [addrErr,    setAddrErr]    = useState<string | null>(null);
+  const [discountCode, setDiscountCode] = useState("");
+  const [discountInfo, setDiscountInfo] = useState<{ pct: number; label: string } | null>(null);
+  const [discountErr,  setDiscountErr]  = useState<string | null>(null);
 
   useEffect(() => {
     fetchCart();
@@ -114,7 +117,7 @@ export default function CheckoutPage() {
       const res = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json", "Authorization": `Bearer ${session.access_token}` },
-        body: JSON.stringify({ shippingAddress: { firstName, lastName, email, street, postalCode, city, country } }),
+        body: JSON.stringify({ shippingAddress: { firstName, lastName, email, street, postalCode, city, country }, discountCode: discountInfo ? discountCode.trim().toUpperCase() : null }),
       });
       const text = await res.text();
       let data: any;
@@ -124,6 +127,25 @@ export default function CheckoutPage() {
     } catch (e: any) { setError("Fetch-Fehler: " + (e?.message ?? String(e))); }
     finally { setPaying(false); }
   };
+
+  const DISCOUNT_CODES: Record<string, { pct: number; label: string }> = {
+    "OMED10": { pct: 0.10, label: "10% Rabatt" },
+    "OMED20": { pct: 0.20, label: "20% Rabatt" },
+  };
+
+  const applyDiscount = () => {
+    const code = discountCode.trim().toUpperCase();
+    if (DISCOUNT_CODES[code]) {
+      setDiscountInfo(DISCOUNT_CODES[code]);
+      setDiscountErr(null);
+    } else {
+      setDiscountInfo(null);
+      setDiscountErr("Ungültiger Rabattcode.");
+    }
+  };
+
+  const discountAmount = discountInfo ? total * discountInfo.pct : 0;
+  const finalTotal = total - discountAmount;
 
   const fo = (e: React.FocusEvent<HTMLInputElement | HTMLSelectElement>) => e.currentTarget.style.borderColor = ORANGE;
   const bl = (e: React.FocusEvent<HTMLInputElement | HTMLSelectElement>) => e.currentTarget.style.borderColor = BORDER;
@@ -280,12 +302,24 @@ export default function CheckoutPage() {
               </div>
             </div>
 
+            {/* ── Discount code ── */}
+            <div style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 16, padding: "16px 18px", marginBottom: 16 }}>
+              <p style={{ fontSize: 12, fontWeight: 700, color: TEXT3, letterSpacing: "1px", textTransform: "uppercase", marginBottom: 10 }}>Rabattcode</p>
+              <div style={{ display: "flex", gap: 8 }}>
+                <input value={discountCode} onChange={e => { setDiscountCode(e.target.value); setDiscountInfo(null); setDiscountErr(null); }}
+                  placeholder="Code eingeben" style={{ ...iStyle, flex: 1 }} onFocus={fo} onBlur={bl} />
+                <button onClick={applyDiscount} style={{ background: ORANGE, color: "#fff", border: "none", borderRadius: 10, padding: "0 18px", fontWeight: 700, fontSize: 13, cursor: "pointer", flexShrink: 0 }}>OK</button>
+              </div>
+              {discountInfo && <p style={{ fontSize: 12, color: "#16a34a", fontWeight: 600, marginTop: 8 }}>✓ {discountInfo.label} angewendet</p>}
+              {discountErr  && <p style={{ fontSize: 12, color: "#dc2626", fontWeight: 600, marginTop: 8 }}>{discountErr}</p>}
+            </div>
+
             {/* ── Summary ── */}
             <div style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 16, padding: "20px 18px", marginBottom: 16 }}>
               {[
-                { label: "Zwischensumme", value: `€${total.toFixed(2)}`,          valueColor: TEXT },
-                { label: "Lieferung",     value: "Kostenlos",                      valueColor: "#16a34a" },
-                { label: "MwSt. (19%)",   value: `€${(total * 0.19).toFixed(2)}`, valueColor: TEXT2 },
+                { label: "Zwischensumme", value: `€${total.toFixed(2)}`, valueColor: TEXT },
+                { label: "Lieferung",     value: "Kostenlos",             valueColor: "#16a34a" },
+                ...(discountInfo ? [{ label: `Rabatt (${discountInfo.pct * 100}%)`, value: `-€${discountAmount.toFixed(2)}`, valueColor: "#16a34a" }] : []),
               ].map(row => (
                 <div key={row.label} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
                   <span style={{ color: TEXT2, fontSize: 13 }}>{row.label}</span>
@@ -294,8 +328,9 @@ export default function CheckoutPage() {
               ))}
               <div style={{ borderTop: `1px solid ${BORDER}`, paddingTop: 14, marginTop: 4, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <span style={{ fontFamily: "'Syne',sans-serif", fontWeight: 700, fontSize: 15, color: TEXT }}>Gesamt</span>
-                <span style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 24, color: TEXT, letterSpacing: "-0.5px" }}>€{total.toFixed(2)}</span>
+                <span style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 24, color: TEXT, letterSpacing: "-0.5px" }}>€{finalTotal.toFixed(2)}</span>
               </div>
+              <p style={{ fontSize: 11, color: TEXT3, marginTop: 8, textAlign: "right" }}>Alle Preise inkl. 19% MwSt.</p>
             </div>
 
             {/* Trust badges */}
@@ -311,7 +346,7 @@ export default function CheckoutPage() {
             {/* CTA */}
             <button onClick={handlePayment} disabled={paying}
               style={{ width: "100%", background: paying ? `rgba(232,82,26,0.55)` : ORANGE, color: "#fff", border: "none", borderRadius: 12, padding: "16px", fontFamily: "'DM Sans',sans-serif", fontWeight: 700, fontSize: 15, cursor: paying ? "not-allowed" : "pointer", transition: "opacity 0.2s", marginBottom: 12, boxShadow: `0 4px 16px rgba(232,82,26,0.25)` }}>
-              {paying ? "Weiterleitung zu Stripe..." : `Jetzt kaufen — €${total.toFixed(2)}`}
+              {paying ? "Weiterleitung zu Stripe..." : `Jetzt kaufen — €${finalTotal.toFixed(2)}`}
             </button>
 
             <p style={{ textAlign: "center", color: TEXT3, fontSize: 12 }}>Bezahlung sicher über Stripe · SSL-verschlüsselt</p>

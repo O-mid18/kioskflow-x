@@ -19,11 +19,16 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  const VALID_DISCOUNT_CODES: Record<string, number> = { "OMED10": 0.10, "OMED20": 0.20 };
+
   try {
     let shippingAddress: Record<string, string> = {};
+    let discountPct = 0;
     try {
       const body = await request.json();
       shippingAddress = body?.shippingAddress ?? {};
+      const code = (body?.discountCode ?? "").toUpperCase();
+      discountPct = VALID_DISCOUNT_CODES[code] ?? 0;
     } catch { /* body might be empty */ }
 
     const { data: cartItems, error: cartError } = await supabase
@@ -54,9 +59,11 @@ export async function POST(request: Request) {
       );
     }
 
-    const totalCents = cartItems.reduce((sum: number, item: any) => {
-      return sum + Math.round(item.products.price * 100) * item.quantity;
-    }, 0);
+    const totalCents = Math.round(
+      cartItems.reduce((sum: number, item: any) => {
+        return sum + Math.round(item.products.price * 100) * item.quantity;
+      }, 0) * (1 - discountPct)
+    );
 
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 
@@ -68,7 +75,7 @@ export async function POST(request: Request) {
           price_data: {
             currency: "eur",
             product_data: { name: item.products.name },
-            unit_amount: Math.round(item.products.price * 100),
+            unit_amount: Math.round(item.products.price * 100 * (1 - discountPct)),
           },
           quantity: item.quantity,
         })),
@@ -86,7 +93,8 @@ export async function POST(request: Request) {
     const db = createAdminClient();
     await db.from("profiles").upsert({ id: user.id, role: "buyer" }, { onConflict: "id", ignoreDuplicates: true });
 
-    const supplierId = (cartItems[0] as any).products?.supplier_id ?? null;
+    const supplierIds = [...new Set((cartItems as any[]).map((i: any) => i.products?.supplier_id).filter(Boolean))];
+    const supplierId = supplierIds.length === 1 ? supplierIds[0] : null;
     const totalEur = totalCents / 100;
 
     const { data: order, error: orderError } = await supabase

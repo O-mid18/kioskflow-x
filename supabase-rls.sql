@@ -163,3 +163,13 @@ create policy "support_messages: insert own"
       and sc.user_id = auth.uid()
     )
   );
+
+-- ── Helper function: atomic stock increment ───────────────────
+-- Used by /api/restore-stock to avoid read-modify-write race condition
+create or replace function increment_product_stock(p_product_id uuid, p_qty int)
+returns void
+language sql
+security definer
+as $$
+  update products set stock = stock + p_qty where id = p_product_id;
+$$;

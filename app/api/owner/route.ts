@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createHash, timingSafeEqual } from "crypto";
+import { createHash, timingSafeEqual, pbkdf2Sync } from "crypto";
 import { createAdminClient } from "@/lib/supabase";
 
 const SESSION_KEY = "owner_session";
@@ -7,6 +7,20 @@ const SALT = "kf-owner-v1";
 
 function sha(str: string) {
   return createHash("sha256").update(str).digest("hex");
+}
+
+// PBKDF2 with 200k iterations — far stronger than raw SHA-256
+function hashPasswordV2(str: string): string {
+  return "v2:" + pbkdf2Sync(str, SALT, 200_000, 32, "sha512").toString("hex");
+}
+
+function verifyPassword(input: string, stored: string): boolean {
+  if (stored.startsWith("v2:")) {
+    const expected = hashPasswordV2(input);
+    try { return timingSafeEqual(Buffer.from(stored), Buffer.from(expected)); } catch { return false; }
+  }
+  // Legacy SHA-256 — accept but will be upgraded on next password change
+  return sha(input) === stored;
 }
 
 function makeToken(pwHash: string): string {
@@ -124,7 +138,7 @@ export async function POST(req: NextRequest) {
 
   if (body.action === "login") {
     const pwHash = await getPwHash();
-    if (sha(body.password ?? "") !== pwHash) return NextResponse.json({ error: "Falsches Passwort" }, { status: 401 });
+    if (!verifyPassword(body.password ?? "", pwHash)) return NextResponse.json({ error: "Falsches Passwort" }, { status: 401 });
     const res = NextResponse.json({ ok: true });
     res.cookies.set(SESSION_KEY, makeToken(pwHash), cookieOpts());
     return res;
@@ -142,9 +156,9 @@ export async function POST(req: NextRequest) {
 
   if (body.action === "change_password") {
     const pwHash = await getPwHash();
-    if (sha(body.currentPassword ?? "") !== pwHash) return NextResponse.json({ error: "Aktuelles Passwort ist falsch" }, { status: 401 });
+    if (!verifyPassword(body.currentPassword ?? "", pwHash)) return NextResponse.json({ error: "Aktuelles Passwort ist falsch" }, { status: 401 });
     if (!body.newPassword || body.newPassword.length < 6) return NextResponse.json({ error: "Mindestens 6 Zeichen erforderlich" }, { status: 400 });
-    const newHash = sha(body.newPassword);
+    const newHash = hashPasswordV2(body.newPassword); // always store as PBKDF2 from now on
     const { error } = await db.from("owner_config").upsert({ key: "password_hash", value: newHash, updated_at: new Date().toISOString() });
     if (error) return NextResponse.json({ error: "Tabelle 'owner_config' fehlt — SQL ausführen" }, { status: 500 });
     const res = NextResponse.json({ ok: true });

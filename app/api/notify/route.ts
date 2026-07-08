@@ -14,9 +14,12 @@ export async function POST(request: Request) {
   if (!user_id || !title) {
     return NextResponse.json({ error: "Missing user_id or title" }, { status: 400 });
   }
-  // Only allow sending notifications to yourself (prevents cross-user notification injection)
+  // Buyers can only notify themselves; suppliers and admins can notify any user (for order updates)
   if (user_id !== user.id) {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    const { data: profile } = await userClient.from("profiles").select("role").eq("id", user.id).maybeSingle();
+    if (!profile || !["supplier", "admin"].includes(profile.role)) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
   }
 
   const db = createAdminClient();
