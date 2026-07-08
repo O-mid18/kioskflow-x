@@ -88,7 +88,11 @@ export default function SupplierProductsPage() {
   const deleteProduct = async (id: string) => {
     if (!confirm("Produkt wirklich löschen?")) return;
     setDeleting(id);
-    await supabase.from("products").delete().eq("id", id);
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) { setDeleting(null); return; }
+    const { data: sup } = await supabase.from("suppliers").select("id").eq("user_id", user.id).maybeSingle();
+    if (!sup) { setDeleting(null); return; }
+    await supabase.from("products").delete().eq("id", id).eq("supplier_id", sup.id);
     setDeleting(null);
     fetchAll();
   };

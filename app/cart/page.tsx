@@ -31,7 +31,7 @@ export default function CartPage() {
       if (authError || !user) { window.location.href = "/login"; return; }
       const { data, error } = await supabase.from("cart_items").select(`id, quantity, products (id, name, price, image_url)`).eq("user_id", user.id);
       if (error) throw error;
-      setItems((data as unknown as CartItem[]) || []);
+      setItems(((data as unknown as CartItem[]) || []).filter(item => item.products != null));
     } catch {
       setError("Warenkorb konnte nicht geladen werden. Bitte versuche es erneut.");
     } finally {
