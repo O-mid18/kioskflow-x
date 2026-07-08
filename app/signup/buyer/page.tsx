@@ -20,6 +20,7 @@ export default function BuyerSignupPage() {
   const router = useRouter();
   const [fields, setFields] = useState({ fullName: "", companyName: "", address: "", postalCode: "", city: "", phone: "", email: "", password: "" });
   const [loading, setLoading] = useState(false);
+  const [resendCooldown, setResendCooldown] = useState(0);
   const [msg, setMsg] = useState<{ text: string; ok: boolean } | null>(null);
   const [otpStep, setOtpStep] = useState(false);
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
@@ -88,10 +89,15 @@ export default function BuyerSignupPage() {
   };
 
   const handleResend = async () => {
+    if (resendCooldown > 0) return;
     setLoading(true);
     await supabase.auth.resend({ type: "signup", email: fields.email });
     setLoading(false);
     setMsg({ text: "Neuer Code gesendet.", ok: true });
+    setResendCooldown(60);
+    const interval = setInterval(() => {
+      setResendCooldown(prev => { if (prev <= 1) { clearInterval(interval); return 0; } return prev - 1; });
+    }, 1000);
   };
 
   if (otpStep) {
@@ -142,9 +148,9 @@ export default function BuyerSignupPage() {
           </button>
 
           <div style={{ textAlign: "center" }}>
-            <button onClick={handleResend} disabled={loading}
-              style={{ background: "none", border: "none", color: ORANGE, fontSize: 13, fontWeight: 600, cursor: "pointer", textDecoration: "underline" }}>
-              Code erneut senden
+            <button onClick={handleResend} disabled={loading || resendCooldown > 0}
+              style={{ background: "none", border: "none", color: resendCooldown > 0 ? "var(--kf-text3)" : ORANGE, fontSize: 13, fontWeight: 600, cursor: resendCooldown > 0 ? "not-allowed" : "pointer", textDecoration: resendCooldown > 0 ? "none" : "underline" }}>
+              {resendCooldown > 0 ? `Code erneut senden (${resendCooldown}s)` : "Code erneut senden"}
             </button>
             <span style={{ color: TEXT3, fontSize: 13, margin: "0 8px" }}>·</span>
             <button onClick={() => { setOtpStep(false); setMsg(null); setOtp(["","","","","",""]); }}

@@ -62,12 +62,12 @@ export default function SettingsPage() {
   const changePassword = async () => {
     setPwMsg(null);
     if (!newPw || !confirmPw) { setPwMsg({ text: "Bitte alle Felder ausfüllen.", ok: false }); return; }
-    if (newPw.length < 6)     { setPwMsg({ text: "Passwort muss mindestens 6 Zeichen haben.", ok: false }); return; }
+    if (newPw.length < 8)     { setPwMsg({ text: "Passwort muss mindestens 8 Zeichen lang sein.", ok: false }); return; }
     if (newPw !== confirmPw)  { setPwMsg({ text: "Passwörter stimmen nicht überein.", ok: false }); return; }
     setPwSaving(true);
     const { error } = await supabase.auth.updateUser({ password: newPw });
     setPwSaving(false);
-    if (error) { setPwMsg({ text: error.message, ok: false }); return; }
+    if (error) { setPwMsg({ text: "Passwort konnte nicht geändert werden. Bitte erneut anmelden und versuchen.", ok: false }); return; }
     setPwMsg({ text: "Passwort erfolgreich geändert!", ok: true });
     setNewPw(""); setConfirmPw("");
     setTimeout(() => setPwMsg(null), 4000);
