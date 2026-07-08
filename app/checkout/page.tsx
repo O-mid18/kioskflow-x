@@ -91,6 +91,16 @@ export default function CheckoutPage() {
       document.getElementById("addr-section")?.scrollIntoView({ behavior: "smooth", block: "start" });
       return;
     }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setAddrErr("Bitte gib eine gültige E-Mail-Adresse ein.");
+      document.getElementById("addr-section")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      return;
+    }
+    if (!/^\d{5}$/.test(postalCode.trim())) {
+      setAddrErr("Postleitzahl muss aus 5 Ziffern bestehen (z.B. 60311).");
+      document.getElementById("addr-section")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      return;
+    }
     if (saveAddr) {
       localStorage.setItem(LS_KEY, JSON.stringify({ firstName, lastName, email, street, postalCode, city, country }));
     } else {
