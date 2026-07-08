@@ -17,9 +17,35 @@ export default function SuccessPage() {
   const [orderNumber, setOrderNumber] = useState<string | null>(null);
 
   useEffect(() => {
-    // Generate order number client-side only to avoid SSR/client mismatch
-    setOrderNumber(Date.now().toString().slice(-6));
-    clearCart();
+    const params = new URLSearchParams(window.location.search);
+    const sessionId = params.get("session_id");
+
+    const init = async () => {
+      if (sessionId) {
+        const { data } = await supabase
+          .from("orders")
+          .select("id")
+          .eq("stripe_session_id", sessionId)
+          .maybeSingle();
+        if (data?.id) {
+          setOrderNumber(data.id.slice(-8).toUpperCase());
+        } else {
+          setTimeout(async () => {
+            const { data: retry } = await supabase
+              .from("orders")
+              .select("id")
+              .eq("stripe_session_id", sessionId)
+              .maybeSingle();
+            setOrderNumber(retry?.id ? retry.id.slice(-8).toUpperCase() : sessionId.slice(-8).toUpperCase());
+          }, 2000);
+        }
+      } else {
+        setOrderNumber(Date.now().toString().slice(-6));
+      }
+      clearCart();
+    };
+
+    init();
   }, []);
 
   const clearCart = async () => {
