@@ -29,7 +29,7 @@ export async function POST(request: Request) {
   await db.from("profiles").delete().eq("id", user.id);
 
   const { error } = await db.auth.admin.deleteUser(user.id);
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) return NextResponse.json({ error: "Account konnte nicht gelöscht werden." }, { status: 500 });
 
   return NextResponse.json({ ok: true });
 }

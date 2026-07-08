@@ -18,25 +18,30 @@ export async function POST(request: Request) {
   if (!supplier) return NextResponse.json({ error: "Supplier not found" }, { status: 404 });
 
   let accountId = supplier.stripe_account_id;
-  if (!accountId) {
-    const account = await stripe.accounts.create({
-      type: "express",
-      country: "DE",
-      capabilities: { card_payments: { requested: true }, transfers: { requested: true } },
+  try {
+    if (!accountId) {
+      const account = await stripe.accounts.create({
+        type: "express",
+        country: "DE",
+        capabilities: { card_payments: { requested: true }, transfers: { requested: true } },
+      });
+      accountId = account.id;
+      await db.from("suppliers").update({ stripe_account_id: accountId }).eq("id", supplier.id);
+    }
+
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://kioskflow-x.vercel.app";
+    const accountLink = await stripe.accountLinks.create({
+      account: accountId,
+      refresh_url: `${baseUrl}/supplier/dashboard/verification?refresh=true`,
+      return_url: `${baseUrl}/supplier/dashboard/verification?success=true`,
+      type: "account_onboarding",
     });
-    accountId = account.id;
-    await db.from("suppliers").update({ stripe_account_id: accountId }).eq("id", supplier.id);
+
+    return NextResponse.json({ url: accountLink.url });
+  } catch (err: any) {
+    console.error("[connect] Stripe error:", err?.message);
+    return NextResponse.json({ error: "Stripe-Verbindung fehlgeschlagen. Bitte erneut versuchen." }, { status: 500 });
   }
-
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://kioskflow-x.vercel.app";
-  const accountLink = await stripe.accountLinks.create({
-    account: accountId,
-    refresh_url: `${baseUrl}/supplier/dashboard/verification?refresh=true`,
-    return_url: `${baseUrl}/supplier/dashboard/verification?success=true`,
-    type: "account_onboarding",
-  });
-
-  return NextResponse.json({ url: accountLink.url });
 }
 
 export async function GET(request: Request) {
