@@ -52,7 +52,7 @@ export default function SupplierProfilePage() {
     setSaving(true);
     const { error } = await supabase.from("suppliers").update({ name, description, logo_url:logoUrl||null }).eq("id",supplierId);
     setSaving(false);
-    if (error) setMsg({ text:error.message, ok:false });
+    if (error) setMsg({ text:"Profil konnte nicht gespeichert werden. Bitte erneut versuchen.", ok:false });
     else setMsg({ text:"Profil erfolgreich gespeichert!", ok:true });
     setTimeout(() => setMsg(null), 3000);
   };

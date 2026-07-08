@@ -84,7 +84,7 @@ export default function EditProductPage() {
     const ext  = imageFile.name.split(".").pop();
     const path = `${userId}/${Date.now()}.${ext}`;
     const { error } = await supabase.storage.from("product-images").upload(path, imageFile, { upsert: true, contentType: imageFile.type });
-    if (error) { setErrorMsg("Bild-Upload fehlgeschlagen: " + error.message); return null; }
+    if (error) { setErrorMsg("Bild-Upload fehlgeschlagen. Bitte erneut versuchen."); return null; }
     const { data } = supabase.storage.from("product-images").getPublicUrl(path);
     return data.publicUrl;
   };
@@ -118,7 +118,7 @@ export default function EditProductPage() {
     }).eq("id", String(params.id));
 
     setSaving(false);
-    if (error) setErrorMsg(error.message);
+    if (error) setErrorMsg("Produkt konnte nicht gespeichert werden. Bitte erneut versuchen.");
     else router.push("/supplier");
   };
 

@@ -79,7 +79,7 @@ export default function VerificationPage() {
       phone, website,
     }).eq("id", supplierId!);
     setSaving(false);
-    if (error) setMsg({ text: error.message, ok: false });
+    if (error) setMsg({ text: "Daten konnten nicht gespeichert werden. Bitte erneut versuchen.", ok: false });
     else setMsg({ text: "Daten gespeichert. Der Admin wird Ihre Angaben prüfen.", ok: true });
     setTimeout(() => setMsg(null), 4000);
   };
