@@ -16,7 +16,7 @@ type OrderItem = {
   quantity: number;
   price_at_purchase: number;
   products?: { name: string; image_url?: string; category?: string; };
-  orders?:   { id: string; status: string; created_at: string; total_price: number; buyer_id: string; };
+  orders?:   { id: string; status: string; created_at: string; total_price: number; buyer_id: string; shipping_name?: string; shipping_street?: string; shipping_postal_code?: string; shipping_city?: string; shipping_country?: string; };
 };
 
 const NEXT_STATUS: Record<string, string[]> = {
@@ -103,7 +103,7 @@ export default function SupplierOrdersPage() {
     if (!supplier) { setLoading(false); return; }
     const { data } = await supabase
       .from("order_items")
-      .select("id, quantity, price_at_purchase, products(name,image_url,category), orders(id,status,created_at,total_price,buyer_id)")
+      .select("id, quantity, price_at_purchase, products(name,image_url,category), orders(id,status,created_at,total_price,buyer_id,shipping_name,shipping_street,shipping_postal_code,shipping_city,shipping_country)")
       .eq("supplier_id", supplier.id)
       .order("created_at", { foreignTable:"orders", ascending:false });
     setItems((data as unknown as OrderItem[]) ?? []);
@@ -194,7 +194,12 @@ export default function SupplierOrdersPage() {
                       </div>
                     </td>
                     <td style={{ padding:"14px 20px", fontSize:13, fontWeight:600, color:TEXT, fontFamily:"'Syne',sans-serif" }}>
-                      #{(item.orders?.id ?? "").slice(-6).toUpperCase()}
+                      <div>#{(item.orders?.id ?? "").slice(-6).toUpperCase()}</div>
+                      {item.orders?.shipping_name && (
+                        <div style={{ fontSize:11, color:TEXT3, fontWeight:400, marginTop:2, fontFamily:"'DM Sans',sans-serif" }}>
+                          📍 {item.orders.shipping_name}, {item.orders.shipping_street}, {item.orders.shipping_postal_code} {item.orders.shipping_city}
+                        </div>
+                      )}
                     </td>
                     <td style={{ padding:"14px 20px", fontSize:12, color:TEXT2, whiteSpace:"nowrap" }}>
                       {item.orders?.created_at ? new Date(item.orders.created_at).toLocaleDateString("de-DE",{day:"2-digit",month:"short",year:"numeric"}) : "—"}

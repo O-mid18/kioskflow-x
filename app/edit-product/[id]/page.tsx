@@ -12,7 +12,7 @@ const TEXT2 = "var(--kf-text2)";
 const TEXT3 = "var(--kf-text3)";
 const ORANGE = "#E8521A";
 
-const CATEGORIES = ["Energy","Cola","Bio","Snacks","Limo","Getränke"];
+import { CATEGORIES } from "@/lib/categories";
 
 function Field({ label, required, children }: { label:string; required?:boolean; children:React.ReactNode }) {
   return (

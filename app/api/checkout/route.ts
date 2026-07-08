@@ -20,6 +20,12 @@ export async function POST(request: Request) {
   }
 
   try {
+    let shippingAddress: Record<string, string> = {};
+    try {
+      const body = await request.json();
+      shippingAddress = body?.shippingAddress ?? {};
+    } catch { /* body might be empty */ }
+
     const { data: cartItems, error: cartError } = await supabase
       .from("cart_items")
       .select("quantity, products(id, name, price, supplier_id, stock)")
@@ -91,6 +97,12 @@ export async function POST(request: Request) {
         total_price: totalEur,
         status: "pending",
         stripe_session_id: stripeSession.id,
+        shipping_name: shippingAddress.firstName && shippingAddress.lastName ? `${shippingAddress.firstName} ${shippingAddress.lastName}`.trim() : null,
+        shipping_email: shippingAddress.email || null,
+        shipping_street: shippingAddress.street || null,
+        shipping_postal_code: shippingAddress.postalCode || null,
+        shipping_city: shippingAddress.city || null,
+        shipping_country: shippingAddress.country || "Deutschland",
       })
       .select("id")
       .single();
