@@ -85,6 +85,18 @@ export default function OrdersPage() {
 
   useEffect(() => { fetchOrders(); }, []);
 
+  const cancelOrder = async (orderId: string) => {
+    if (!window.confirm("Bestellung wirklich stornieren?")) return;
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    await supabase.from("orders")
+      .update({ status: "cancelled" })
+      .eq("id", orderId)
+      .eq("buyer_id", user.id)
+      .eq("status", "pending");
+    setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: "cancelled" } : o));
+  };
+
   const fetchOrders = async () => {
     setLoading(true);
     const { data: { user } } = await supabase.auth.getUser();
@@ -211,6 +223,13 @@ export default function OrdersPage() {
                       <p style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 18, color: TEXT }}>
                         €{Number(order.total_price).toFixed(2)}
                       </p>
+                      {order.status === "pending" && (
+                        <button
+                          onClick={e => { e.stopPropagation(); cancelOrder(order.id); }}
+                          style={{ background: "none", border: "1.5px solid #dc2626", borderRadius: 8, padding: "5px 10px", color: "#dc2626", fontSize: 11, fontWeight: 700, cursor: "pointer" }}>
+                          Stornieren
+                        </button>
+                      )}
                       <span style={{ color: TEXT3, fontSize: 16, transition: "transform 0.2s", transform: expanded ? "rotate(180deg)" : "rotate(0deg)", display: "inline-block" }}>▾</span>
                     </div>
                   </div>
