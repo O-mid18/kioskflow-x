@@ -133,3 +133,33 @@ create policy "reviews: own write"
   on reviews for all
   using (auth.uid() = user_id)
   with check (auth.uid() = user_id);
+
+-- ── 12. support_conversations & support_messages ─────────────
+alter table support_conversations enable row level security;
+alter table support_messages      enable row level security;
+
+create policy "support_conversations: own only"
+  on support_conversations for all
+  using (auth.uid() = user_id)
+  with check (auth.uid() = user_id);
+
+create policy "support_messages: own conversation"
+  on support_messages for select
+  using (
+    exists (
+      select 1 from support_conversations sc
+      where sc.id = support_messages.conversation_id
+      and sc.user_id = auth.uid()
+    )
+  );
+
+create policy "support_messages: insert own"
+  on support_messages for insert
+  with check (
+    sender_id = auth.uid()
+    and exists (
+      select 1 from support_conversations sc
+      where sc.id = support_messages.conversation_id
+      and sc.user_id = auth.uid()
+    )
+  );
