@@ -12,7 +12,7 @@ const TEXT2 = "var(--kf-text2)";
 const TEXT3 = "var(--kf-text3)";
 const ORANGE = "#E8521A";
 
-interface Product { id: string; name: string; price: number; image_url: string | null; }
+interface Product { id: string; name: string; price: number; image_url: string | null; stock?: number; }
 interface CartItem { id: string; quantity: number; products: Product; }
 
 export default function CartPage() {
@@ -29,7 +29,7 @@ export default function CartPage() {
       setError(null);
       const { data: { user }, error: authError } = await supabase.auth.getUser();
       if (authError || !user) { window.location.href = "/login"; return; }
-      const { data, error } = await supabase.from("cart_items").select(`id, quantity, products (id, name, price, image_url)`).eq("user_id", user.id);
+      const { data, error } = await supabase.from("cart_items").select(`id, quantity, products (id, name, price, image_url, stock)`).eq("user_id", user.id);
       if (error) throw error;
       setItems(((data as unknown as CartItem[]) || []).filter(item => item.products != null));
     } catch {
@@ -41,7 +41,8 @@ export default function CartPage() {
 
   useEffect(() => { fetchCart(); }, []);
 
-  const increaseQuantity = async (id: string, quantity: number) => {
+  const increaseQuantity = async (id: string, quantity: number, stock?: number) => {
+    if (stock !== undefined && quantity >= stock) return;
     await supabase.from("cart_items").update({ quantity: quantity + 1 }).eq("id", id);
     fetchCart();
   };
@@ -166,7 +167,7 @@ export default function CartPage() {
                     <div className="cart-qty" style={{ display:"flex", alignItems:"center", gap:6, flexShrink:0 }}>
                       <button onClick={() => decreaseQuantity(item.id, item.quantity)} style={{ width:34, height:34, background:BG, border:`1px solid ${BORDER}`, borderRadius:8, color:TEXT, cursor:"pointer", fontSize:16, fontWeight:700, display:"flex", alignItems:"center", justifyContent:"center" }}>−</button>
                       <span style={{ width:30, textAlign:"center", color:TEXT, fontWeight:700, fontSize:14 }}>{item.quantity}</span>
-                      <button onClick={() => increaseQuantity(item.id, item.quantity)} style={{ width:34, height:34, background:ORANGE, border:"none", borderRadius:8, color:"#fff", cursor:"pointer", fontSize:16, fontWeight:700, display:"flex", alignItems:"center", justifyContent:"center" }}>+</button>
+                      <button onClick={() => increaseQuantity(item.id, item.quantity, item.products.stock)} style={{ width:34, height:34, background:ORANGE, border:"none", borderRadius:8, color:"#fff", cursor:"pointer", fontSize:16, fontWeight:700, display:"flex", alignItems:"center", justifyContent:"center" }}>+</button>
                       <button onClick={() => removeItem(item.id)} style={{ width:34, height:34, background:"none", border:`1px solid ${BORDER}`, borderRadius:8, color:TEXT3, cursor:"pointer", fontSize:14, display:"flex", alignItems:"center", justifyContent:"center" }}>✕</button>
                     </div>
                   </div>
