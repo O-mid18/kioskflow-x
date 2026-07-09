@@ -358,3 +358,7 @@ create policy "Authenticated upload product images"
 alter table products
   add constraint price_positive check (price > 0),
   add constraint stock_non_negative check (stock >= 0);
+
+-- ── 21. reviews: prevent duplicate reviews per user/product ────────────
+alter table reviews
+  add constraint reviews_one_per_user_per_product unique (user_id, product_id);
