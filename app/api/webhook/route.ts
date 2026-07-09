@@ -64,16 +64,10 @@ export async function POST(request: Request) {
 
       if (orderItems && orderItems.length > 0) {
         await Promise.all(orderItems.map(async (item: any) => {
-          const { data: product } = await db
-            .from("products")
-            .select("stock")
-            .eq("id", item.product_id)
-            .maybeSingle();
-          if (product != null) {
-            await db.from("products")
-              .update({ stock: Math.max(0, (product.stock ?? 0) - item.quantity) })
-              .eq("id", item.product_id);
-          }
+          await db.rpc("decrement_product_stock", {
+            p_product_id: item.product_id,
+            p_qty: item.quantity,
+          });
         }));
       }
 

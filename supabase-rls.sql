@@ -174,6 +174,16 @@ as $$
   update products set stock = stock + p_qty where id = p_product_id;
 $$;
 
+-- ── Helper function: atomic stock decrement ───────────────────
+-- Used by /api/webhook to avoid race condition on duplicate webhook events
+create or replace function decrement_product_stock(p_product_id uuid, p_qty int)
+returns void
+language sql
+security definer
+as $$
+  update products set stock = greatest(0, stock - p_qty) where id = p_product_id;
+$$;
+
 -- ── 13. reviews: enforce verified-purchase requirement server-side ─────────
 drop policy if exists "reviews: own write" on reviews;
 

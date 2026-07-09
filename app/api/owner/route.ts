@@ -3,29 +3,35 @@ import { createHash, timingSafeEqual, pbkdf2Sync } from "crypto";
 import { createAdminClient } from "@/lib/supabase";
 
 const SESSION_KEY = "owner_session";
-const SALT = "kf-owner-v1";
+const LEGACY_SALT = "kf-owner-v1";
 
 function sha(str: string) {
   return createHash("sha256").update(str).digest("hex");
 }
 
-// PBKDF2 with 200k iterations — far stronger than raw SHA-256
-function hashPasswordV2(str: string): string {
-  return "v2:" + pbkdf2Sync(str, SALT, 200_000, 32, "sha512").toString("hex");
+// PBKDF2 with 200k iterations. Salt is now stored inside the hash as "v2:<salt>:<hash>"
+function hashPasswordV2(str: string, salt?: string): string {
+  const s = salt ?? createHash("sha256").update(str + Date.now() + Math.random()).digest("hex").slice(0, 32);
+  return "v2:" + s + ":" + pbkdf2Sync(str, s, 200_000, 32, "sha512").toString("hex");
 }
 
 function verifyPassword(input: string, stored: string): boolean {
   if (stored.startsWith("v2:")) {
-    const expected = hashPasswordV2(input);
+    const parts = stored.split(":");
+    if (parts.length < 3) return false;
+    const salt = parts[1];
+    const expected = "v2:" + salt + ":" + pbkdf2Sync(input, salt, 200_000, 32, "sha512").toString("hex");
     try { return timingSafeEqual(Buffer.from(stored), Buffer.from(expected)); } catch { return false; }
   }
-  // Legacy SHA-256 — accept but will be upgraded on next password change
-  return sha(input) === stored;
+  // Legacy SHA-256 — timing-safe comparison
+  try {
+    return timingSafeEqual(Buffer.from(sha(input), "hex"), Buffer.from(stored, "hex"));
+  } catch { return false; }
 }
 
 function makeToken(pwHash: string): string {
   const ts = Date.now().toString();
-  return `${ts}.${sha(`${ts}:${pwHash}:${SALT}`)}`;
+  return `${ts}.${sha(`${ts}:${pwHash}:${LEGACY_SALT}`)}`;
 }
 
 function verifyToken(token: string, pwHash: string): boolean {
@@ -35,7 +41,7 @@ function verifyToken(token: string, pwHash: string): boolean {
   const sig = token.slice(dot + 1);
   if (Number.isNaN(parseInt(ts))) return false;
   if (Date.now() - parseInt(ts) > 7 * 86_400_000) return false;
-  const expected = sha(`${ts}:${pwHash}:${SALT}`);
+  const expected = sha(`${ts}:${pwHash}:${LEGACY_SALT}`);
   try { return timingSafeEqual(Buffer.from(sig, "hex"), Buffer.from(expected, "hex")); }
   catch { return false; }
 }
@@ -46,7 +52,9 @@ async function getPwHash(): Promise<string> {
     const { data } = await db.from("owner_config").select("value").eq("key", "password_hash").maybeSingle();
     if (data?.value) return data.value;
   } catch {}
-  return sha(process.env.OWNER_PASSWORD ?? "kioskflow2024");
+  const envPw = process.env.OWNER_PASSWORD;
+  if (!envPw) throw new Error("OWNER_PASSWORD env var is not set and no password_hash in DB");
+  return sha(envPw);
 }
 
 function cookieOpts(maxAge = 7 * 86_400) {
@@ -132,13 +140,39 @@ export async function GET(req: NextRequest) {
   return NextResponse.json({ error: "Unknown action" }, { status: 400 });
 }
 
+// In-process login attempt counter (per process restart — lightweight brute force protection)
+const loginFailures = new Map<string, { count: number; until: number }>();
+const MAX_FAILURES = 5;
+const LOCKOUT_MS = 15 * 60 * 1000;
+
+function getClientIp(req: NextRequest): string {
+  return req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
+}
+
 // ── POST ──────────────────────────────────────────────────────────────────────
 export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => ({}));
 
   if (body.action === "login") {
-    const pwHash = await getPwHash();
-    if (!verifyPassword(body.password ?? "", pwHash)) return NextResponse.json({ error: "Falsches Passwort" }, { status: 401 });
+    const ip = getClientIp(req);
+    const now = Date.now();
+    const record = loginFailures.get(ip);
+    if (record && record.count >= MAX_FAILURES && now < record.until) {
+      return NextResponse.json({ error: "Zu viele Fehlversuche. Bitte warte 15 Minuten." }, { status: 429 });
+    }
+
+    let pwHash: string;
+    try { pwHash = await getPwHash(); }
+    catch { return NextResponse.json({ error: "Owner-Passwort nicht konfiguriert." }, { status: 503 }); }
+
+    if (!verifyPassword(body.password ?? "", pwHash)) {
+      const prev = loginFailures.get(ip) ?? { count: 0, until: 0 };
+      const newCount = prev.count + 1;
+      loginFailures.set(ip, { count: newCount, until: now + LOCKOUT_MS });
+      return NextResponse.json({ error: "Falsches Passwort" }, { status: 401 });
+    }
+
+    loginFailures.delete(ip);
     const res = NextResponse.json({ ok: true });
     res.cookies.set(SESSION_KEY, makeToken(pwHash), cookieOpts());
     return res;
@@ -208,7 +242,11 @@ export async function POST(req: NextRequest) {
 
   // ── Product actions ───────────────────────────────────────────────────────────
   if (body.action === "update_product") {
-    await db.from("products").update({ price: Number(body.price), stock: Number(body.stock) }).eq("id", body.productId);
+    const price = Number(body.price);
+    const stock = Number(body.stock);
+    if (isNaN(price) || price <= 0) return NextResponse.json({ error: "Ungültiger Preis" }, { status: 400 });
+    if (isNaN(stock) || stock < 0 || !Number.isInteger(stock)) return NextResponse.json({ error: "Ungültiger Lagerbestand" }, { status: 400 });
+    await db.from("products").update({ price, stock }).eq("id", body.productId);
     return NextResponse.json({ ok: true });
   }
 
@@ -218,7 +256,9 @@ export async function POST(req: NextRequest) {
   }
 
   // ── Order actions ─────────────────────────────────────────────────────────────
+  const VALID_ORDER_STATUSES = ["pending", "paid", "shipped", "delivered", "cancelled", "refunded"];
   if (body.action === "update_order_status") {
+    if (!VALID_ORDER_STATUSES.includes(body.status)) return NextResponse.json({ error: "Ungültiger Bestellstatus" }, { status: 400 });
     await db.from("orders").update({ status: body.status }).eq("id", body.orderId);
     return NextResponse.json({ ok: true });
   }
