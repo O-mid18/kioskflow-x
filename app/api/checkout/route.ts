@@ -65,7 +65,7 @@ export async function POST(request: Request) {
       }, 0) * (1 - discountPct)
     );
 
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://vendoro.vercel.app";
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://kioskflow-x.vercel.app";
 
     let stripeSession;
     try {

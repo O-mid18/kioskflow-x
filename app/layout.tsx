@@ -18,11 +18,11 @@ export const metadata: Metadata = {
   description: "B2B Marktplatz fuer lokale Marken und Kiosk-Betreiber in Frankfurt. Keine Mindestmengen. Keine Zwischenhaendler.",
   keywords: ["Kiosk", "Spaeti", "Grosshandel", "Frankfurt", "B2B", "Getraenke", "Snacks"],
   authors: [{ name: "Vendoro" }],
-  metadataBase: new URL("https://vendoro.vercel.app"),
+  metadataBase: new URL("https://kioskflow-x.vercel.app"),
   openGraph: {
     title: "Vendoro — Direkt vom Hersteller zum Kiosk",
     description: "B2B Marktplatz fuer lokale Marken und Kiosk-Betreiber in Frankfurt.",
-    url: "https://vendoro.vercel.app",
+    url: "https://kioskflow-x.vercel.app",
     siteName: "Vendoro",
     locale: "de_DE",
     type: "website",
