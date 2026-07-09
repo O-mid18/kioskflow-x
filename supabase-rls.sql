@@ -343,3 +343,13 @@ create trigger trg_prevent_conversation_reassignment
   before update on conversations
   for each row
   execute function prevent_conversation_reassignment();
+
+-- ── 19. storage.objects (product-images bucket): fix INSERT policy ───
+drop policy if exists "Authenticated upload product images" on storage.objects;
+
+create policy "Authenticated upload product images"
+  on storage.objects for insert
+  with check (
+    bucket_id = 'product-images'
+    and (storage.foldername(name))[1] = auth.uid()::text
+  );
