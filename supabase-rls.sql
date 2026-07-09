@@ -280,3 +280,56 @@ create policy "order_items: buyer insert"
     and (select status from orders where id = order_items.order_id) = 'pending'
     and price_at_purchase = (select price from products where id = order_items.product_id)
   );
+
+-- ── 18. conversations & messages: cleanup + hijack prevention ─────────────
+drop policy if exists "conv_insert" on conversations;
+drop policy if exists "conv_select" on conversations;
+drop policy if exists "conversations: participants only" on conversations;
+drop policy if exists "msg_insert" on messages;
+drop policy if exists "msg_select" on messages;
+drop policy if exists "messages: participants insert" on messages;
+drop policy if exists "messages: participants read" on messages;
+
+create policy "conversations: participants only"
+  on conversations for all
+  using (auth.uid() = buyer_id or auth.uid() = supplier_id)
+  with check (auth.uid() = buyer_id or auth.uid() = supplier_id);
+
+create policy "messages: participants read"
+  on messages for select
+  using (
+    exists (
+      select 1 from conversations c
+      where c.id = messages.conversation_id
+      and (auth.uid() = c.buyer_id or auth.uid() = c.supplier_id)
+    )
+  );
+
+create policy "messages: participants insert"
+  on messages for insert
+  with check (
+    sender_id = auth.uid()
+    and exists (
+      select 1 from conversations c
+      where c.id = messages.conversation_id
+      and (auth.uid() = c.buyer_id or auth.uid() = c.supplier_id)
+    )
+  );
+
+create or replace function prevent_conversation_reassignment()
+returns trigger as $$
+begin
+  if auth.role() != 'service_role' then
+    if new.buyer_id is distinct from old.buyer_id or new.supplier_id is distinct from old.supplier_id then
+      raise exception 'Conversation participants cannot be changed.';
+    end if;
+  end if;
+  return new;
+end;
+$$ language plpgsql security definer;
+
+drop trigger if exists trg_prevent_conversation_reassignment on conversations;
+create trigger trg_prevent_conversation_reassignment
+  before update on conversations
+  for each row
+  execute function prevent_conversation_reassignment();
