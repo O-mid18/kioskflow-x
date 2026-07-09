@@ -10,7 +10,12 @@ export async function POST(request: Request) {
   const { data: { user }, error: authError } = await userClient.auth.getUser();
   if (authError || !user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { user_id, type, title, body, link } = await request.json();
+  let user_id: string, type: string, title: string, body: string, link: string;
+  try {
+    ({ user_id, type, title, body, link } = await request.json());
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+  }
   if (!user_id || !title) {
     return NextResponse.json({ error: "Missing user_id or title" }, { status: 400 });
   }

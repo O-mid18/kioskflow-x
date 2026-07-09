@@ -60,32 +60,35 @@ export default function SupplierAnalyticsPage() {
 
   const fetchData = async () => {
     setLoading(true);
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) { window.location.href = "/login"; return; }
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) { window.location.href = "/login"; return; }
 
-    const { data: supplier } = await supabase.from("suppliers").select("id").eq("user_id", user.id).maybeSingle();
-    if (!supplier) { setLoading(false); return; }
+      const { data: supplier } = await supabase.from("suppliers").select("id").eq("user_id", user.id).maybeSingle();
+      if (!supplier) { return; }
 
-    // Get this supplier's products first
-    const { data: prods } = await supabase
-      .from("products")
-      .select("id, name, category")
-      .eq("supplier_id", supplier.id);
+      const { data: prods } = await supabase
+        .from("products")
+        .select("id, name, category")
+        .eq("supplier_id", supplier.id);
 
-    const supplierProducts = (prods as typeof products) ?? [];
-    setProducts(supplierProducts);
+      const supplierProducts = (prods as typeof products) ?? [];
+      setProducts(supplierProducts);
 
-    if (supplierProducts.length === 0) { setLoading(false); return; }
+      if (supplierProducts.length === 0) { return; }
 
-    // Then get order_items for those products
-    const productIds = supplierProducts.map(p => p.id);
-    const { data: orderData } = await supabase
-      .from("order_items")
-      .select("quantity, price_at_purchase, product_id, products(name, category), orders(status, created_at)")
-      .in("product_id", productIds);
+      const productIds = supplierProducts.map(p => p.id);
+      const { data: orderData } = await supabase
+        .from("order_items")
+        .select("quantity, price_at_purchase, product_id, products(name, category), orders(status, created_at)")
+        .in("product_id", productIds);
 
-    setItems((orderData as unknown as OrderItem[]) ?? []);
-    setLoading(false);
+      setItems((orderData as unknown as OrderItem[]) ?? []);
+    } catch {
+      // silent — loading state cleaned up in finally
+    } finally {
+      setLoading(false);
+    }
   };
 
   // ── Derived metrics ──

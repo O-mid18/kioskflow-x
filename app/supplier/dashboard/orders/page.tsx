@@ -51,6 +51,7 @@ export default function SupplierOrdersPage() {
   };
 
   const updateStatus = async (orderId: string, newStatus: string, buyerId: string, oldStatus: string) => {
+    if (!items.some(item => item.orders?.id === orderId)) return;
     setUpdating(orderId);
     const { error } = await supabase.from("orders").update({ status: newStatus }).eq("id", orderId);
     if (!error) {

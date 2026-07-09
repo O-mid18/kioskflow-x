@@ -24,7 +24,7 @@ export default function WishlistPage() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { window.location.href = "/login"; return; }
     const { data } = await supabase.from("wishlist").select("id, products(id, name, price, image_url, stock, category)").eq("user_id", user.id);
-    setItems((data as unknown as WishItem[]) ?? []);
+    setItems(((data as unknown as WishItem[]) ?? []).filter(i => i.products !== null));
     setLoading(false);
   };
 

@@ -89,11 +89,12 @@ export default function OrdersPage() {
     if (!window.confirm("Bestellung wirklich stornieren?")) return;
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
-    await supabase.from("orders")
+    const { error } = await supabase.from("orders")
       .update({ status: "cancelled" })
       .eq("id", orderId)
       .eq("buyer_id", user.id)
       .eq("status", "pending");
+    if (error) { alert("Stornierung fehlgeschlagen. Bitte versuche es erneut."); return; }
     setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: "cancelled" } : o));
   };
 
@@ -102,13 +103,13 @@ export default function OrdersPage() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { window.location.href = "/login"; return; }
 
-    const { data } = await supabase
+    const { data, error: fetchErr } = await supabase
       .from("orders")
       .select("id, total_price, status, created_at, order_items(id, product_id, quantity, price_at_purchase, products(name, image_url))")
       .eq("buyer_id", user.id)
       .order("created_at", { ascending: false });
 
-    setOrders((data as unknown as Order[]) ?? []);
+    if (!fetchErr) setOrders((data as unknown as Order[]) ?? []);
     setLoading(false);
   };
 

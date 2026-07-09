@@ -70,8 +70,8 @@ export default function BuyerMessagesPage() {
   const send = async () => {
     if (!text.trim() || !active || !userId) return;
     const content = text.trim();
-    setText("");
-    await supabase.from("messages").insert({ conversation_id: active.id, sender_id: userId, content });
+    const { error } = await supabase.from("messages").insert({ conversation_id: active.id, sender_id: userId, content });
+    if (!error) setText("");
   };
 
   const loadSuppliers = async () => {

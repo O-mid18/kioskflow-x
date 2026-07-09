@@ -62,8 +62,8 @@ export default function CartPage() {
     if (!window.confirm("Warenkorb leeren? Alle Artikel werden entfernt.")) return;
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
-    await supabase.from("cart_items").delete().eq("user_id", user.id);
-    setItems([]);
+    const { error } = await supabase.from("cart_items").delete().eq("user_id", user.id);
+    if (!error) setItems([]);
   };
 
   const applyDiscount = () => {

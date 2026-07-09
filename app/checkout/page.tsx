@@ -98,8 +98,8 @@ export default function CheckoutPage() {
       document.getElementById("addr-section")?.scrollIntoView({ behavior: "smooth", block: "start" });
       return;
     }
-    if (!/^\d{5}$/.test(postalCode.trim())) {
-      setAddrErr("Postleitzahl muss aus 5 Ziffern bestehen (z.B. 60311).");
+    if (!/^\d{4,5}$/.test(postalCode.trim())) {
+      setAddrErr("Postleitzahl muss aus 4–5 Ziffern bestehen (z.B. 60311 oder 1010).");
       document.getElementById("addr-section")?.scrollIntoView({ behavior: "smooth", block: "start" });
       return;
     }

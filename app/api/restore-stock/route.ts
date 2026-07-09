@@ -25,15 +25,16 @@ export async function POST(request: Request) {
   const { data: supplierItems } = await db.from("order_items").select("id").eq("order_id", orderId).eq("supplier_id", callerSupplier.id).limit(1);
   if (!supplierItems || supplierItems.length === 0) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
-  const { data: orderItems } = await db.from("order_items").select("product_id, quantity").eq("order_id", orderId);
+  const { data: orderItems } = await db.from("order_items").select("product_id, quantity").eq("order_id", orderId).eq("supplier_id", callerSupplier.id);
   if (!orderItems || orderItems.length === 0) return NextResponse.json({ ok: true });
 
-  // Atomic increment via SQL: UPDATE products SET stock = stock + qty WHERE id = product_id
-  // Supabase doesn't support expressions in .update(), so we use rpc or individual updates.
-  // Each update is a single atomic statement at DB level — safe for concurrent reads.
-  await Promise.all(orderItems.map(async (item: any) => {
-    await db.rpc("increment_product_stock", { p_product_id: item.product_id, p_qty: item.quantity });
-  }));
+  const results = await Promise.all(
+    orderItems.map((item: any) =>
+      db.rpc("increment_product_stock", { p_product_id: item.product_id, p_qty: item.quantity })
+    )
+  );
+  const rpcErr = results.find(r => r.error);
+  if (rpcErr) return NextResponse.json({ error: "Stock restore failed" }, { status: 500 });
 
   return NextResponse.json({ ok: true });
 }
