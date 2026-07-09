@@ -353,3 +353,8 @@ create policy "Authenticated upload product images"
     bucket_id = 'product-images'
     and (storage.foldername(name))[1] = auth.uid()::text
   );
+
+-- ── 20. products: DB-level CHECK constraints (defense in depth) ────
+alter table products
+  add constraint price_positive check (price > 0),
+  add constraint stock_non_negative check (stock >= 0);
