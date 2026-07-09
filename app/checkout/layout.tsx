@@ -1,7 +1,7 @@
 ﻿import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Kasse | KioskFlow",
+  title: "Kasse | Vendoro",
   description: "Schliesse deine Bestellung sicher ab.",
 };
 

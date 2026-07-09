@@ -45,7 +45,7 @@ export default function OwnerLogin() {
       <div style={{ width: "100%", maxWidth: 400, padding: "0 24px" }}>
         {/* Logo */}
         <div style={{ textAlign: "center", marginBottom: 36 }}>
-          <div style={{ width: 56, height: 56, background: ORANGE, borderRadius: 16, display: "inline-flex", alignItems: "center", justifyContent: "center", fontFamily: "'Syne',sans-serif", fontWeight: 900, fontSize: 26, color: "#fff", marginBottom: 18 }}>K</div>
+          <div style={{ width: 56, height: 56, background: ORANGE, borderRadius: 16, display: "inline-flex", alignItems: "center", justifyContent: "center", fontFamily: "'Syne',sans-serif", fontWeight: 900, fontSize: 26, color: "#fff", marginBottom: 18 }}>V</div>
           <h1 style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 24, color: TEXT, letterSpacing: "-0.5px" }}>Owner-Panel</h1>
           <p style={{ color: TEXT3, fontSize: 13, marginTop: 6 }}>Nur für den Eigentümer · Passwort erforderlich</p>
         </div>

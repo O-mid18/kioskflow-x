@@ -54,8 +54,8 @@ export default function LoginPage() {
         <div style={{ position:"absolute", bottom:-100, left:-60, width:280, height:280, borderRadius:"50%", background:"rgba(0,0,0,0.06)" }} />
 
         <div style={{ display:"flex", alignItems:"center", gap:10, position:"relative" }}>
-          <div style={{ width:36, height:36, background:"rgba(255,255,255,0.2)", backdropFilter:"blur(10px)", border:"1.5px solid rgba(255,255,255,0.3)", borderRadius:9, display:"flex", alignItems:"center", justifyContent:"center", fontWeight:900, fontSize:17, color:"#fff", fontFamily:"'Syne',sans-serif" }}>K</div>
-          <span style={{ fontFamily:"'Syne',sans-serif", fontWeight:800, fontSize:16, color:"#fff", letterSpacing:"-0.3px" }}>KioskFlow</span>
+          <div style={{ width:36, height:36, background:"rgba(255,255,255,0.2)", backdropFilter:"blur(10px)", border:"1.5px solid rgba(255,255,255,0.3)", borderRadius:9, display:"flex", alignItems:"center", justifyContent:"center", fontWeight:900, fontSize:17, color:"#fff", fontFamily:"'Syne',sans-serif" }}>V</div>
+          <span style={{ fontFamily:"'Syne',sans-serif", fontWeight:800, fontSize:16, color:"#fff", letterSpacing:"-0.3px" }}>Vendoro</span>
         </div>
 
         <div style={{ position:"relative" }}>
@@ -84,7 +84,7 @@ export default function LoginPage() {
         <div style={{ width:"100%", maxWidth:400 }}>
           <p style={{ fontSize:11, fontWeight:700, color:TEXT3, letterSpacing:"2.5px", textTransform:"uppercase", marginBottom:28 }}>Einloggen</p>
           <h2 style={{ fontFamily:"'Syne',sans-serif", fontWeight:800, fontSize:28, color:TEXT, letterSpacing:"-0.5px", marginBottom:8 }}>Willkommen zurück</h2>
-          <p style={{ color:TEXT2, fontSize:14, marginBottom:32 }}>Dein KioskFlow-Dashboard wartet auf dich.</p>
+          <p style={{ color:TEXT2, fontSize:14, marginBottom:32 }}>Dein Vendoro-Dashboard wartet auf dich.</p>
 
           {errorMsg && (
             <div style={{ background:"#fef2f2", border:"1.5px solid #fca5a5", borderRadius:10, padding:"12px 16px", marginBottom:24 }}>

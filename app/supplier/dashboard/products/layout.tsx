@@ -1,7 +1,7 @@
 ﻿import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Produkte | KioskFlow",
+  title: "Produkte | Vendoro",
   description: "Deine Produkte verwalten.",
 };
 

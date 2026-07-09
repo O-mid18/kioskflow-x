@@ -1,7 +1,7 @@
 ﻿import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Bestellung erfolgreich | KioskFlow",
+  title: "Bestellung erfolgreich | Vendoro",
   description: "Deine Bestellung wurde erfolgreich aufgegeben.",
 };
 

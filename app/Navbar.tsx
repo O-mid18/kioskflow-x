@@ -43,10 +43,10 @@ export default function Navbar() {
     }}>
       <Link href="/marketplace" style={{ display: "flex", alignItems: "center", gap: 8, textDecoration: "none" }}>
         <div style={{ width: 30, height: 30, background: ORANGE, borderRadius: 7, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 900, fontSize: 14, color: "#fff" }}>
-          K
+          V
         </div>
         <span style={{ fontWeight: 800, fontSize: 15, color: "var(--kf-text)", letterSpacing: "-0.3px" }}>
-          KioskFlow
+          Vendoro
         </span>
       </Link>
 

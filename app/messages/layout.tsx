@@ -1,8 +1,8 @@
 ﻿import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Nachrichten | KioskFlow",
-  description: "Nachrichten mit Lieferanten auf KioskFlow.",
+  title: "Nachrichten | Vendoro",
+  description: "Nachrichten mit Lieferanten auf Vendoro.",
 };
 
 export default function Layout({ children }: { children: React.ReactNode }) {

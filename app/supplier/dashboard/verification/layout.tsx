@@ -1,7 +1,7 @@
 ﻿import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Verifizierung | KioskFlow",
+  title: "Verifizierung | Vendoro",
   description: "Lieferanten-Verifizierung.",
 };
 

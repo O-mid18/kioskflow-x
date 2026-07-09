@@ -1,8 +1,8 @@
 ﻿import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Bestellungen | KioskFlow",
-  description: "Verwalte deine Bestellungen auf KioskFlow.",
+  title: "Bestellungen | Vendoro",
+  description: "Verwalte deine Bestellungen auf Vendoro.",
 };
 
 export default function Layout({ children }: { children: React.ReactNode }) {

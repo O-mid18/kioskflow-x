@@ -1,7 +1,7 @@
 ﻿import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Nachrichten | KioskFlow",
+  title: "Nachrichten | Vendoro",
   description: "Nachrichten im Lieferanten-Portal.",
 };
 

@@ -20,13 +20,13 @@ export default function SignupPage() {
         <div style={{ position: "absolute", bottom: -100, left: -60, width: 280, height: 280, borderRadius: "50%", background: "rgba(0,0,0,0.06)" }} />
 
         <a href="/marketplace" style={{ display: "flex", alignItems: "center", gap: 10, position: "relative", textDecoration: "none" }}>
-          <div style={{ width: 36, height: 36, background: "rgba(255,255,255,0.2)", backdropFilter: "blur(10px)", border: "1.5px solid rgba(255,255,255,0.3)", borderRadius: 9, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 900, fontSize: 17, color: "#fff", fontFamily: "'Syne',sans-serif" }}>K</div>
-          <span style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 16, color: "#fff", letterSpacing: "-0.3px" }}>KioskFlow</span>
+          <div style={{ width: 36, height: 36, background: "rgba(255,255,255,0.2)", backdropFilter: "blur(10px)", border: "1.5px solid rgba(255,255,255,0.3)", borderRadius: 9, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 900, fontSize: 17, color: "#fff", fontFamily: "'Syne',sans-serif" }}>V</div>
+          <span style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 16, color: "#fff", letterSpacing: "-0.3px" }}>Vendoro</span>
         </a>
 
         <div style={{ position: "relative" }}>
           <h1 style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: "clamp(28px,3vw,42px)", color: "#fff", lineHeight: 1.1, letterSpacing: "-1.2px", marginBottom: 18 }}>
-            Willkommen bei<br />KioskFlow.
+            Willkommen bei<br />Vendoro.
           </h1>
           <p style={{ color: "rgba(255,255,255,0.65)", fontSize: 14, lineHeight: 1.7, maxWidth: 300 }}>
             Tritt unserem B2B-Netzwerk bei. Direkt vom Hersteller zum Kiosk — ohne Mindestmengen.
@@ -48,7 +48,7 @@ export default function SignupPage() {
         <div style={{ width: "100%", maxWidth: 400 }}>
           <p style={{ fontSize: 11, fontWeight: 700, color: TEXT3, letterSpacing: "2.5px", textTransform: "uppercase", marginBottom: 28 }}>Registrieren</p>
           <h2 style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 28, color: TEXT, letterSpacing: "-0.5px", marginBottom: 8 }}>Konto erstellen</h2>
-          <p style={{ color: TEXT2, fontSize: 14, marginBottom: 32 }}>Tritt KioskFlow kostenlos bei.</p>
+          <p style={{ color: TEXT2, fontSize: 14, marginBottom: 32 }}>Tritt Vendoro kostenlos bei.</p>
 
           {/* Role choice */}
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 24 }}>

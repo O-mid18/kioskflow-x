@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "KioskFlow — Direkt vom Hersteller zum Kiosk",
+  title: "Vendoro — Direkt vom Hersteller zum Kiosk",
   description: "B2B Marktplatz fuer lokale Marken und Kiosk-Betreiber in Frankfurt.",
 };
 
@@ -32,8 +32,8 @@ export default function HomePage() {
       {/* NAVBAR */}
       <nav style={{ position: "sticky", top: 0, zIndex: 50, background: "var(--kf-surface)", borderBottom: "1px solid var(--kf-border)", padding: "0 32px", height: 60, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <a href="/" style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none" }}>
-          <div style={{ width: 32, height: 32, background: ORANGE, borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Syne',sans-serif", fontWeight: 900, fontSize: 15, color: "#fff" }}>K</div>
-          <span style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 16, color: "var(--kf-text)", letterSpacing: "-0.3px" }}>KioskFlow</span>
+          <div style={{ width: 32, height: 32, background: ORANGE, borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Syne',sans-serif", fontWeight: 900, fontSize: 15, color: "#fff" }}>V</div>
+          <span style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 16, color: "var(--kf-text)", letterSpacing: "-0.3px" }}>Vendoro</span>
         </a>
         <div className="kf-nav-links" style={{ display: "flex", alignItems: "center", gap: 28 }}>
           <a href="/marketplace" className="kf-nav-link" style={{ fontSize: 14, fontWeight: 500, color: "var(--kf-text2)", textDecoration: "none" }}>Marktplatz</a>
@@ -76,9 +76,9 @@ export default function HomePage() {
           </div>
           <div style={{ width: 2, height: 20, background: "var(--kf-border)", margin: "0 auto" }} />
           <div style={{ background: ORANGE, borderRadius: 16, padding: "20px", display: "flex", alignItems: "center", gap: 14 }}>
-            <div style={{ width: 44, height: 44, background: "rgba(255,255,255,0.2)", borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Syne',sans-serif", fontWeight: 900, fontSize: 20, color: "#fff", flexShrink: 0 }}>K</div>
+            <div style={{ width: 44, height: 44, background: "rgba(255,255,255,0.2)", borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Syne',sans-serif", fontWeight: 900, fontSize: 20, color: "#fff", flexShrink: 0 }}>V</div>
             <div style={{ flex: 1 }}>
-              <p style={{ fontWeight: 700, fontSize: 14, color: "#fff" }}>KioskFlow Marktplatz</p>
+              <p style={{ fontWeight: 700, fontSize: 14, color: "#fff" }}>Vendoro Marktplatz</p>
               <p style={{ fontSize: 12, color: "rgba(255,255,255,0.7)" }}>Sichere Zahlung · Direktpreise</p>
             </div>
             <div style={{ textAlign: "right", flexShrink: 0 }}>
@@ -132,7 +132,7 @@ export default function HomePage() {
       {/* FEATURES */}
       <section style={{ maxWidth: 1200, margin: "0 auto", padding: "80px 32px" }}>
         <div style={{ textAlign: "center", marginBottom: 52 }}>
-          <p style={{ fontSize: 12, fontWeight: 700, color: ORANGE, letterSpacing: "2.5px", textTransform: "uppercase", marginBottom: 12 }}>Warum KioskFlow</p>
+          <p style={{ fontSize: 12, fontWeight: 700, color: ORANGE, letterSpacing: "2.5px", textTransform: "uppercase", marginBottom: 12 }}>Warum Vendoro</p>
           <h2 style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: "clamp(1.8rem,3.5vw,2.6rem)", color: "var(--kf-text)", letterSpacing: "-0.8px" }}>Gebaut für Späti-Betreiber</h2>
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 4 }} className="kf-features-grid">
@@ -157,7 +157,7 @@ export default function HomePage() {
           <div>
             <p style={{ fontSize: 12, fontWeight: 700, color: "rgba(255,255,255,0.65)", letterSpacing: "2px", textTransform: "uppercase", marginBottom: 10 }}>Für Hersteller und Marken</p>
             <h2 style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: "clamp(1.6rem,3vw,2.4rem)", color: "#fff", letterSpacing: "-0.8px", marginBottom: 12 }}>Erreiche hunderte<br />Kioske in Deutschland.</h2>
-            <p style={{ fontSize: 15, color: "rgba(255,255,255,0.78)", lineHeight: 1.6, maxWidth: 400 }}>Liste deine Produkte kostenlos auf KioskFlow und verkaufe direkt an Kiosk-Betreiber.</p>
+            <p style={{ fontSize: 15, color: "rgba(255,255,255,0.78)", lineHeight: 1.6, maxWidth: 400 }}>Liste deine Produkte kostenlos auf Vendoro und verkaufe direkt an Kiosk-Betreiber.</p>
           </div>
           <a href="/signup/supplier" className="kf-cta-btn" style={{ background: "#fff", color: ORANGE, padding: "16px 32px", borderRadius: 14, fontWeight: 800, fontSize: 16, textDecoration: "none", whiteSpace: "nowrap", boxShadow: "0 4px 20px rgba(0,0,0,0.15)", fontFamily: "'Syne',sans-serif" }}>
             Jetzt kostenlos listen →
@@ -170,8 +170,8 @@ export default function HomePage() {
         <div style={{ maxWidth: 1200, margin: "0 auto", display: "grid", gridTemplateColumns: "2fr 1fr 1fr 1fr", gap: 48, marginBottom: 36 }} className="kf-footer-grid">
           <div>
             <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
-              <div style={{ width: 28, height: 28, background: ORANGE, borderRadius: 7, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Syne',sans-serif", fontWeight: 900, fontSize: 13, color: "#fff" }}>K</div>
-              <span style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 14, color: "var(--kf-text)" }}>KioskFlow</span>
+              <div style={{ width: 28, height: 28, background: ORANGE, borderRadius: 7, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Syne',sans-serif", fontWeight: 900, fontSize: 13, color: "#fff" }}>V</div>
+              <span style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 14, color: "var(--kf-text)" }}>Vendoro</span>
             </div>
             <p style={{ fontSize: 13, color: "var(--kf-text3)", lineHeight: 1.7, maxWidth: 260 }}>B2B Marktplatz für Kiosk-Betreiber und lokale Marken in Frankfurt, Deutschland.</p>
           </div>
@@ -191,7 +191,7 @@ export default function HomePage() {
           ))}
         </div>
         <div style={{ borderTop: "1px solid var(--kf-border)", paddingTop: 24, display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12 }}>
-          <p style={{ fontSize: 12, color: "var(--kf-text3)" }}>© 2026 KioskFlow. Alle Rechte vorbehalten.</p>
+          <p style={{ fontSize: 12, color: "var(--kf-text3)" }}>© 2026 Vendoro. Alle Rechte vorbehalten.</p>
           <p style={{ fontSize: 12, color: "var(--kf-text3)" }}>Made in Frankfurt 🇩🇪</p>
         </div>
       </footer>

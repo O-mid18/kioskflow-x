@@ -14,23 +14,23 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "KioskFlow — Direkt vom Hersteller zum Kiosk",
+  title: "Vendoro — Direkt vom Hersteller zum Kiosk",
   description: "B2B Marktplatz fuer lokale Marken und Kiosk-Betreiber in Frankfurt. Keine Mindestmengen. Keine Zwischenhaendler.",
   keywords: ["Kiosk", "Spaeti", "Grosshandel", "Frankfurt", "B2B", "Getraenke", "Snacks"],
-  authors: [{ name: "KioskFlow" }],
-  metadataBase: new URL("https://kioskflow-x.vercel.app"),
+  authors: [{ name: "Vendoro" }],
+  metadataBase: new URL("https://vendoro.vercel.app"),
   openGraph: {
-    title: "KioskFlow — Direkt vom Hersteller zum Kiosk",
+    title: "Vendoro — Direkt vom Hersteller zum Kiosk",
     description: "B2B Marktplatz fuer lokale Marken und Kiosk-Betreiber in Frankfurt.",
-    url: "https://kioskflow-x.vercel.app",
-    siteName: "KioskFlow",
+    url: "https://vendoro.vercel.app",
+    siteName: "Vendoro",
     locale: "de_DE",
     type: "website",
-    images: [{ url: "/og-image.svg", width: 1200, height: 630, alt: "KioskFlow" }],
+    images: [{ url: "/og-image.svg", width: 1200, height: 630, alt: "Vendoro" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "KioskFlow — Direkt vom Hersteller zum Kiosk",
+    title: "Vendoro — Direkt vom Hersteller zum Kiosk",
     description: "B2B Marktplatz fuer lokale Marken und Kiosk-Betreiber in Frankfurt.",
     images: ["/og-image.svg"],
   },

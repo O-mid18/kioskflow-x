@@ -29,7 +29,7 @@ export async function POST(request: Request) {
       await db.from("suppliers").update({ stripe_account_id: accountId }).eq("id", supplier.id);
     }
 
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://kioskflow-x.vercel.app";
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://vendoro.vercel.app";
     const accountLink = await stripe.accountLinks.create({
       account: accountId,
       refresh_url: `${baseUrl}/supplier/dashboard/verification?refresh=true`,
