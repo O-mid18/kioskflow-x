@@ -362,3 +362,7 @@ alter table products
 -- ── 21. reviews: prevent duplicate reviews per user/product ────────────
 alter table reviews
   add constraint reviews_one_per_user_per_product unique (user_id, product_id);
+
+-- ── 22. messages & reviews: DB-level length limits ─────────────
+alter table messages add constraint message_length check (char_length(content) <= 2000);
+alter table reviews  add constraint comment_length check (char_length(comment) <= 1000);

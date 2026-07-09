@@ -181,7 +181,7 @@ export default function BuyerMessagesPage() {
               </div>
 
               <div style={{ padding: "12px 20px", borderTop: `1px solid ${BORDER}`, display: "flex", gap: 10, flexShrink: 0 }}>
-                <input value={text} onChange={e => setText(e.target.value)}
+                <input value={text} onChange={e => setText(e.target.value)} maxLength={2000}
                   onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } }}
                   placeholder="Nachricht schreiben..."
                   style={{ flex: 1, background: SURFACE, border: `1.5px solid ${BORDER}`, borderRadius: 10, padding: "10px 14px", color: TEXT, fontSize: 14, fontFamily: "inherit", outline: "none" }}

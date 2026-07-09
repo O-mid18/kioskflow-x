@@ -224,7 +224,7 @@ export default function ProductDetailsPage() {
                 <span style={{ color: TEXT3, fontSize: 12, marginLeft: 4 }}>{rating}/5</span>
               </div>
 
-              <textarea value={comment} onChange={e => setComment(e.target.value)} placeholder="Deine Bewertung..." rows={4}
+              <textarea value={comment} onChange={e => setComment(e.target.value)} placeholder="Deine Bewertung..." rows={4} maxLength={1000}
                 style={{ width: "100%", background: BG, border: `1.5px solid ${BORDER}`, borderRadius: 10, padding: "10px 14px", color: TEXT, fontSize: 14, fontFamily: "inherit", resize: "none", boxSizing: "border-box", outline: "none", marginBottom: 12 }}
                 onFocus={e => e.currentTarget.style.borderColor = ORANGE}
                 onBlur={e => e.currentTarget.style.borderColor = BORDER} />
