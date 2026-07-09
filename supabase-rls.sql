@@ -209,3 +209,22 @@ create trigger trg_prevent_role_escalation
   before update on profiles
   for each row
   execute function prevent_role_self_escalation();
+
+-- ── 15. suppliers: prevent self-verification ──────────────────────────────
+create or replace function prevent_supplier_self_verify()
+returns trigger as $$
+begin
+  if new.verified is distinct from old.verified then
+    if auth.role() != 'service_role' then
+      raise exception 'Verification status can only be changed by an administrator.';
+    end if;
+  end if;
+  return new;
+end;
+$$ language plpgsql security definer;
+
+drop trigger if exists trg_prevent_supplier_self_verify on suppliers;
+create trigger trg_prevent_supplier_self_verify
+  before update on suppliers
+  for each row
+  execute function prevent_supplier_self_verify();
