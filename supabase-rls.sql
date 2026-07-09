@@ -1,5 +1,5 @@
 -- ============================================================
--- KioskFlow — Row Level Security Policies
+-- Vendoro — Row Level Security Policies
 -- Run this in: Supabase Dashboard → SQL Editor
 -- ============================================================
 
@@ -173,3 +173,20 @@ security definer
 as $$
   update products set stock = stock + p_qty where id = p_product_id;
 $$;
+
+-- ── 13. reviews: enforce verified-purchase requirement server-side ─────────
+drop policy if exists "reviews: own write" on reviews;
+
+create policy "reviews: own write"
+  on reviews for all
+  using (auth.uid() = user_id)
+  with check (
+    auth.uid() = user_id
+    and exists (
+      select 1 from order_items oi
+      join orders o on o.id = oi.order_id
+      where oi.product_id::text = reviews.product_id::text
+      and o.buyer_id = auth.uid()
+      and o.status = 'paid'
+    )
+  );
