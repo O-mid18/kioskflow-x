@@ -190,3 +190,22 @@ create policy "reviews: own write"
       and o.status = 'paid'
     )
   );
+
+-- ── 14. profiles: prevent self role-escalation ────────────────────────────
+create or replace function prevent_role_self_escalation()
+returns trigger as $$
+begin
+  if new.role is distinct from old.role then
+    if auth.role() != 'service_role' then
+      raise exception 'Role changes are not permitted directly. Contact an administrator.';
+    end if;
+  end if;
+  return new;
+end;
+$$ language plpgsql security definer;
+
+drop trigger if exists trg_prevent_role_escalation on profiles;
+create trigger trg_prevent_role_escalation
+  before update on profiles
+  for each row
+  execute function prevent_role_self_escalation();
