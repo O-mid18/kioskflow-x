@@ -228,3 +228,44 @@ create trigger trg_prevent_supplier_self_verify
   before update on suppliers
   for each row
   execute function prevent_supplier_self_verify();
+
+-- ── 16. orders: guard status transitions and immutable fields ─────────────
+create or replace function guard_order_update()
+returns trigger as $$
+begin
+  if auth.role() = 'service_role' then
+    return new;
+  end if;
+
+  if new.buyer_id is distinct from old.buyer_id
+     or new.supplier_id is distinct from old.supplier_id
+     or new.total_price is distinct from old.total_price
+     or new.stripe_session_id is distinct from old.stripe_session_id then
+    raise exception 'These order fields cannot be changed directly.';
+  end if;
+
+  if new.status = 'paid' and old.status is distinct from 'paid' then
+    raise exception 'Order status can only be set to paid via payment confirmation.';
+  end if;
+
+  if auth.uid() = old.buyer_id and new.status is distinct from old.status then
+    if not (old.status = 'pending' and new.status = 'cancelled') then
+      raise exception 'Buyers may only cancel orders that are still pending.';
+    end if;
+  end if;
+
+  if auth.uid() = (select user_id from suppliers where id = old.supplier_id)
+     and new.status is distinct from old.status
+     and new.status = 'pending' then
+    raise exception 'Cannot revert an order back to pending.';
+  end if;
+
+  return new;
+end;
+$$ language plpgsql security definer;
+
+drop trigger if exists trg_guard_order_update on orders;
+create trigger trg_guard_order_update
+  before update on orders
+  for each row
+  execute function guard_order_update();
