@@ -269,3 +269,14 @@ create trigger trg_guard_order_update
   before update on orders
   for each row
   execute function guard_order_update();
+
+-- ── 17. order_items: prevent price tampering and post-payment injection ───
+drop policy if exists "order_items: buyer insert" on order_items;
+
+create policy "order_items: buyer insert"
+  on order_items for insert
+  with check (
+    auth.uid() = (select buyer_id from orders where id = order_items.order_id)
+    and (select status from orders where id = order_items.order_id) = 'pending'
+    and price_at_purchase = (select price from products where id = order_items.product_id)
+  );
