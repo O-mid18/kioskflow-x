@@ -103,24 +103,42 @@ export default function HomePage() {
         </div>
       </section>
 
-      <div style={{ borderTop: "1px solid var(--kf-border)" }} />
+      {/* TRUST BAND */}
+      <div style={{ background: "var(--kf-surface)", borderTop: "1px solid var(--kf-border)", borderBottom: "1px solid var(--kf-border)" }}>
+        <div style={{ maxWidth: 1200, margin: "0 auto", padding: "24px 32px", display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 0 }}>
+          {[
+            { value: "500+", label: "Kioske registriert" },
+            { value: "50+",  label: "Lokale Marken" },
+            { value: "24h",  label: "Lieferzeit" },
+            { value: "0 €",  label: "Mindestbestellung" },
+          ].map(({ value, label }, i) => (
+            <div key={label} style={{ textAlign: "center", padding: "12px 16px", borderRight: i < 3 ? "1px solid var(--kf-border)" : "none" }}>
+              <p style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 26, color: ORANGE, letterSpacing: "-0.8px", fontVariantNumeric: "tabular-nums" }}>{value}</p>
+              <p style={{ fontSize: 12, color: "var(--kf-text3)", marginTop: 3, fontWeight: 500 }}>{label}</p>
+            </div>
+          ))}
+        </div>
+      </div>
 
       {/* STEPS */}
       <section style={{ maxWidth: 1200, margin: "0 auto", padding: "80px 32px" }}>
-        <div style={{ textAlign: "center", marginBottom: 52 }}>
+        <div style={{ textAlign: "center", marginBottom: 52 }} className="kf-reveal">
           <p style={{ fontSize: 12, fontWeight: 700, color: ORANGE, letterSpacing: "2.5px", textTransform: "uppercase", marginBottom: 12 }}>So einfach geht&apos;s</p>
           <h2 style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: "clamp(1.8rem,3.5vw,2.6rem)", color: "var(--kf-text)", letterSpacing: "-0.8px" }}>In drei Schritten bestellen</h2>
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20 }} className="kf-steps-grid">
-          {[
-            { num: "01", icon: "🧑‍💼", title: "Registrieren", desc: "Erstelle ein kostenloses Kiosk-Konto in wenigen Minuten. Keine Verträge, kein Kleingedrucktes." },
-            { num: "02", icon: "🛒", title: "Produkte wählen", desc: "Browse lokale Marken aus Frankfurt. Filtere nach Kategorie und Preis. Bestelle ab 1 Stück." },
-            { num: "03", icon: "📦", title: "Lieferung erhalten", desc: "Bezahle sicher online. Deine Bestellung kommt direkt vom Hersteller zu dir innerhalb von 24h." },
-          ].map(({ num, icon, title, desc }) => (
-            <div key={num} className="kf-step" style={{ background: "var(--kf-surface)", border: "1px solid var(--kf-border)", borderRadius: 18, padding: "28px 24px" }}>
+          {([
+            { num: "01", title: "Registrieren", desc: "Erstelle ein kostenloses Kiosk-Konto in wenigen Minuten. Keine Verträge, kein Kleingedrucktes.",
+              svg: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={ORANGE} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> },
+            { num: "02", title: "Produkte wählen", desc: "Browse lokale Marken aus Frankfurt. Filtere nach Kategorie und Preis. Bestelle ab 1 Stück.",
+              svg: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={ORANGE} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg> },
+            { num: "03", title: "Lieferung erhalten", desc: "Bezahle sicher online. Deine Bestellung kommt direkt vom Hersteller zu dir innerhalb von 24h.",
+              svg: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={ORANGE} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg> },
+          ] as const).map(({ num, svg, title, desc }, i) => (
+            <div key={num} className="kf-step kf-reveal" style={{ background: "var(--kf-surface)", border: "1px solid var(--kf-border)", borderRadius: 18, padding: "28px 24px", animationDelay: `${i * 0.1}s` }}>
               <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20 }}>
                 <span style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 12, color: "var(--kf-text3)", letterSpacing: "1px" }}>{num}</span>
-                <span style={{ fontSize: 28 }}>{icon}</span>
+                <div style={{ width: 36, height: 36, background: `${ORANGE}12`, borderRadius: 9, display: "flex", alignItems: "center", justifyContent: "center" }}>{svg}</div>
               </div>
               <h3 style={{ fontFamily: "'Syne',sans-serif", fontWeight: 700, fontSize: 18, color: "var(--kf-text)", marginBottom: 10 }}>{title}</h3>
               <p style={{ fontSize: 14, color: "var(--kf-text2)", lineHeight: 1.7 }}>{desc}</p>
@@ -133,19 +151,23 @@ export default function HomePage() {
 
       {/* FEATURES */}
       <section style={{ maxWidth: 1200, margin: "0 auto", padding: "80px 32px" }}>
-        <div style={{ textAlign: "center", marginBottom: 52 }}>
+        <div style={{ textAlign: "center", marginBottom: 52 }} className="kf-reveal">
           <p style={{ fontSize: 12, fontWeight: 700, color: ORANGE, letterSpacing: "2.5px", textTransform: "uppercase", marginBottom: 12 }}>Warum Vendoro</p>
           <h2 style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: "clamp(1.8rem,3.5vw,2.6rem)", color: "var(--kf-text)", letterSpacing: "-0.8px" }}>Gebaut für Späti-Betreiber</h2>
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16 }} className="kf-features-grid">
-          {[
-            { icon: "📉", title: "Keine Mindestmengen", desc: "Bestelle genau so viel wie du brauchst — auch einzelne Flaschen." },
-            { icon: "🏷️", title: "Direktpreise", desc: "Kein Großhändler dazwischen. Du kaufst zum Herstellerpreis." },
-            { icon: "🇩🇪", title: "Lokale Marken", desc: "Frankfurter und deutsche Marken, die du sonst nirgends bekommst." },
-            { icon: "🔒", title: "Sichere Zahlung", desc: "Bezahle per Kreditkarte. Geld zurück bei Problemen, garantiert." },
-          ].map(({ icon, title, desc }) => (
-            <div key={title} className="kf-feature-card" style={{ background: "var(--kf-surface)", border: "1px solid var(--kf-border)", borderRadius: 18, padding: "28px 24px" }}>
-              <div style={{ width: 48, height: 48, background: `${ORANGE}12`, borderRadius: 14, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, marginBottom: 18 }}>{icon}</div>
+          {([
+            { title: "Keine Mindestmengen", desc: "Bestelle genau so viel wie du brauchst — auch einzelne Flaschen.",
+              svg: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={ORANGE} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg> },
+            { title: "Direktpreise", desc: "Kein Großhändler dazwischen. Du kaufst zum Herstellerpreis.",
+              svg: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={ORANGE} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg> },
+            { title: "Lokale Marken", desc: "Frankfurter und deutsche Marken, die du sonst nirgends bekommst.",
+              svg: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={ORANGE} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> },
+            { title: "Sichere Zahlung", desc: "Bezahle per Kreditkarte. Geld zurück bei Problemen, garantiert.",
+              svg: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={ORANGE} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> },
+          ] as const).map(({ svg, title, desc }, i) => (
+            <div key={title} className="kf-feature-card kf-reveal" style={{ background: "var(--kf-surface)", border: "1px solid var(--kf-border)", borderRadius: 18, padding: "28px 24px", animationDelay: `${i * 0.1}s` }}>
+              <div style={{ width: 48, height: 48, background: `${ORANGE}12`, borderRadius: 14, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 18 }}>{svg}</div>
               <h3 style={{ fontFamily: "'Syne',sans-serif", fontWeight: 700, fontSize: 15, color: "var(--kf-text)", marginBottom: 8 }}>{title}</h3>
               <p style={{ fontSize: 13, color: "var(--kf-text2)", lineHeight: 1.65 }}>{desc}</p>
             </div>
