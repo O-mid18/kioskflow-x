@@ -17,14 +17,14 @@
 }
 
 .dark {
-  --kf-bg: #0E0C0A;
-  --kf-surface: #1A1714;
-  --kf-border: #2C2824;
+  --kf-bg: #100D0A;
+  --kf-surface: #1C1915;
+  --kf-border: #2E2A26;
   --kf-text: #EDE9E3;
   --kf-text2: #9A9088;
   --kf-text3: #5C5450;
   --kf-toast-bg: #EDE9E3;
-  --kf-toast-fg: #1A1714;
+  --kf-toast-fg: #1C1915;
 }
 
 /* analytics-bento overrides */
@@ -151,8 +151,22 @@
   }
   body {
     @apply bg-background text-foreground;
+    scroll-behavior: smooth;
   }
   html {
     @apply font-sans;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    text-wrap: balance;
+  }
+  p {
+    text-wrap: pretty;
+  }
+  /* Footer & nav link hover */
+  .kf-footer-link {
+    transition: color 0.15s;
+  }
+  .kf-footer-link:hover {
+    color: #E8521A !important;
   }
 }

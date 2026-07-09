@@ -16,13 +16,15 @@ export default function HomePage() {
         .kf-nav-link:hover { color: #E8521A !important; }
         .kf-step { transition: transform 0.2s, box-shadow 0.2s; }
         .kf-step:hover { transform: translateY(-3px); box-shadow: 0 8px 32px rgba(0,0,0,0.08); }
+        .kf-feature-card { transition: transform 0.2s, box-shadow 0.2s; }
+        .kf-feature-card:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(0,0,0,0.07); }
         .kf-cta-btn { transition: opacity 0.15s, transform 0.15s; display: inline-block; }
         .kf-cta-btn:hover { opacity: 0.9; transform: translateY(-1px); }
         @media (max-width: 768px) {
           .kf-hero-grid { grid-template-columns: 1fr !important; }
           .kf-hero-visual { display: none !important; }
           .kf-steps-grid { grid-template-columns: 1fr !important; }
-          .kf-features-grid { grid-template-columns: 1fr 1fr !important; }
+          .kf-features-grid { grid-template-columns: 1fr 1fr !important; gap: 12px !important; }
           .kf-footer-grid { grid-template-columns: 1fr !important; gap: 28px !important; }
           .kf-nav-links { display: none !important; }
           .kf-supplier-cta { flex-direction: column !important; text-align: center !important; }
@@ -59,7 +61,7 @@ export default function HomePage() {
             Bestelle Getränke und Snacks direkt von lokalen Marken aus Frankfurt — ohne Mindestmengen, ohne Zwischenhändler.
           </p>
           <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-            <a href="/signup/buyer" className="kf-cta-btn" style={{ background: ORANGE, color: "#fff", padding: "14px 26px", borderRadius: 12, fontWeight: 700, fontSize: 15, textDecoration: "none", boxShadow: "0 4px 16px rgba(232,82,26,0.3)" }}>🛒 Als Kiosk starten</a>
+            <a href="/signup/buyer" className="kf-cta-btn" style={{ background: ORANGE, color: "#fff", padding: "14px 26px", borderRadius: 12, fontWeight: 700, fontSize: 15, textDecoration: "none", boxShadow: "0 4px 16px rgba(232,82,26,0.3)" }}>Als Kiosk starten →</a>
             <a href="/marketplace" className="kf-cta-btn" style={{ background: "var(--kf-surface)", border: "1.5px solid var(--kf-border)", color: "var(--kf-text)", padding: "14px 26px", borderRadius: 12, fontWeight: 600, fontSize: 15, textDecoration: "none" }}>Marktplatz ansehen</a>
           </div>
           <p style={{ fontSize: 13, color: "var(--kf-text3)", marginTop: 20 }}>Kostenlos registrieren · Keine Mindestbestellmenge</p>
@@ -135,15 +137,15 @@ export default function HomePage() {
           <p style={{ fontSize: 12, fontWeight: 700, color: ORANGE, letterSpacing: "2.5px", textTransform: "uppercase", marginBottom: 12 }}>Warum Vendoro</p>
           <h2 style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: "clamp(1.8rem,3.5vw,2.6rem)", color: "var(--kf-text)", letterSpacing: "-0.8px" }}>Gebaut für Späti-Betreiber</h2>
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 4 }} className="kf-features-grid">
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16 }} className="kf-features-grid">
           {[
             { icon: "📉", title: "Keine Mindestmengen", desc: "Bestelle genau so viel wie du brauchst — auch einzelne Flaschen." },
             { icon: "🏷️", title: "Direktpreise", desc: "Kein Großhändler dazwischen. Du kaufst zum Herstellerpreis." },
             { icon: "🇩🇪", title: "Lokale Marken", desc: "Frankfurter und deutsche Marken, die du sonst nirgends bekommst." },
             { icon: "🔒", title: "Sichere Zahlung", desc: "Bezahle per Kreditkarte. Geld zurück bei Problemen, garantiert." },
           ].map(({ icon, title, desc }) => (
-            <div key={title} style={{ padding: "24px 20px" }}>
-              <div style={{ width: 44, height: 44, background: "var(--kf-surface)", border: "1px solid var(--kf-border)", borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, marginBottom: 16 }}>{icon}</div>
+            <div key={title} className="kf-feature-card" style={{ background: "var(--kf-surface)", border: "1px solid var(--kf-border)", borderRadius: 18, padding: "28px 24px" }}>
+              <div style={{ width: 48, height: 48, background: `${ORANGE}12`, borderRadius: 14, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, marginBottom: 18 }}>{icon}</div>
               <h3 style={{ fontFamily: "'Syne',sans-serif", fontWeight: 700, fontSize: 15, color: "var(--kf-text)", marginBottom: 8 }}>{title}</h3>
               <p style={{ fontSize: 13, color: "var(--kf-text2)", lineHeight: 1.65 }}>{desc}</p>
             </div>
@@ -184,7 +186,7 @@ export default function HomePage() {
               <p style={{ fontSize: 12, fontWeight: 700, color: "var(--kf-text)", letterSpacing: "1px", textTransform: "uppercase", marginBottom: 16 }}>{heading}</p>
               <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                 {links.map(({ label, href }) => (
-                  <a key={label} href={href} style={{ fontSize: 13, color: "var(--kf-text2)", textDecoration: "none" }}>{label}</a>
+                  <a key={label} href={href} className="kf-footer-link" style={{ fontSize: 13, color: "var(--kf-text2)", textDecoration: "none" }}>{label}</a>
                 ))}
               </div>
             </div>
