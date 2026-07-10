@@ -9,7 +9,7 @@ const ORANGE = "#E8521A";
 
 export default function HomePage() {
   return (
-    <main style={{ background: "var(--kf-bg)", color: "var(--kf-text)", fontFamily: "'DM Sans','Helvetica Neue',system-ui,sans-serif", overflowX: "hidden" }}>
+    <main style={{ background: "var(--kf-bg)", backgroundImage: "radial-gradient(ellipse 55% 45% at 80% 12%, rgba(232,82,26,0.07) 0%, transparent 65%)", color: "var(--kf-text)", fontFamily: "'DM Sans','Helvetica Neue',system-ui,sans-serif", overflowX: "hidden" }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap');
         * { box-sizing: border-box; }
@@ -69,7 +69,9 @@ export default function HomePage() {
 
         <div className="kf-hero-visual" style={{ display: "flex", flexDirection: "column", gap: 0 }}>
           <div style={{ background: "var(--kf-surface)", border: "1px solid var(--kf-border)", borderRadius: 16, padding: "18px 20px", display: "flex", alignItems: "center", gap: 14 }}>
-            <div style={{ width: 44, height: 44, background: "#E8521A18", borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, flexShrink: 0 }}>🏭</div>
+            <div style={{ width: 44, height: 44, background: "#E8521A18", borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={ORANGE} strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+            </div>
             <div style={{ flex: 1 }}>
               <p style={{ fontWeight: 700, fontSize: 14, color: "var(--kf-text)" }}>Lokaler Hersteller</p>
               <p style={{ fontSize: 12, color: "var(--kf-text3)" }}>Hot Blood GmbH · Frankfurt</p>
@@ -90,7 +92,9 @@ export default function HomePage() {
           </div>
           <div style={{ width: 2, height: 20, background: "var(--kf-border)", margin: "0 auto" }} />
           <div style={{ background: "var(--kf-surface)", border: "1px solid var(--kf-border)", borderRadius: 16, padding: "18px 20px", display: "flex", alignItems: "center", gap: 14 }}>
-            <div style={{ width: 44, height: 44, background: "#E8521A18", borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, flexShrink: 0 }}>🏪</div>
+            <div style={{ width: 44, height: 44, background: "#E8521A18", borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={ORANGE} strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            </div>
             <div style={{ flex: 1 }}>
               <p style={{ fontWeight: 700, fontSize: 14, color: "var(--kf-text)" }}>Dein Späti</p>
               <p style={{ fontSize: 12, color: "var(--kf-text3)" }}>Bestellung #61761F8E</p>

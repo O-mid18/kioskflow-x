@@ -199,3 +199,36 @@
 body > main, #__next > main {
   animation: kf-page-in 0.25s ease;
 }
+
+/* ── Sync body background to Vendoro warm parchment ── */
+:root {
+  --background: #E8E4DC;
+  --foreground: #100E0B;
+}
+.dark {
+  --background: #100D0A;
+  --foreground: #EDE9E3;
+}
+html { color-scheme: light; }
+html.dark { color-scheme: dark; }
+
+/* ── Text selection ── */
+::selection {
+  background: rgba(232, 82, 26, 0.18);
+  color: var(--kf-text);
+}
+
+/* ── Card elevation — make cards pop off parchment ── */
+.kf-step, .kf-feature-card {
+  box-shadow: 0 1px 3px rgba(16,14,11,0.06), 0 1px 0 rgba(255,255,255,0.55);
+  transition: transform 0.22s ease, box-shadow 0.22s ease !important;
+}
+.kf-step:hover, .kf-feature-card:hover {
+  box-shadow: 0 10px 36px rgba(16,14,11,0.1), 0 1px 0 rgba(255,255,255,0.55) !important;
+}
+.dark .kf-step, .dark .kf-feature-card {
+  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+.dark .kf-step:hover, .dark .kf-feature-card:hover {
+  box-shadow: 0 10px 36px rgba(0,0,0,0.35) !important;
+}
