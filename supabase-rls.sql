@@ -366,3 +366,7 @@ alter table reviews
 -- ── 22. messages & reviews: DB-level length limits ─────────────
 alter table messages add constraint message_length check (char_length(content) <= 2000);
 alter table reviews  add constraint comment_length check (char_length(comment) <= 1000);
+
+-- ── 23. wishlist: unique constraint (user_id, product_id) ────────
+alter table wishlist
+  add constraint wishlist_user_product_unique unique (user_id, product_id);
