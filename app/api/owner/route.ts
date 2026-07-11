@@ -238,6 +238,8 @@ export async function POST(req: NextRequest) {
       await db.from("support_messages").delete().in("conversation_id", convIds);
       await db.from("support_conversations").delete().in("id", convIds);
     }
+    // Also delete any support_messages where this user is the sender (e.g. admin replies)
+    await db.from("support_messages").delete().eq("sender_id", uid);
 
     // Direct buyer-supplier chat (conversations / messages)
     const { data: directConvs } = await db
