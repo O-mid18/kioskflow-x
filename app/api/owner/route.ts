@@ -264,6 +264,7 @@ export async function POST(req: NextRequest) {
     const { data: sup } = await db.from("suppliers").select("id").eq("user_id", uid).maybeSingle();
     if (sup?.id) {
       await db.from("order_items").delete().eq("supplier_id", sup.id);
+      await db.from("orders").update({ supplier_id: null }).eq("supplier_id", sup.id);
       await db.from("products").delete().eq("supplier_id", sup.id);
       await db.from("suppliers").delete().eq("id", sup.id);
     }
