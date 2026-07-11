@@ -221,24 +221,41 @@ export async function POST(req: NextRequest) {
     const uid = body.userId;
     if (!uid) return NextResponse.json({ error: "Missing userId" }, { status: 400 });
 
-    // Delete all related data before removing auth user (FK constraints)
+    // 1. Get buyer order IDs first (needed to delete order_items)
+    const { data: userOrders } = await db.from("orders").select("id").eq("buyer_id", uid);
+    const orderIds = (userOrders ?? []).map((o: any) => o.id);
+
+    // 2. Delete all related data in dependency order
     await db.from("cart_items").delete().eq("user_id", uid);
     await db.from("wishlist").delete().eq("user_id", uid);
     await db.from("notifications").delete().eq("user_id", uid);
     await db.from("reviews").delete().eq("user_id", uid);
-    await db.from("order_items").delete().eq("order_id",
-      db.from("orders").select("id").eq("buyer_id", uid) as any
-    ).catch(() => null);
+
+    // Support chat
+    const { data: convs } = await db.from("support_conversations").select("id").eq("user_id", uid);
+    const convIds = (convs ?? []).map((c: any) => c.id);
+    if (convIds.length > 0) {
+      await db.from("support_messages").delete().in("conversation_id", convIds);
+      await db.from("support_conversations").delete().in("id", convIds);
+    }
+
+    // Orders & items
+    if (orderIds.length > 0) {
+      await db.from("order_items").delete().in("order_id", orderIds);
+    }
     await db.from("orders").delete().eq("buyer_id", uid);
-    // If supplier: delete their products first, then supplier record
+
+    // If supplier: delete products then supplier record
     const { data: sup } = await db.from("suppliers").select("id").eq("user_id", uid).maybeSingle();
     if (sup?.id) {
       await db.from("order_items").delete().eq("supplier_id", sup.id);
       await db.from("products").delete().eq("supplier_id", sup.id);
       await db.from("suppliers").delete().eq("id", sup.id);
     }
+
     await db.from("profiles").delete().eq("id", uid);
 
+    // 3. Finally remove from auth
     const { error: authErr } = await db.auth.admin.deleteUser(uid);
     if (authErr) {
       console.error("[owner] delete_user auth error:", authErr.message);
