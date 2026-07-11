@@ -231,13 +231,26 @@ export async function POST(req: NextRequest) {
     await db.from("notifications").delete().eq("user_id", uid);
     await db.from("reviews").delete().eq("user_id", uid);
 
-    // Support chat
+    // Support chat (support_conversations / support_messages)
     const { data: convs } = await db.from("support_conversations").select("id").eq("user_id", uid);
     const convIds = (convs ?? []).map((c: any) => c.id);
     if (convIds.length > 0) {
       await db.from("support_messages").delete().in("conversation_id", convIds);
       await db.from("support_conversations").delete().in("id", convIds);
     }
+
+    // Direct buyer-supplier chat (conversations / messages)
+    const { data: directConvs } = await db
+      .from("conversations")
+      .select("id")
+      .or(`buyer_id.eq.${uid},supplier_id.eq.${uid}`);
+    const directConvIds = (directConvs ?? []).map((c: any) => c.id);
+    if (directConvIds.length > 0) {
+      await db.from("messages").delete().in("conversation_id", directConvIds);
+      await db.from("conversations").delete().in("id", directConvIds);
+    }
+    // Also delete any messages sent by this user in other conversations
+    await db.from("messages").delete().eq("sender_id", uid);
 
     // Orders & items
     if (orderIds.length > 0) {

@@ -47,9 +47,39 @@ export async function POST(request: Request) {
     await db.from("wishlist").delete().eq("user_id", userId);
     await db.from("notifications").delete().eq("user_id", userId);
     await db.from("reviews").delete().eq("user_id", userId);
-    // Delete supplier record if this is a supplier
+
+    // Support chat
+    const { data: suppConvs } = await db.from("support_conversations").select("id").eq("user_id", userId);
+    const suppConvIds = (suppConvs ?? []).map((c: any) => c.id);
+    if (suppConvIds.length > 0) {
+      await db.from("support_messages").delete().in("conversation_id", suppConvIds);
+      await db.from("support_conversations").delete().in("id", suppConvIds);
+    }
+
+    // Direct buyer-supplier chat
+    const { data: dirConvs } = await db
+      .from("conversations")
+      .select("id")
+      .or(`buyer_id.eq.${userId},supplier_id.eq.${userId}`);
+    const dirConvIds = (dirConvs ?? []).map((c: any) => c.id);
+    if (dirConvIds.length > 0) {
+      await db.from("messages").delete().in("conversation_id", dirConvIds);
+      await db.from("conversations").delete().in("id", dirConvIds);
+    }
+    await db.from("messages").delete().eq("sender_id", userId);
+
+    // Orders
+    const { data: userOrders } = await db.from("orders").select("id").eq("buyer_id", userId);
+    const orderIds = (userOrders ?? []).map((o: any) => o.id);
+    if (orderIds.length > 0) {
+      await db.from("order_items").delete().in("order_id", orderIds);
+    }
+    await db.from("orders").delete().eq("buyer_id", userId);
+
+    // Supplier
     const { data: sup } = await db.from("suppliers").select("id").eq("user_id", userId).maybeSingle();
     if (sup) {
+      await db.from("order_items").delete().eq("supplier_id", sup.id);
       await db.from("products").delete().eq("supplier_id", sup.id);
       await db.from("suppliers").delete().eq("id", sup.id);
     }
