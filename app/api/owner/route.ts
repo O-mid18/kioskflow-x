@@ -218,8 +218,32 @@ export async function POST(req: NextRequest) {
   }
 
   if (body.action === "delete_user") {
-    await db.from("profiles").delete().eq("id", body.userId);
-    await db.auth.admin.deleteUser(body.userId);
+    const uid = body.userId;
+    if (!uid) return NextResponse.json({ error: "Missing userId" }, { status: 400 });
+
+    // Delete all related data before removing auth user (FK constraints)
+    await db.from("cart_items").delete().eq("user_id", uid);
+    await db.from("wishlist").delete().eq("user_id", uid);
+    await db.from("notifications").delete().eq("user_id", uid);
+    await db.from("reviews").delete().eq("user_id", uid);
+    await db.from("order_items").delete().eq("order_id",
+      db.from("orders").select("id").eq("buyer_id", uid) as any
+    ).catch(() => null);
+    await db.from("orders").delete().eq("buyer_id", uid);
+    // If supplier: delete their products first, then supplier record
+    const { data: sup } = await db.from("suppliers").select("id").eq("user_id", uid).maybeSingle();
+    if (sup?.id) {
+      await db.from("order_items").delete().eq("supplier_id", sup.id);
+      await db.from("products").delete().eq("supplier_id", sup.id);
+      await db.from("suppliers").delete().eq("id", sup.id);
+    }
+    await db.from("profiles").delete().eq("id", uid);
+
+    const { error: authErr } = await db.auth.admin.deleteUser(uid);
+    if (authErr) {
+      console.error("[owner] delete_user auth error:", authErr.message);
+      return NextResponse.json({ error: authErr.message }, { status: 500 });
+    }
     return NextResponse.json({ ok: true });
   }
 

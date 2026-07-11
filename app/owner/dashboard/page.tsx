@@ -172,9 +172,10 @@ export default function OwnerDashboard() {
   };
   const deleteUser = async (id: string, email: string) => {
     if (!confirm(`"${email}" löschen? Nicht rückgängig machbar.`)) return;
-    await ownerPost({ action: "delete_user", userId: id });
+    const res = await ownerPost({ action: "delete_user", userId: id });
+    if (res?.error) { showToast("Fehler: " + res.error); return; }
     setUsers(prev => prev.filter(u => u.id !== id));
-    showToast("Nutzer gelöscht");
+    showToast("Nutzer gelöscht ✓");
   };
 
   const toggleVerify = async (id: number, verified: boolean) => {
