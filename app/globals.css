@@ -162,6 +162,28 @@
   p {
     text-wrap: pretty;
   }
+
+  /* Skip-to-content link (accessibility) */
+  .kf-skip-link {
+    position: absolute;
+    top: -100%;
+    left: 16px;
+    z-index: 9999;
+    background: #E8521A;
+    color: #fff;
+    font-weight: 700;
+    font-size: 14px;
+    padding: 10px 20px;
+    border-radius: 0 0 8px 8px;
+    text-decoration: none;
+    transition: top 0.1s;
+  }
+  .kf-skip-link:focus {
+    top: 0;
+    outline: 3px solid #fff;
+    outline-offset: 2px;
+  }
+
   /* Footer & nav link hover */
   .kf-footer-link {
     transition: color 0.15s;
@@ -174,6 +196,19 @@
   .kf-cta-btn:active {
     transform: scale(0.97) !important;
     opacity: 0.88 !important;
+  }
+
+  /* Visible focus rings for keyboard navigation */
+  a:focus-visible,
+  button:focus-visible {
+    outline: 2px solid #E8521A;
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  /* Mobile hamburger: hidden by default, shown via page.tsx @media */
+  .kf-hamburger {
+    display: none;
   }
 }
 
