@@ -44,6 +44,7 @@ export default function AdminDashboard() {
   const [search, setSearch]       = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [deletingProduct, setDeletingProduct] = useState<string | null>(null);
+  const [deletingUser, setDeletingUser]       = useState<string | null>(null);
 
   // Support chat state
   const [conversations, setConversations] = useState<Conversation[]>([]);
@@ -185,6 +186,16 @@ export default function AdminDashboard() {
     setDeletingProduct(null);
     if (!res.ok) flash(json.error ?? "Fehler beim Löschen", false);
     else { flash("Produkt gelöscht", true); fetchAll(); }
+  };
+
+  const deleteUser = async (id: string, label: string) => {
+    if (!confirm(`Benutzer "${label}" wirklich löschen?\n\nAlle Daten (Bestellungen, Produkte, Konto) werden dauerhaft entfernt.`)) return;
+    setDeletingUser(id);
+    const res = await adminFetch({ action: "delete_user", userId: id });
+    const json = await res.json();
+    setDeletingUser(null);
+    if (!res.ok) flash(json.error ?? "Fehler beim Löschen", false);
+    else { flash("Benutzer gelöscht ✓", true); fetchAll(); }
   };
 
   const totalRevenue    = orders.filter(o => ["paid","shipped","delivered"].includes(o.status)).reduce((s, o) => s + Number(o.total_price), 0);
@@ -427,6 +438,12 @@ export default function AdminDashboard() {
                           Widerrufen
                         </button>
                       )}
+                      <button
+                        onClick={() => deleteUser(s.user_id, s.name || s.id.slice(0, 8))}
+                        disabled={deletingUser === s.user_id}
+                        style={{ background: "#fef2f2", border: "1px solid #fca5a5", color: "#dc2626", borderRadius: 8, padding: "7px 16px", fontSize: 12, fontWeight: 700, cursor: "pointer", marginLeft: "auto" }}>
+                        {deletingUser === s.user_id ? "..." : "Konto löschen 🗑"}
+                      </button>
                     </div>
                   </div>
                 );
@@ -451,8 +468,8 @@ export default function AdminDashboard() {
                 <span style={{ fontSize: 12, color: TEXT3 }}>{buyers.length} Käufer registriert</span>
               </div>
               <div style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 18, overflow: "hidden" }}>
-                <div style={{ display: "grid", gridTemplateColumns: "2fr 120px 140px", padding: "10px 22px", background: BG, borderBottom: `1px solid ${BORDER}` }}>
-                  {["Käufer-ID", "Rolle", "Registriert"].map(h => (
+                <div style={{ display: "grid", gridTemplateColumns: "2fr 120px 140px 100px", padding: "10px 22px", background: BG, borderBottom: `1px solid ${BORDER}` }}>
+                  {["Käufer-ID", "Rolle", "Registriert", "Aktion"].map(h => (
                     <p key={h} style={{ fontSize: 11, fontWeight: 700, color: TEXT3, textTransform: "uppercase", letterSpacing: "0.8px" }}>{h}</p>
                   ))}
                 </div>
@@ -465,10 +482,16 @@ export default function AdminDashboard() {
                     <div key={b.id} style={{ padding: "14px 22px", borderBottom: i < filtered.length - 1 ? `1px solid ${BORDER}` : "none" }}
                       onMouseEnter={e => e.currentTarget.style.background = BG}
                       onMouseLeave={e => e.currentTarget.style.background = "transparent"}>
-                      <div style={{ display: "grid", gridTemplateColumns: "2fr 120px 140px", alignItems: "center", marginBottom: 8 }}>
+                      <div style={{ display: "grid", gridTemplateColumns: "2fr 120px 140px 100px", alignItems: "center", marginBottom: 8 }}>
                         <p style={{ fontFamily: "monospace", fontSize: 12, fontWeight: 700, color: TEXT, wordBreak: "break-all" }}>{b.id}</p>
                         <span style={{ fontSize: 11, fontWeight: 700, padding: "3px 10px", borderRadius: 100, background: `${ORANGE}15`, color: ORANGE, width: "fit-content" }}>Käufer</span>
                         <p style={{ fontSize: 12, color: TEXT2 }}>{b.created_at ? new Date(b.created_at).toLocaleDateString("de-DE") : "—"}</p>
+                        <button
+                          onClick={() => deleteUser(b.id, b.id.slice(0, 8))}
+                          disabled={deletingUser === b.id}
+                          style={{ background: "#fef2f2", border: "1px solid #fca5a5", color: "#dc2626", borderRadius: 8, padding: "5px 12px", fontSize: 12, fontWeight: 700, cursor: "pointer", width: "fit-content" }}>
+                          {deletingUser === b.id ? "..." : "Löschen"}
+                        </button>
                       </div>
                       <div style={{ display: "flex", gap: 20 }}>
                         <p style={{ fontSize: 12, color: TEXT3 }}>🧾 {orderCount} Bestellungen</p>

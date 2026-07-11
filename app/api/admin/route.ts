@@ -32,6 +32,39 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: true });
   }
 
+  if (body.action === "delete_user") {
+    const { userId } = body;
+    if (!userId) return NextResponse.json({ error: "Missing userId" }, { status: 400 });
+
+    // Prevent deleting admin accounts
+    const { data: targetProfile } = await db.from("profiles").select("role").eq("id", userId).maybeSingle();
+    if (targetProfile?.role === "admin") {
+      return NextResponse.json({ error: "Admin-Konten können nicht gelöscht werden." }, { status: 403 });
+    }
+
+    // Clean up related data first
+    await db.from("cart_items").delete().eq("user_id", userId);
+    await db.from("wishlist").delete().eq("user_id", userId);
+    await db.from("notifications").delete().eq("user_id", userId);
+    await db.from("reviews").delete().eq("user_id", userId);
+    // Delete supplier record if this is a supplier
+    const { data: sup } = await db.from("suppliers").select("id").eq("user_id", userId).maybeSingle();
+    if (sup) {
+      await db.from("products").delete().eq("supplier_id", sup.id);
+      await db.from("suppliers").delete().eq("id", sup.id);
+    }
+    await db.from("profiles").delete().eq("id", userId);
+
+    // Delete the auth user (service role required)
+    const { error: authErr } = await db.auth.admin.deleteUser(userId);
+    if (authErr) {
+      console.error("[admin] delete_user error:", authErr.message);
+      return NextResponse.json({ error: authErr.message }, { status: 500 });
+    }
+
+    return NextResponse.json({ ok: true });
+  }
+
   if (body.action === "get_conversations") {
     const { data } = await db.from("conversations").select("id, buyer_id, supplier_id, created_at").order("created_at", { ascending: false });
     if (!data) return NextResponse.json({ conversations: [] });
