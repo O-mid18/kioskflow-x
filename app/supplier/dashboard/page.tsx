@@ -10,7 +10,7 @@ const BORDER = "var(--kf-border)";
 const TEXT = "var(--kf-text)";
 const TEXT2 = "var(--kf-text2)";
 const TEXT3 = "var(--kf-text3)";
-const ORANGE = "#E8521A";
+const ORANGE = "#2563EB";
 
 type Product  = { id:string; name:string; price:number; stock:number; image_url?:string; category?:string; };
 type Order    = { id:string; status:string; total_price:number; created_at:string; };
@@ -351,7 +351,7 @@ export default function SupplierDashboardPage() {
       </div>
 
       {/* ── Quick actions footer ── */}
-      <div style={{ marginTop:24, background:`linear-gradient(135deg, ${ORANGE} 0%, #c4411a 100%)`, borderRadius:18, padding:"28px 32px", display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"wrap", gap:20, position:"relative", overflow:"hidden" }}>
+      <div style={{ marginTop:24, background:`linear-gradient(135deg, ${ORANGE} 0%, #1D4ED8 100%)`, borderRadius:18, padding:"28px 32px", display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"wrap", gap:20, position:"relative", overflow:"hidden" }}>
         <div style={{ position:"absolute", top:-50, right:-50, width:200, height:200, background:"rgba(255,255,255,0.07)", borderRadius:"50%" }} />
         <div style={{ position:"relative" }}>
           <p style={{ fontFamily:"'Syne',sans-serif", fontWeight:800, fontSize:20, color:"#fff", marginBottom:6 }}>Bereit für mehr Verkäufe?</p>

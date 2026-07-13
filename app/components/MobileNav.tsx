@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 
-const ORANGE = "#E8521A";
+const ORANGE = "#2563EB";
 
 export default function MobileNav() {
   const [open, setOpen] = useState(false);

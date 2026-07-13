@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   description: "B2B Marktplatz für lokale Marken und Kiosk-Betreiber in Frankfurt. Keine Mindestmengen, Direktpreise, Lieferung in 24h.",
 };
 
-const ORANGE = "#E8521A";
+const ORANGE = "#2563EB";
 
 export default function HomePage() {
   return (
@@ -17,7 +17,7 @@ export default function HomePage() {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap');
         * { box-sizing: border-box; }
-        .kf-nav-link:hover { color: #E8521A !important; }
+        .kf-nav-link:hover { color: #2563EB !important; }
         .kf-step { transition: transform 0.2s, box-shadow 0.2s; }
         .kf-step:hover { transform: translateY(-3px); box-shadow: 0 8px 32px rgba(0,0,0,0.08); }
         .kf-feature-card { transition: transform 0.2s, box-shadow 0.2s; }
@@ -81,7 +81,7 @@ export default function HomePage() {
 
         <div className="kf-hero-visual" style={{ display: "flex", flexDirection: "column", gap: 0 }} aria-hidden="true">
           <div style={{ background: "var(--kf-surface)", border: "1px solid var(--kf-border)", borderRadius: 16, padding: "18px 20px", display: "flex", alignItems: "center", gap: 14 }}>
-            <div style={{ width: 44, height: 44, background: "#E8521A18", borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+            <div style={{ width: 44, height: 44, background: "#2563EB18", borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={ORANGE} strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
             </div>
             <div style={{ flex: 1 }}>
@@ -104,7 +104,7 @@ export default function HomePage() {
           </div>
           <div style={{ width: 2, height: 20, background: "var(--kf-border)", margin: "0 auto" }} aria-hidden="true" />
           <div style={{ background: "var(--kf-surface)", border: "1px solid var(--kf-border)", borderRadius: 16, padding: "18px 20px", display: "flex", alignItems: "center", gap: 14 }}>
-            <div style={{ width: 44, height: 44, background: "#E8521A18", borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+            <div style={{ width: 44, height: 44, background: "#2563EB18", borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={ORANGE} strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
             </div>
             <div style={{ flex: 1 }}>

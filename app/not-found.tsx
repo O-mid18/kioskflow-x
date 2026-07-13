@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-const ORANGE = "#E8521A";
+const ORANGE = "#2563EB";
 
 export default function NotFound() {
   return (

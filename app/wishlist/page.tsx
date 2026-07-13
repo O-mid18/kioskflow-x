@@ -9,7 +9,7 @@ const BORDER = "var(--kf-border)";
 const TEXT = "var(--kf-text)";
 const TEXT2 = "var(--kf-text2)";
 const TEXT3 = "var(--kf-text3)";
-const ORANGE = "#E8521A";
+const ORANGE = "#2563EB";
 
 type WishItem = { id: string; products: { id: string; name: string; price: number; image_url: string | null; stock?: number; category?: string } };
 
@@ -49,7 +49,7 @@ export default function WishlistPage() {
       <div style={{ maxWidth: 1100, margin: "0 auto", padding: "32px 24px" }}>
 
         {/* Hero */}
-        <div style={{ background: `linear-gradient(135deg, ${ORANGE} 0%, #c4411a 100%)`, borderRadius: 20, padding: "36px 40px", marginBottom: 32, position: "relative", overflow: "hidden" }}>
+        <div style={{ background: `linear-gradient(135deg, ${ORANGE} 0%, #1D4ED8 100%)`, borderRadius: 20, padding: "36px 40px", marginBottom: 32, position: "relative", overflow: "hidden" }}>
           <div style={{ position: "absolute", top: -40, right: -40, width: 200, height: 200, borderRadius: "50%", background: "rgba(255,255,255,0.08)" }} />
           <p style={{ fontSize: 11, fontWeight: 700, color: "rgba(255,255,255,0.7)", letterSpacing: "2.5px", textTransform: "uppercase", marginBottom: 10 }}>Gespeicherte Produkte</p>
           <h1 style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 32, color: "#fff", letterSpacing: "-1px", marginBottom: 8 }}>Meine Wunschliste</h1>

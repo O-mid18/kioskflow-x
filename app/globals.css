@@ -169,7 +169,7 @@
     top: -100%;
     left: 16px;
     z-index: 9999;
-    background: #E8521A;
+    background: #2563EB;
     color: #fff;
     font-weight: 700;
     font-size: 14px;
@@ -189,7 +189,7 @@
     transition: color 0.15s;
   }
   .kf-footer-link:hover {
-    color: #E8521A !important;
+    color: #2563EB !important;
   }
 
   /* CTA button press state */
@@ -201,7 +201,7 @@
   /* Visible focus rings for keyboard navigation */
   a:focus-visible,
   button:focus-visible {
-    outline: 2px solid #E8521A;
+    outline: 2px solid #2563EB;
     outline-offset: 3px;
     border-radius: 4px;
   }

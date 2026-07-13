@@ -9,7 +9,7 @@ const BORDER  = "var(--kf-border)";
 const TEXT    = "var(--kf-text)";
 const TEXT2   = "var(--kf-text2)";
 const TEXT3   = "var(--kf-text3)";
-const ORANGE  = "#E8521A";
+const ORANGE  = "#2563EB";
 
 const STATUS: Record<string, { label: string; color: string; bg: string; icon: string }> = {
   pending:   { label: "Ausstehend", color: "#ea580c", bg: "#fff7ed", icon: "⏳" },

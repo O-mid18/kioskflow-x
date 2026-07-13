@@ -21,7 +21,7 @@ const BORDER = "var(--kf-border)";
 const TEXT = "var(--kf-text)";
 const TEXT2 = "var(--kf-text2)";
 const TEXT3 = "var(--kf-text3)";
-const ORANGE = "#E8521A";
+const ORANGE = "#2563EB";
 
 function Toast({ msg, onClose }: { msg: string; onClose: () => void }) {
   useEffect(() => { const t = setTimeout(onClose, 2200); return () => clearTimeout(t); }, [onClose]);
@@ -397,7 +397,7 @@ export default function MarketplacePage({ initialProducts = [], initialSuppliers
       <div style={{ maxWidth:1100, margin:"0 auto", padding:"0 20px" }}>
 
         {/* ── HERO BANNER ── */}
-        <div style={{ margin:"20px 0", borderRadius:20, overflow:"hidden", background:`linear-gradient(135deg, ${ORANGE} 0%, #c4411a 100%)`, padding:"32px 36px", display:"flex", justifyContent:"space-between", alignItems:"center", position:"relative" }}>
+        <div style={{ margin:"20px 0", borderRadius:20, overflow:"hidden", background:`linear-gradient(135deg, ${ORANGE} 0%, #1D4ED8 100%)`, padding:"32px 36px", display:"flex", justifyContent:"space-between", alignItems:"center", position:"relative" }}>
           <div style={{ position:"absolute", top:-40, right:-40, width:200, height:200, background:"rgba(255,255,255,0.08)", borderRadius:"50%" }} />
           <div style={{ position:"absolute", bottom:-60, right:80, width:150, height:150, background:"rgba(255,255,255,0.05)", borderRadius:"50%" }} />
           <div>

@@ -9,7 +9,7 @@ const BORDER = "var(--kf-border)";
 const TEXT = "var(--kf-text)";
 const TEXT2 = "var(--kf-text2)";
 const TEXT3 = "var(--kf-text3)";
-const ORANGE = "#E8521A";
+const ORANGE = "#2563EB";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");

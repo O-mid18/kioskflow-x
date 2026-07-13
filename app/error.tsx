@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 
-const ORANGE = "#E8521A";
+const ORANGE = "#2563EB";
 
 export default function GlobalError({
   error,

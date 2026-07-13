@@ -6,7 +6,7 @@ const BORDER = "var(--kf-border)";
 const TEXT = "var(--kf-text)";
 const TEXT2 = "var(--kf-text2)";
 const TEXT3 = "var(--kf-text3)";
-const ORANGE = "#E8521A";
+const ORANGE = "#2563EB";
 
 export default function SignupPage() {
 
@@ -15,7 +15,7 @@ export default function SignupPage() {
       <style>{`@import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600;700&display=swap'); input::placeholder { color: var(--kf-text3); }`}</style>
 
       {/* Left — brand panel */}
-      <div style={{ width: "45%", background: `linear-gradient(150deg, ${ORANGE} 0%, #c4411a 100%)`, display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "48px 52px", position: "relative", overflow: "hidden" }}>
+      <div style={{ width: "45%", background: `linear-gradient(150deg, ${ORANGE} 0%, #1D4ED8 100%)`, display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "48px 52px", position: "relative", overflow: "hidden" }}>
         <div style={{ position: "absolute", top: -80, right: -80, width: 320, height: 320, borderRadius: "50%", background: "rgba(255,255,255,0.08)" }} />
         <div style={{ position: "absolute", bottom: -100, left: -60, width: 280, height: 280, borderRadius: "50%", background: "rgba(0,0,0,0.06)" }} />
 

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 
-const ORANGE = "#E8521A";
+const ORANGE = "#2563EB";
 
 export default function Navbar() {
   const [userEmail, setUserEmail] = useState<string | null>(null);
