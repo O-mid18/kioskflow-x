@@ -70,7 +70,7 @@ export default function LoginPage() {
         </div>
 
         <div style={{ display:"flex", gap:36, position:"relative" }}>
-          {[{v:"500+",l:"Kioske"},{v:"50+",l:"Marken"},{v:"24h",l:"Lieferung"}].map(({ v, l }) => (
+          {[{v:"100%",l:"Direktpreise"},{v:"0€",l:"Mindestbestellung"},{v:"24h",l:"Lieferung"}].map(({ v, l }) => (
             <div key={l}>
               <p style={{ fontFamily:"'Syne',sans-serif", fontSize:24, fontWeight:800, color:"#fff", letterSpacing:"-0.5px" }}>{v}</p>
               <p style={{ fontSize:12, color:"rgba(255,255,255,0.55)", marginTop:2 }}>{l}</p>
@@ -127,7 +127,7 @@ export default function LoginPage() {
 
           <p style={{ color:TEXT3, fontSize:11, textAlign:"center", marginTop:32 }}>
             Durch das Einloggen stimmst du unseren{" "}
-            <a href="#" style={{ color:TEXT3, textDecoration:"underline" }}>AGB</a> zu.
+            <a href="/agb" style={{ color:TEXT3, textDecoration:"underline" }}>AGB</a> zu.
           </p>
         </div>
       </div>

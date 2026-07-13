@@ -409,7 +409,7 @@ export default function MarketplacePage({ initialProducts = [], initialSuppliers
             <a href="/signup" style={{ display:"inline-block", background:"#fff", color:ORANGE, fontWeight:700, padding:"11px 22px", borderRadius:10, textDecoration:"none", fontSize:14 }}>Kostenlos starten →</a>
           </div>
           <div style={{ display:"flex", gap:32, flexShrink:0, position:"relative" }}>
-            {[{v:"500+",l:"Kioske"},{v:"50+",l:"Marken"},{v:"24h",l:"Lieferung"}].map(({ v, l }) => (
+            {[{v:"100%",l:"Direktpreise"},{v:"0€",l:"Mindestbestellung"},{v:"24h",l:"Lieferung"}].map(({ v, l }) => (
               <div key={l} style={{ textAlign:"center" }}>
                 <p style={{ fontFamily:"'Syne',sans-serif", fontSize:26, fontWeight:800, color:"#fff", letterSpacing:"-0.5px" }}>{v}</p>
                 <p style={{ fontSize:11, color:"rgba(255,255,255,0.6)", marginTop:3 }}>{l}</p>
