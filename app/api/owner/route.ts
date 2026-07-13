@@ -321,8 +321,20 @@ export async function POST(req: NextRequest) {
   }
 
   if (body.action === "delete_supplier") {
-    await db.from("products").update({ stock: 0 }).eq("supplier_id", body.supplierId);
-    await db.from("suppliers").delete().eq("id", body.supplierId);
+    const sid = body.supplierId;
+    if (!sid) return NextResponse.json({ error: "Missing supplierId" }, { status: 400 });
+    const { data: supProducts } = await db.from("products").select("id").eq("supplier_id", sid);
+    const supProductIds = (supProducts ?? []).map((p: any) => p.id);
+    if (supProductIds.length > 0) {
+      await db.from("reviews").delete().in("product_id", supProductIds);
+      await db.from("wishlist").delete().in("product_id", supProductIds);
+      await db.from("cart_items").delete().in("product_id", supProductIds);
+      await db.from("order_items").delete().in("product_id", supProductIds);
+    }
+    await db.from("order_items").delete().eq("supplier_id", sid);
+    await db.from("orders").update({ supplier_id: null }).eq("supplier_id", sid);
+    await db.from("products").delete().eq("supplier_id", sid);
+    await db.from("suppliers").delete().eq("id", sid);
     return NextResponse.json({ ok: true });
   }
 

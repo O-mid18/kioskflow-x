@@ -345,7 +345,7 @@ export default function CheckoutPage() {
 
             {/* CTA */}
             <button onClick={handlePayment} disabled={paying}
-              style={{ width: "100%", background: paying ? `rgba(232,82,26,0.55)` : ORANGE, color: "#fff", border: "none", borderRadius: 12, padding: "16px", fontFamily: "'DM Sans',sans-serif", fontWeight: 700, fontSize: 15, cursor: paying ? "not-allowed" : "pointer", transition: "opacity 0.2s", marginBottom: 12, boxShadow: `0 4px 16px rgba(232,82,26,0.25)` }}>
+              style={{ width: "100%", background: paying ? `rgba(37,99,235,0.55)` : ORANGE, color: "#fff", border: "none", borderRadius: 12, padding: "16px", fontFamily: "'DM Sans',sans-serif", fontWeight: 700, fontSize: 15, cursor: paying ? "not-allowed" : "pointer", transition: "opacity 0.2s", marginBottom: 12, boxShadow: `0 4px 16px rgba(37,99,235,0.25)` }}>
               {paying ? "Weiterleitung zu Stripe..." : `Jetzt kaufen — €${finalTotal.toFixed(2)}`}
             </button>
 

@@ -15,9 +15,10 @@ export async function POST(request: Request) {
 
   const db = createAdminClient();
 
-  const { data: order } = await db.from("orders").select("id, status").eq("id", orderId).maybeSingle();
+  const { data: order } = await db.from("orders").select("id, status, stock_decremented").eq("id", orderId).maybeSingle();
   if (!order) return NextResponse.json({ error: "Order not found" }, { status: 404 });
   if (order.status !== "cancelled") return NextResponse.json({ error: "Order is not cancelled" }, { status: 400 });
+  if (!order.stock_decremented) return NextResponse.json({ ok: true, skipped: true, reason: "Stock was never decremented for this order" });
 
   // Verify caller is a supplier who has items in this order
   const { data: callerSupplier } = await db.from("suppliers").select("id").eq("user_id", user.id).maybeSingle();

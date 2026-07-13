@@ -157,7 +157,7 @@ export default function SupplierProfilePage() {
           Abmelden ⏏
         </button>
         <button onClick={save} disabled={saving}
-          style={{ background:saving?`rgba(232,82,26,0.55)`:ORANGE, color:"#fff", border:"none", borderRadius:10, padding:"12px 28px", fontSize:14, fontWeight:700, cursor:saving?"not-allowed":"pointer", boxShadow:`0 4px 14px rgba(232,82,26,0.25)` }}>
+          style={{ background:saving?`rgba(37,99,235,0.55)`:ORANGE, color:"#fff", border:"none", borderRadius:10, padding:"12px 28px", fontSize:14, fontWeight:700, cursor:saving?"not-allowed":"pointer", boxShadow:`0 4px 14px rgba(37,99,235,0.25)` }}>
           {saving ? "Wird gespeichert..." : "Änderungen speichern →"}
         </button>
       </div>

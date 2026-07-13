@@ -162,7 +162,7 @@ export default function SupplierDashboardPage() {
           <p style={{ fontSize:13, color:TEXT2, marginTop:4 }}>Hier ist ein Überblick über dein Geschäft.</p>
         </div>
         <div style={{ display:"flex", gap:10 }}>
-          <a href="/add-product" style={{ display:"inline-flex", alignItems:"center", gap:8, background:ORANGE, color:"#fff", fontWeight:700, padding:"11px 20px", borderRadius:11, fontSize:14, boxShadow:`0 4px 14px rgba(232,82,26,0.25)` }}>
+          <a href="/add-product" style={{ display:"inline-flex", alignItems:"center", gap:8, background:ORANGE, color:"#fff", fontWeight:700, padding:"11px 20px", borderRadius:11, fontSize:14, boxShadow:`0 4px 14px rgba(37,99,235,0.25)` }}>
             <span style={{ fontSize:18, lineHeight:1 }}>+</span> Produkt hinzufügen
           </a>
           <a href="/supplier/dashboard/products" style={{ display:"inline-flex", alignItems:"center", gap:8, background:SURFACE, border:`1.5px solid ${BORDER}`, color:TEXT2, fontWeight:600, padding:"11px 18px", borderRadius:11, fontSize:14 }}>

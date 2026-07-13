@@ -44,14 +44,30 @@ export async function POST(request: Request) {
       return NextResponse.json({ received: true, alreadyProcessed: true });
     }
 
-    const { error } = await db
+    // Atomically claim this event for processing: only the request that
+    // actually flips status from non-paid to paid proceeds. Two overlapping
+    // webhook deliveries for the same event (Stripe retries, or a slow
+    // serverless cold start) previously could both pass the check above
+    // before either had written "paid", letting both run stock decrement +
+    // supplier payout — i.e. double-charging stock or double-paying a
+    // supplier for one real sale.
+    const { data: claimed, error } = await db
       .from("orders")
       .update({ status: "paid" })
-      .eq("stripe_session_id", session.id);
+      .eq("stripe_session_id", session.id)
+      .neq("status", "paid")
+      .select("id")
+      .maybeSingle();
 
     if (error) {
       console.error("Order status update error:", error);
       return NextResponse.json({ error: "DB update failed" }, { status: 500 });
+    }
+
+    if (!claimed) {
+      // Another concurrent delivery already claimed and is processing (or
+      // just processed) this same event — don't double up.
+      return NextResponse.json({ received: true, alreadyProcessed: true });
     }
 
     const order = existingOrder;
@@ -73,6 +89,9 @@ export async function POST(request: Request) {
         }));
 
         const conflicts = decrementResults.filter(r => !r.success);
+        if (conflicts.length === 0) {
+          await db.from("orders").update({ stock_decremented: true }).eq("id", order.id);
+        }
         if (conflicts.length > 0) {
           // Roll back successful decrements
           await Promise.all(

@@ -398,3 +398,8 @@ create table if not exists owner_login_attempts (
   locked_until timestamptz,
   updated_at  timestamptz not null default now()
 );
+
+-- ── 26. stock_decremented flag on orders ────
+-- Set to true by the Stripe webhook after stock is successfully decremented.
+-- Used by restore-stock to ensure we never "restore" stock that was never taken.
+alter table orders add column if not exists stock_decremented boolean not null default false;

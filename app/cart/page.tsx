@@ -19,9 +19,6 @@ export default function CartPage() {
   const [items, setItems] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [discountCode, setDiscountCode] = useState("");
-  const [discount, setDiscount] = useState(0);
-  const [discountMsg, setDiscountMsg] = useState<{text:string;ok:boolean}|null>(null);
 
   const fetchCart = async () => {
     try {
@@ -66,15 +63,8 @@ export default function CartPage() {
     if (!error) setItems([]);
   };
 
-  const applyDiscount = () => {
-    if (discountCode === "OMED10") { setDiscount(0.1); setDiscountMsg({ text:"10% Rabatt angewendet", ok:true }); }
-    else if (discountCode === "OMED20") { setDiscount(0.2); setDiscountMsg({ text:"20% Rabatt angewendet", ok:true }); }
-    else setDiscountMsg({ text:"Ungültiger Rabattcode", ok:false });
-  };
-
   const subtotal = items.reduce((sum, item) => sum + item.products.price * item.quantity, 0);
-  const discountAmount = subtotal * discount;
-  const total = subtotal - discountAmount;
+  const total = subtotal;
   const cartCount = items.reduce((s, i) => s + i.quantity, 0);
 
   if (loading) {
@@ -177,19 +167,6 @@ export default function CartPage() {
 
             {/* Summary sidebar */}
             <div style={{ position:"sticky", top:20 }}>
-              {/* Discount */}
-              <div style={{ background:SURFACE, border:`1px solid ${BORDER}`, borderRadius:14, padding:"18px", marginBottom:12 }}>
-                <p style={{ fontWeight:700, fontSize:13, color:TEXT, marginBottom:12 }}>Rabattcode</p>
-                <div style={{ display:"flex", gap:8 }}>
-                  <input value={discountCode} onChange={e => setDiscountCode(e.target.value)} placeholder="Code eingeben"
-                    style={{ flex:1, background:BG, border:`1.5px solid ${BORDER}`, borderRadius:8, padding:"9px 12px", color:TEXT, fontSize:13, outline:"none" }}
-                    onFocus={e => e.currentTarget.style.borderColor=ORANGE}
-                    onBlur={e => e.currentTarget.style.borderColor=BORDER} />
-                  <button onClick={applyDiscount} style={{ background:ORANGE, color:"#fff", border:"none", borderRadius:8, padding:"9px 14px", fontWeight:700, fontSize:13, cursor:"pointer", flexShrink:0 }}>OK</button>
-                </div>
-                {discountMsg && <p style={{ fontSize:12, color:discountMsg.ok?"#16a34a":"#dc2626", marginTop:8, fontWeight:500 }}>{discountMsg.text}</p>}
-              </div>
-
               {/* Totals */}
               <div style={{ background:SURFACE, border:`1px solid ${BORDER}`, borderRadius:14, padding:"18px" }}>
                 <p style={{ fontWeight:700, fontSize:13, color:TEXT, marginBottom:16 }}>Zusammenfassung</p>
@@ -198,12 +175,6 @@ export default function CartPage() {
                     <span style={{ color:TEXT2, fontSize:13 }}>Zwischensumme</span>
                     <span style={{ color:TEXT, fontSize:13, fontWeight:600 }}>€{subtotal.toFixed(2)}</span>
                   </div>
-                  {discount > 0 && (
-                    <div style={{ display:"flex", justifyContent:"space-between" }}>
-                      <span style={{ color:"#16a34a", fontSize:13 }}>Rabatt ({discount*100}%)</span>
-                      <span style={{ color:"#16a34a", fontSize:13, fontWeight:600 }}>−€{discountAmount.toFixed(2)}</span>
-                    </div>
-                  )}
                   <div style={{ display:"flex", justifyContent:"space-between" }}>
                     <span style={{ color:TEXT2, fontSize:13 }}>Lieferung</span>
                     <span style={{ color:"#16a34a", fontSize:13, fontWeight:600 }}>Kostenlos</span>
@@ -213,7 +184,7 @@ export default function CartPage() {
                   <span style={{ fontFamily:"'Syne',sans-serif", fontWeight:700, fontSize:15, color:TEXT }}>Gesamt</span>
                   <span style={{ fontFamily:"'Syne',sans-serif", fontWeight:800, fontSize:22, color:TEXT, letterSpacing:"-0.5px" }}>€{total.toFixed(2)}</span>
                 </div>
-                <a href="/checkout" style={{ display:"block", background:ORANGE, color:"#fff", fontWeight:700, padding:"14px", borderRadius:11, textDecoration:"none", fontSize:14, textAlign:"center", boxShadow:`0 4px 14px rgba(232,82,26,0.25)` }}>Zur Kasse →</a>
+                <a href="/checkout" style={{ display:"block", background:ORANGE, color:"#fff", fontWeight:700, padding:"14px", borderRadius:11, textDecoration:"none", fontSize:14, textAlign:"center", boxShadow:`0 4px 14px rgba(37,99,235,0.25)` }}>Zur Kasse →</a>
                 <a href="/marketplace" style={{ display:"block", background:BG, color:TEXT2, fontWeight:600, padding:"12px", borderRadius:11, textDecoration:"none", fontSize:13, textAlign:"center", marginTop:8 }}>Weiter einkaufen</a>
               </div>
             </div>

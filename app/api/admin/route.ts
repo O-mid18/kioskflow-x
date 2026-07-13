@@ -79,7 +79,15 @@ export async function POST(request: Request) {
     // Supplier
     const { data: sup } = await db.from("suppliers").select("id").eq("user_id", userId).maybeSingle();
     if (sup) {
+      const { data: supProducts } = await db.from("products").select("id").eq("supplier_id", sup.id);
+      const supProductIds = (supProducts ?? []).map((p: any) => p.id);
+      if (supProductIds.length > 0) {
+        await db.from("reviews").delete().in("product_id", supProductIds);
+        await db.from("wishlist").delete().in("product_id", supProductIds);
+        await db.from("cart_items").delete().in("product_id", supProductIds);
+      }
       await db.from("order_items").delete().eq("supplier_id", sup.id);
+      await db.from("orders").update({ supplier_id: null }).eq("supplier_id", sup.id);
       await db.from("products").delete().eq("supplier_id", sup.id);
       await db.from("suppliers").delete().eq("id", sup.id);
     }

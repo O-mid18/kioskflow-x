@@ -200,7 +200,7 @@ export default function VerificationPage() {
         {/* Save */}
         <div style={{ display: "flex", justifyContent: "flex-end" }}>
           <button onClick={save} disabled={saving}
-            style={{ background: saving ? "rgba(232,82,26,0.55)" : ORANGE, color: "#fff", border: "none", borderRadius: 10, padding: "12px 28px", fontSize: 14, fontWeight: 700, cursor: saving ? "not-allowed" : "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", gap: 8 }}>
+            style={{ background: saving ? "rgba(37,99,235,0.55)" : ORANGE, color: "#fff", border: "none", borderRadius: 10, padding: "12px 28px", fontSize: 14, fontWeight: 700, cursor: saving ? "not-allowed" : "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", gap: 8 }}>
             {saving && <div style={{ width: 14, height: 14, border: "2px solid rgba(255,255,255,0.4)", borderTopColor: "#fff", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />}
             {saving ? "Wird gespeichert..." : "Daten einreichen →"}
           </button>

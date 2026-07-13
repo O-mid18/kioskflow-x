@@ -45,7 +45,7 @@ export default function LoginPage() {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600;700&display=swap');
         input::placeholder { color: ${TEXT3}; }
-        input:focus { outline:none; border-color:${ORANGE} !important; box-shadow:0 0 0 3px rgba(232,82,26,0.1); }
+        input:focus { outline:none; border-color:${ORANGE} !important; box-shadow:0 0 0 3px rgba(37,99,235,0.1); }
       `}</style>
 
       {/* Left — brand panel */}
@@ -109,7 +109,7 @@ export default function LoginPage() {
             </div>
 
             <button onClick={handleLogin} disabled={loading}
-              style={{ width:"100%", background:loading?"rgba(232,82,26,0.55)":ORANGE, color:"#fff", border:"none", borderRadius:11, padding:"14px", fontFamily:"'DM Sans',sans-serif", fontWeight:700, fontSize:15, cursor:loading?"not-allowed":"pointer", marginTop:4, transition:"opacity 0.2s", boxShadow:`0 4px 14px rgba(232,82,26,0.25)` }}>
+              style={{ width:"100%", background:loading?"rgba(37,99,235,0.55)":ORANGE, color:"#fff", border:"none", borderRadius:11, padding:"14px", fontFamily:"'DM Sans',sans-serif", fontWeight:700, fontSize:15, cursor:loading?"not-allowed":"pointer", marginTop:4, transition:"opacity 0.2s", boxShadow:`0 4px 14px rgba(37,99,235,0.25)` }}>
               {loading ? "Einen Moment..." : "Einloggen →"}
             </button>
           </div>

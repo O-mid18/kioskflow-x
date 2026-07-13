@@ -20,14 +20,18 @@ export default function ResetPasswordPage() {
   const [done, setDone] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const [sessionReady, setSessionReady] = useState(false);
+  const [linkExpired, setLinkExpired] = useState(false);
 
   useEffect(() => {
-    // Supabase handles the recovery token from the URL hash automatically
-    supabase.auth.onAuthStateChange((event) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
       if (event === "PASSWORD_RECOVERY") {
         setSessionReady(true);
       }
     });
+    const timer = setTimeout(() => {
+      setSessionReady(s => { if (!s) setLinkExpired(true); return s; });
+    }, 8000);
+    return () => { subscription.unsubscribe(); clearTimeout(timer); };
   }, []);
 
   const handleReset = async () => {
@@ -50,7 +54,7 @@ export default function ResetPasswordPage() {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600;700&display=swap');
         input::placeholder { color: ${TEXT3}; }
-        input:focus { outline:none; border-color:${ORANGE} !important; box-shadow:0 0 0 3px rgba(232,82,26,0.1); }
+        input:focus { outline:none; border-color:${ORANGE} !important; box-shadow:0 0 0 3px rgba(37,99,235,0.1); }
       `}</style>
 
       <div style={{ width: "100%", maxWidth: 400 }}>
@@ -65,13 +69,18 @@ export default function ResetPasswordPage() {
             <h2 style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 22, color: TEXT, letterSpacing: "-0.5px", marginBottom: 10 }}>Passwort aktualisiert</h2>
             <p style={{ color: TEXT2, fontSize: 14 }}>Du wirst weitergeleitet...</p>
           </div>
+        ) : linkExpired ? (
+          <div style={{ background: SURFACE, border: `1.5px solid ${BORDER}`, borderRadius: 14, padding: 28, textAlign: "center" }}>
+            <div style={{ fontSize: 40, marginBottom: 16 }}>⚠️</div>
+            <h2 style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 20, color: TEXT, letterSpacing: "-0.5px", marginBottom: 10 }}>Link abgelaufen</h2>
+            <p style={{ color: TEXT2, fontSize: 14, lineHeight: 1.6, marginBottom: 20 }}>
+              Dieser Reset-Link ist ungültig oder abgelaufen. Bitte fordere einen neuen an.
+            </p>
+            <a href="/auth/forgot-password" style={{ color: "#fff", background: ORANGE, fontWeight: 700, fontSize: 14, textDecoration: "none", padding: "10px 20px", borderRadius: 10, display: "inline-block" }}>Neuen Link anfordern</a>
+          </div>
         ) : !sessionReady ? (
           <div style={{ background: SURFACE, border: `1.5px solid ${BORDER}`, borderRadius: 14, padding: 28, textAlign: "center" }}>
             <p style={{ color: TEXT2, fontSize: 14 }}>Link wird überprüft...</p>
-            <p style={{ color: TEXT3, fontSize: 12, marginTop: 12 }}>
-              Falls der Link ungültig ist, fordere einen neuen an:{" "}
-              <a href="/auth/forgot-password" style={{ color: ORANGE, fontWeight: 700, textDecoration: "none" }}>Passwort vergessen</a>
-            </p>
           </div>
         ) : (
           <>
@@ -110,7 +119,7 @@ export default function ResetPasswordPage() {
               <button
                 onClick={handleReset}
                 disabled={loading}
-                style={{ width: "100%", background: loading ? "rgba(232,82,26,0.55)" : ORANGE, color: "#fff", border: "none", borderRadius: 11, padding: "14px", fontWeight: 700, fontSize: 15, cursor: loading ? "not-allowed" : "pointer", boxShadow: "0 4px 14px rgba(232,82,26,0.25)" }}
+                style={{ width: "100%", background: loading ? "rgba(37,99,235,0.55)" : ORANGE, color: "#fff", border: "none", borderRadius: 11, padding: "14px", fontWeight: 700, fontSize: 15, cursor: loading ? "not-allowed" : "pointer", boxShadow: "0 4px 14px rgba(37,99,235,0.25)" }}
               >
                 {loading ? "Speichern..." : "Passwort speichern →"}
               </button>

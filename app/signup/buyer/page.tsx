@@ -28,7 +28,7 @@ export default function BuyerSignupPage() {
 
   const set = (key: string) => (e: React.ChangeEvent<HTMLInputElement>) => setFields(f => ({ ...f, [key]: e.target.value }));
 
-  const focus = (e: React.FocusEvent<HTMLInputElement>) => { e.currentTarget.style.borderColor = ORANGE; e.currentTarget.style.boxShadow = "0 0 0 3px rgba(232,82,26,0.1)"; };
+  const focus = (e: React.FocusEvent<HTMLInputElement>) => { e.currentTarget.style.borderColor = ORANGE; e.currentTarget.style.boxShadow = "0 0 0 3px rgba(37,99,235,0.1)"; };
   const blur  = (e: React.FocusEvent<HTMLInputElement>) => { e.currentTarget.style.borderColor = BORDER; e.currentTarget.style.boxShadow = "none"; };
 
   const handleSignup = async () => {
@@ -143,7 +143,7 @@ export default function BuyerSignupPage() {
           </div>
 
           <button onClick={handleVerify} disabled={loading}
-            style={{ width: "100%", background: loading ? "rgba(232,82,26,0.55)" : ORANGE, color: "#fff", border: "none", borderRadius: 12, padding: "15px", fontWeight: 700, fontSize: 15, cursor: loading ? "not-allowed" : "pointer", boxShadow: "0 4px 16px rgba(232,82,26,0.25)", fontFamily: "inherit", marginBottom: 16 }}>
+            style={{ width: "100%", background: loading ? "rgba(37,99,235,0.55)" : ORANGE, color: "#fff", border: "none", borderRadius: 12, padding: "15px", fontWeight: 700, fontSize: 15, cursor: loading ? "not-allowed" : "pointer", boxShadow: "0 4px 16px rgba(37,99,235,0.25)", fontFamily: "inherit", marginBottom: 16 }}>
             {loading ? "Wird überprüft..." : "Bestätigen →"}
           </button>
 
@@ -230,7 +230,7 @@ export default function BuyerSignupPage() {
         </div>
 
         <button onClick={handleSignup} disabled={loading}
-          style={{ width: "100%", marginTop: 14, background: loading ? "rgba(232,82,26,0.55)" : ORANGE, color: "#fff", border: "none", borderRadius: 12, padding: "15px", fontWeight: 700, fontSize: 15, cursor: loading ? "not-allowed" : "pointer", boxShadow: "0 4px 16px rgba(232,82,26,0.25)", fontFamily: "inherit" }}>
+          style={{ width: "100%", marginTop: 14, background: loading ? "rgba(37,99,235,0.55)" : ORANGE, color: "#fff", border: "none", borderRadius: 12, padding: "15px", fontWeight: 700, fontSize: 15, cursor: loading ? "not-allowed" : "pointer", boxShadow: "0 4px 16px rgba(37,99,235,0.25)", fontFamily: "inherit" }}>
           {loading ? "Wird erstellt..." : "Käufer-Konto erstellen →"}
         </button>
 

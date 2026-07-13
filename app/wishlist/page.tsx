@@ -77,7 +77,7 @@ export default function WishlistPage() {
             <p style={{ fontSize: 56, marginBottom: 16 }}>❤️</p>
             <h2 style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 22, color: TEXT, marginBottom: 10 }}>Noch nichts gespeichert</h2>
             <p style={{ color: TEXT2, fontSize: 14, marginBottom: 28 }}>Entdecke Produkte und füge sie deiner Wunschliste hinzu.</p>
-            <a href="/marketplace" style={{ display: "inline-block", background: ORANGE, color: "#fff", fontWeight: 700, padding: "13px 28px", borderRadius: 12, textDecoration: "none", fontSize: 14, boxShadow: "0 4px 14px rgba(232,82,26,0.25)" }}>Zum Marktplatz →</a>
+            <a href="/marketplace" style={{ display: "inline-block", background: ORANGE, color: "#fff", fontWeight: 700, padding: "13px 28px", borderRadius: 12, textDecoration: "none", fontSize: 14, boxShadow: "0 4px 14px rgba(37,99,235,0.25)" }}>Zum Marktplatz →</a>
           </div>
         ) : (
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: 16 }}>

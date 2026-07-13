@@ -41,7 +41,7 @@ export default function MobileNav() {
               {label}
             </a>
           ))}
-          <a href="/signup" style={{ background: ORANGE, color: "#fff", padding: "13px 16px", borderRadius: 10, fontWeight: 700, fontSize: 15, textDecoration: "none", textAlign: "center", marginTop: 14, boxShadow: "0 2px 8px rgba(232,82,26,0.3)" }}>
+          <a href="/signup" style={{ background: ORANGE, color: "#fff", padding: "13px 16px", borderRadius: 10, fontWeight: 700, fontSize: 15, textDecoration: "none", textAlign: "center", marginTop: 14, boxShadow: "0 2px 8px rgba(37,99,235,0.3)" }}>
             Kostenlos starten →
           </a>
         </div>

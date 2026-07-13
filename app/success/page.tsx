@@ -102,7 +102,7 @@ export default function SuccessPage() {
           <span style={{ fontFamily:"'Syne',sans-serif", fontWeight:700, fontSize:14, color:TEXT }}>{orderNumber ? `#KF-${orderNumber}` : "—"}</span>
         </div>
 
-        <a href="/marketplace" style={{ display:"block", background:ORANGE, color:"#fff", fontWeight:700, padding:"14px", borderRadius:12, textDecoration:"none", fontSize:14, marginBottom:12, boxShadow:`0 4px 14px rgba(232,82,26,0.25)` }}>
+        <a href="/marketplace" style={{ display:"block", background:ORANGE, color:"#fff", fontWeight:700, padding:"14px", borderRadius:12, textDecoration:"none", fontSize:14, marginBottom:12, boxShadow:`0 4px 14px rgba(37,99,235,0.25)` }}>
           Weiter einkaufen →
         </a>
         <a href="/orders" style={{ display:"block", background:BG, border:`1px solid ${BORDER}`, color:TEXT2, fontWeight:600, padding:"13px", borderRadius:12, textDecoration:"none", fontSize:14 }}>

@@ -258,7 +258,7 @@ export default function OwnerDashboard() {
         @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600;700&display=swap');
         @keyframes spin{to{transform:rotate(360deg)}}
         ::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-track{background:${BG}}::-webkit-scrollbar-thumb{background:${BORDER};border-radius:99px}
-        input:focus,textarea:focus,select:focus{outline:none;border-color:${ORANGE}!important;box-shadow:0 0 0 3px rgba(232,82,26,0.12)!important}
+        input:focus,textarea:focus,select:focus{outline:none;border-color:${ORANGE}!important;box-shadow:0 0 0 3px rgba(37,99,235,0.12)!important}
         tr:hover td{background:${BG}}
       `}</style>
 
@@ -490,7 +490,7 @@ export default function OwnerDashboard() {
                   <textarea value={bMsg} onChange={e => setBMsg(e.target.value)} rows={3} placeholder="Nachricht an alle Nutzer..." style={{ ...inp(), resize: "none" } as any} />
                 </div>
                 <button onClick={broadcast} disabled={bLoading || !bTitle || !bMsg}
-                  style={{ background: bLoading || !bTitle || !bMsg ? "rgba(232,82,26,0.45)" : ORANGE, color: "#fff", border: "none", borderRadius: 10, padding: "12px", fontSize: 14, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+                  style={{ background: bLoading || !bTitle || !bMsg ? "rgba(37,99,235,0.45)" : ORANGE, color: "#fff", border: "none", borderRadius: 10, padding: "12px", fontSize: 14, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
                   {bLoading && <div style={{ width: 14, height: 14, border: "2px solid rgba(255,255,255,0.4)", borderTopColor: "#fff", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />}
                   An alle {users.length} Nutzer senden
                 </button>
@@ -509,7 +509,7 @@ export default function OwnerDashboard() {
                   </div>
                 ))}
                 <button onClick={changePassword} disabled={pwLoading || !curPw || !newPw || !confPw}
-                  style={{ background: pwLoading || !curPw || !newPw || !confPw ? "rgba(232,82,26,0.45)" : ORANGE, color: "#fff", border: "none", borderRadius: 10, padding: "12px", fontSize: 14, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+                  style={{ background: pwLoading || !curPw || !newPw || !confPw ? "rgba(37,99,235,0.45)" : ORANGE, color: "#fff", border: "none", borderRadius: 10, padding: "12px", fontSize: 14, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
                   {pwLoading && <div style={{ width: 14, height: 14, border: "2px solid rgba(255,255,255,0.4)", borderTopColor: "#fff", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />}
                   Passwort speichern
                 </button>

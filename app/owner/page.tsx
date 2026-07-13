@@ -39,7 +39,7 @@ export default function OwnerLogin() {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600;700&display=swap');
         @keyframes spin { to { transform: rotate(360deg); } }
-        input:focus { outline: none; border-color: ${ORANGE} !important; box-shadow: 0 0 0 3px rgba(232,82,26,0.12) !important; }
+        input:focus { outline: none; border-color: ${ORANGE} !important; box-shadow: 0 0 0 3px rgba(37,99,235,0.12) !important; }
       `}</style>
 
       <div style={{ width: "100%", maxWidth: 400, padding: "0 24px" }}>
@@ -78,7 +78,7 @@ export default function OwnerLogin() {
             </div>
 
             <button type="submit" disabled={loading || !password}
-              style={{ background: loading || !password ? "rgba(232,82,26,0.45)" : ORANGE, color: "#fff", border: "none", borderRadius: 10, padding: "13px", fontSize: 14, fontWeight: 700, cursor: loading || !password ? "not-allowed" : "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, transition: "background 0.2s", boxShadow: "0 4px 14px rgba(232,82,26,0.25)" }}>
+              style={{ background: loading || !password ? "rgba(37,99,235,0.45)" : ORANGE, color: "#fff", border: "none", borderRadius: 10, padding: "13px", fontSize: 14, fontWeight: 700, cursor: loading || !password ? "not-allowed" : "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, transition: "background 0.2s", boxShadow: "0 4px 14px rgba(37,99,235,0.25)" }}>
               {loading && <div style={{ width: 14, height: 14, border: "2px solid rgba(255,255,255,0.4)", borderTopColor: "#fff", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />}
               {loading ? "Wird geprüft..." : "Einloggen →"}
             </button>

@@ -10,7 +10,7 @@ const ORANGE = "#2563EB";
 
 export default function HomePage() {
   return (
-    <main id="main-content" style={{ background: "var(--kf-bg)", backgroundImage: "radial-gradient(ellipse 55% 45% at 80% 12%, rgba(232,82,26,0.07) 0%, transparent 65%)", color: "var(--kf-text)", fontFamily: "'DM Sans','Helvetica Neue',system-ui,sans-serif", overflowX: "hidden" }}>
+    <main id="main-content" style={{ background: "var(--kf-bg)", backgroundImage: "radial-gradient(ellipse 55% 45% at 80% 12%, rgba(37,99,235,0.07) 0%, transparent 65%)", color: "var(--kf-text)", fontFamily: "'DM Sans','Helvetica Neue',system-ui,sans-serif", overflowX: "hidden" }}>
       {/* Skip-to-content for keyboard users */}
       <a href="#main-content" className="kf-skip-link">Zum Inhalt springen</a>
 
@@ -54,7 +54,7 @@ export default function HomePage() {
         </div>
         <div className="kf-desktop-auth" style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <a href="/login" style={{ fontSize: 14, fontWeight: 600, color: "var(--kf-text2)", textDecoration: "none", padding: "7px 14px" }}>Anmelden</a>
-          <a href="/signup" className="kf-cta-btn" style={{ background: ORANGE, color: "#fff", fontSize: 14, fontWeight: 700, textDecoration: "none", padding: "8px 18px", borderRadius: 9, boxShadow: "0 2px 8px rgba(232,82,26,0.3)" }}>Kostenlos starten →</a>
+          <a href="/signup" className="kf-cta-btn" style={{ background: ORANGE, color: "#fff", fontSize: 14, fontWeight: 700, textDecoration: "none", padding: "8px 18px", borderRadius: 9, boxShadow: "0 2px 8px rgba(37,99,235,0.3)" }}>Kostenlos starten →</a>
         </div>
         <MobileNav />
       </nav>
@@ -73,7 +73,7 @@ export default function HomePage() {
             Getränke und Snacks von Frankfurter Herstellern. Kein Zwischenhändler, keine Mindestmenge, keine Verträge.
           </p>
           <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-            <a href="/signup/buyer" className="kf-cta-btn" style={{ background: ORANGE, color: "#fff", padding: "14px 26px", borderRadius: 12, fontWeight: 700, fontSize: 15, textDecoration: "none", boxShadow: "0 4px 16px rgba(232,82,26,0.3)" }}>Als Kiosk starten →</a>
+            <a href="/signup/buyer" className="kf-cta-btn" style={{ background: ORANGE, color: "#fff", padding: "14px 26px", borderRadius: 12, fontWeight: 700, fontSize: 15, textDecoration: "none", boxShadow: "0 4px 16px rgba(37,99,235,0.3)" }}>Als Kiosk starten →</a>
             <a href="/marketplace" className="kf-cta-btn" style={{ background: "var(--kf-surface)", border: "1.5px solid var(--kf-border)", color: "var(--kf-text)", padding: "14px 26px", borderRadius: 12, fontWeight: 600, fontSize: 15, textDecoration: "none" }}>Marktplatz ansehen</a>
           </div>
           <p style={{ fontSize: 13, color: "var(--kf-text3)", marginTop: 20 }}>Kostenlos registrieren · Keine Mindestbestellmenge</p>

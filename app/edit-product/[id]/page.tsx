@@ -48,7 +48,7 @@ export default function EditProductPage() {
 
   const focus = (e: React.FocusEvent<HTMLInputElement|HTMLTextAreaElement|HTMLSelectElement>) => {
     e.currentTarget.style.borderColor = ORANGE;
-    e.currentTarget.style.boxShadow = "0 0 0 3px rgba(232,82,26,0.1)";
+    e.currentTarget.style.boxShadow = "0 0 0 3px rgba(37,99,235,0.1)";
   };
   const blur = (e: React.FocusEvent<HTMLInputElement|HTMLTextAreaElement|HTMLSelectElement>) => {
     e.currentTarget.style.borderColor = BORDER;
@@ -253,7 +253,7 @@ export default function EditProductPage() {
           <div style={{ display:"flex", justifyContent:"flex-end", gap:10, paddingTop:4 }}>
             <a href="/supplier/dashboard/products" style={{ background:"none", border:`1.5px solid ${BORDER}`, color:TEXT2, borderRadius:10, padding:"12px 22px", fontSize:14, fontWeight:600, textDecoration:"none", display:"inline-flex", alignItems:"center" }}>Abbrechen</a>
             <button onClick={updateProduct} disabled={saving}
-              style={{ background:saving?"rgba(232,82,26,0.55)":ORANGE, color:"#fff", border:"none", borderRadius:10, padding:"12px 28px", fontSize:14, fontFamily:"inherit", fontWeight:700, cursor:saving?"not-allowed":"pointer", transition:"opacity 0.2s", boxShadow:`0 4px 14px rgba(232,82,26,0.25)`, display:"flex", alignItems:"center", gap:8 }}>
+              style={{ background:saving?"rgba(37,99,235,0.55)":ORANGE, color:"#fff", border:"none", borderRadius:10, padding:"12px 28px", fontSize:14, fontFamily:"inherit", fontWeight:700, cursor:saving?"not-allowed":"pointer", transition:"opacity 0.2s", boxShadow:`0 4px 14px rgba(37,99,235,0.25)`, display:"flex", alignItems:"center", gap:8 }}>
               {saving && <div style={{ width:14, height:14, border:"2px solid rgba(255,255,255,0.4)", borderTopColor:"#fff", borderRadius:"50%", animation:"spin 0.8s linear infinite" }} />}
               {saving ? "Wird gespeichert..." : "Änderungen speichern →"}
             </button>
