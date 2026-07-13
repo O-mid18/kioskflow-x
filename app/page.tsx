@@ -86,7 +86,7 @@ export default function HomePage() {
             </div>
             <div style={{ flex: 1 }}>
               <p style={{ fontWeight: 700, fontSize: 14, color: "var(--kf-text)" }}>Lokaler Hersteller</p>
-              <p style={{ fontSize: 12, color: "var(--kf-text3)" }}>Hot Blood GmbH · Frankfurt</p>
+              <p style={{ fontSize: 12, color: "var(--kf-text3)" }}>Getränke Manufaktur · Frankfurt</p>
             </div>
             <div style={{ background: "#dcfce7", color: "#16a34a", fontSize: 11, fontWeight: 700, padding: "3px 10px", borderRadius: 100, flexShrink: 0 }}>✓ Verifiziert</div>
           </div>
@@ -123,8 +123,8 @@ export default function HomePage() {
       <div style={{ background: "var(--kf-surface)", borderTop: "1px solid var(--kf-border)", borderBottom: "1px solid var(--kf-border)" }}>
         <div style={{ maxWidth: 1200, margin: "0 auto", padding: "24px 32px", display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 0 }} className="kf-trust-band">
           {[
-            { value: "500+", label: "Kioske registriert" },
-            { value: "50+",  label: "Lokale Marken" },
+            { value: "100%", label: "Direktpreise" },
+            { value: "2026", label: "Gegründet in Frankfurt" },
             { value: "24h",  label: "Lieferzeit" },
             { value: "0 €",  label: "Mindestbestellung" },
           ].map(({ value, label }, i) => (
@@ -193,35 +193,6 @@ export default function HomePage() {
 
       <div style={{ borderTop: "1px solid var(--kf-border)" }} aria-hidden="true" />
 
-      {/* TESTIMONIALS */}
-      <section style={{ maxWidth: 1200, margin: "0 auto", padding: "80px 32px" }}>
-        <div style={{ textAlign: "center", marginBottom: 52 }} className="kf-reveal">
-          <p style={{ fontSize: 12, fontWeight: 700, color: ORANGE, letterSpacing: "2.5px", textTransform: "uppercase", marginBottom: 12 }}>Stimmen unserer Nutzer</p>
-          <h2 style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: "clamp(1.8rem,3.5vw,2.6rem)", color: "var(--kf-text)", letterSpacing: "-0.8px" }}>Was Späti-Betreiber sagen</h2>
-        </div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20 }} className="kf-steps-grid">
-          {([
-            { quote: "Seitdem ich über Flowio bestelle, spare ich im Schnitt 30% gegenüber meinem alten Großhändler. Der Unterschied ist sofort spürbar.", author: "Ahmed K.", role: "Späti, Frankfurt-Sachsenhausen" },
-            { quote: "Keine Mindestmenge ist ein echter Gamechanger. Ich teste jetzt neue Produkte ohne Restrisiko — meine Kunden lieben die Auswahl.", author: "Marta S.", role: "Getränkeladen, Frankfurt-Bornheim" },
-            { quote: "Bestellung am Abend, Lieferung am nächsten Morgen. So sollte Einkauf für Kioske immer funktionieren.", author: "Yusuf D.", role: "Kiosk, Frankfurt-Ostbahnhof" },
-          ] as const).map(({ quote, author, role }, i) => (
-            <div key={author} className="kf-feature-card kf-reveal" style={{ background: "var(--kf-surface)", border: "1px solid var(--kf-border)", borderRadius: 18, padding: "28px 24px", animationDelay: `${i * 0.1}s` }}>
-              <div style={{ fontSize: 40, lineHeight: 1, color: ORANGE, fontFamily: "'Syne',sans-serif", fontWeight: 900, marginBottom: 16, opacity: 0.35 }} aria-hidden="true">"</div>
-              <p style={{ fontSize: 14, color: "var(--kf-text2)", lineHeight: 1.75, marginBottom: 24 }}>{quote}</p>
-              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                <div style={{ width: 36, height: 36, background: `${ORANGE}20`, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 14, color: ORANGE, flexShrink: 0 }} aria-hidden="true">{author[0]}</div>
-                <div>
-                  <p style={{ fontSize: 13, fontWeight: 700, color: "var(--kf-text)" }}>{author}</p>
-                  <p style={{ fontSize: 12, color: "var(--kf-text3)" }}>{role}</p>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <div style={{ borderTop: "1px solid var(--kf-border)" }} aria-hidden="true" />
-
       {/* FAQ */}
       <section style={{ maxWidth: 760, margin: "0 auto", padding: "80px 32px" }}>
         <div style={{ textAlign: "center", marginBottom: 52 }} className="kf-reveal">
@@ -249,7 +220,7 @@ export default function HomePage() {
         <div style={{ maxWidth: 1200, margin: "0 auto", background: ORANGE, borderRadius: 24, padding: "52px 48px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 32, flexWrap: "wrap" }} className="kf-supplier-cta">
           <div>
             <p style={{ fontSize: 12, fontWeight: 700, color: "rgba(255,255,255,0.65)", letterSpacing: "2px", textTransform: "uppercase", marginBottom: 10 }}>Für Hersteller und Marken</p>
-            <h2 style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: "clamp(1.6rem,3vw,2.4rem)", color: "#fff", letterSpacing: "-0.8px", marginBottom: 12 }}>Dein Produkt.<br />500+ Kioske. Kein Aufwand.</h2>
+            <h2 style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: "clamp(1.6rem,3vw,2.4rem)", color: "#fff", letterSpacing: "-0.8px", marginBottom: 12 }}>Dein Produkt.<br />Frankfurter Kioske. Kein Aufwand.</h2>
             <p style={{ fontSize: 15, color: "rgba(255,255,255,0.78)", lineHeight: 1.6, maxWidth: 400 }}>Erstelle ein Anbieter-Konto in 5 Minuten und liste deine Produkte kostenlos. Keine Provision, direkte Zahlung.</p>
           </div>
           <a href="/signup/supplier" className="kf-cta-btn" style={{ background: "#fff", color: ORANGE, padding: "16px 32px", borderRadius: 14, fontWeight: 800, fontSize: 16, textDecoration: "none", whiteSpace: "nowrap", boxShadow: "0 4px 20px rgba(0,0,0,0.15)", fontFamily: "'Syne',sans-serif" }}>
@@ -271,7 +242,7 @@ export default function HomePage() {
           {([
             { heading: "Plattform", links: [{ label: "Marktplatz", href: "/marketplace" }, { label: "Als Käufer", href: "/signup/buyer" }, { label: "Als Lieferant", href: "/signup/supplier" }] },
             { heading: "Konto", links: [{ label: "Anmelden", href: "/login" }, { label: "Registrieren", href: "/signup" }, { label: "Support", href: "/support" }] },
-            { heading: "Rechtliches", links: [{ label: "Impressum", href: "#" }, { label: "Datenschutz", href: "#" }, { label: "AGB", href: "#" }] },
+            { heading: "Rechtliches", links: [{ label: "Impressum", href: "/impressum" }, { label: "Datenschutz", href: "/datenschutz" }, { label: "AGB", href: "/agb" }] },
           ] as const).map(({ heading, links }) => (
             <div key={heading}>
               <p style={{ fontSize: 12, fontWeight: 700, color: "var(--kf-text)", letterSpacing: "1px", textTransform: "uppercase", marginBottom: 16 }}>{heading}</p>
