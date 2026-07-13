@@ -140,13 +140,33 @@ export async function GET(req: NextRequest) {
   return NextResponse.json({ error: "Unknown action" }, { status: 400 });
 }
 
-// In-process login attempt counter (per process restart — lightweight brute force protection)
-const loginFailures = new Map<string, { count: number; until: number }>();
 const MAX_FAILURES = 5;
 const LOCKOUT_MS = 15 * 60 * 1000;
 
 function getClientIp(req: NextRequest): string {
   return req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
+}
+
+async function checkBruteForce(ip: string): Promise<{ blocked: boolean }> {
+  const db = createAdminClient();
+  const { data } = await db.from("owner_login_attempts").select("count, locked_until").eq("ip", ip).maybeSingle();
+  if (data && data.count >= MAX_FAILURES && data.locked_until && new Date(data.locked_until) > new Date()) {
+    return { blocked: true };
+  }
+  return { blocked: false };
+}
+
+async function recordFailure(ip: string): Promise<void> {
+  const db = createAdminClient();
+  const lockedUntil = new Date(Date.now() + LOCKOUT_MS).toISOString();
+  const { data } = await db.from("owner_login_attempts").select("count").eq("ip", ip).maybeSingle();
+  const newCount = (data?.count ?? 0) + 1;
+  await db.from("owner_login_attempts").upsert({ ip, count: newCount, locked_until: lockedUntil }, { onConflict: "ip" });
+}
+
+async function clearFailures(ip: string): Promise<void> {
+  const db = createAdminClient();
+  await db.from("owner_login_attempts").delete().eq("ip", ip);
 }
 
 // ── POST ──────────────────────────────────────────────────────────────────────
@@ -155,9 +175,8 @@ export async function POST(req: NextRequest) {
 
   if (body.action === "login") {
     const ip = getClientIp(req);
-    const now = Date.now();
-    const record = loginFailures.get(ip);
-    if (record && record.count >= MAX_FAILURES && now < record.until) {
+    const { blocked } = await checkBruteForce(ip);
+    if (blocked) {
       return NextResponse.json({ error: "Zu viele Fehlversuche. Bitte warte 15 Minuten." }, { status: 429 });
     }
 
@@ -166,13 +185,11 @@ export async function POST(req: NextRequest) {
     catch { return NextResponse.json({ error: "Owner-Passwort nicht konfiguriert." }, { status: 503 }); }
 
     if (!verifyPassword(body.password ?? "", pwHash)) {
-      const prev = loginFailures.get(ip) ?? { count: 0, until: 0 };
-      const newCount = prev.count + 1;
-      loginFailures.set(ip, { count: newCount, until: now + LOCKOUT_MS });
+      await recordFailure(ip);
       return NextResponse.json({ error: "Falsches Passwort" }, { status: 401 });
     }
 
-    loginFailures.delete(ip);
+    await clearFailures(ip);
     const res = NextResponse.json({ ok: true });
     res.cookies.set(SESSION_KEY, makeToken(pwHash), cookieOpts());
     return res;

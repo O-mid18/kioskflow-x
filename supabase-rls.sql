@@ -174,14 +174,23 @@ as $$
   update products set stock = stock + p_qty where id = p_product_id;
 $$;
 
--- ── Helper function: atomic stock decrement ───────────────────
--- Used by /api/webhook to avoid race condition on duplicate webhook events
+-- ── Helper function: atomic stock decrement (conflict-aware) ────────────────
+-- Returns true if stock was decremented, false if insufficient stock
+-- Used by /api/webhook — caller checks return value and handles conflicts
 create or replace function decrement_product_stock(p_product_id uuid, p_qty int)
-returns void
-language sql
+returns boolean
+language plpgsql
 security definer
 as $$
-  update products set stock = greatest(0, stock - p_qty) where id = p_product_id;
+declare
+  updated_rows int;
+begin
+  update products
+  set stock = stock - p_qty
+  where id = p_product_id and stock >= p_qty;
+  get diagnostics updated_rows = row_count;
+  return updated_rows > 0;
+end;
 $$;
 
 -- ── 13. reviews: enforce verified-purchase requirement server-side ─────────
@@ -370,3 +379,22 @@ alter table reviews  add constraint comment_length check (char_length(comment) <
 -- ── 23. wishlist: unique constraint (user_id, product_id) ────────
 alter table wishlist
   add constraint wishlist_user_product_unique unique (user_id, product_id);
+
+-- ── 24. order_stock_restorations: idempotency table ─────────────
+-- Ensures each supplier can only restore stock once per order (race-condition safe)
+create table if not exists order_stock_restorations (
+  order_id    uuid not null references orders(id) on delete cascade,
+  supplier_id uuid not null references suppliers(id) on delete cascade,
+  created_at  timestamptz not null default now(),
+  primary key (order_id, supplier_id)
+);
+alter table order_stock_restorations enable row level security;
+
+-- ── 25. owner_login_attempts: persistent brute-force protection ────
+-- Replaces in-memory Map — survives serverless cold starts
+create table if not exists owner_login_attempts (
+  ip          text primary key,
+  count       int not null default 0,
+  locked_until timestamptz,
+  updated_at  timestamptz not null default now()
+);

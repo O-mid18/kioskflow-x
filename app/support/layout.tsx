@@ -1,8 +1,8 @@
 ﻿import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Support | Vendoro",
-  description: "Hilfe und Support fuer Vendoro-Nutzer.",
+  title: "Support | Flowio",
+  description: "Hilfe und Support fuer Flowio-Nutzer.",
 };
 
 export default function Layout({ children }: { children: React.ReactNode }) {

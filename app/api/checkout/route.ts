@@ -19,16 +19,12 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const VALID_DISCOUNT_CODES: Record<string, number> = { "OMED10": 0.10, "OMED20": 0.20 };
-
   try {
     let shippingAddress: Record<string, string> = {};
-    let discountPct = 0;
+    const discountPct = 0;
     try {
       const body = await request.json();
       shippingAddress = body?.shippingAddress ?? {};
-      const code = (body?.discountCode ?? "").toUpperCase();
-      discountPct = VALID_DISCOUNT_CODES[code] ?? 0;
     } catch { /* body might be empty */ }
 
     const { data: cartItems, error: cartError } = await supabase

@@ -139,8 +139,8 @@ export default function SupportPage() {
       {/* Navbar */}
       <nav style={{ background: SURFACE, borderBottom: `1px solid ${BORDER}`, padding: "0 24px", height: 58, display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0 }}>
         <a href="/marketplace" style={{ display: "flex", alignItems: "center", gap: 8, textDecoration: "none" }}>
-          <div style={{ width: 30, height: 30, background: ORANGE, borderRadius: 7, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 900, fontSize: 14, color: "#fff", fontFamily: "'Syne',sans-serif" }}>V</div>
-          <span style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 14, color: TEXT }}>Vendoro</span>
+          <img src="/flowio-icon.png" alt="Flowio" style={{ width: 30, height: 30, borderRadius: 7, objectFit: "cover" }} />
+          <span style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 14, color: TEXT }}>Flowio</span>
         </a>
         <a href="/profile" style={{ fontSize: 13, color: TEXT2, textDecoration: "none", fontWeight: 500 }}>← Zurück</a>
       </nav>
@@ -152,7 +152,7 @@ export default function SupportPage() {
         <div style={{ padding: "20px 0 12px", borderBottom: `1px solid ${BORDER}`, display: "flex", alignItems: "center", gap: 12 }}>
           <div style={{ width: 42, height: 42, borderRadius: 12, background: `${ORANGE}15`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20 }}>💬</div>
           <div>
-            <p style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 16, color: TEXT }}>Vendoro Support</p>
+            <p style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 16, color: TEXT }}>Flowio Support</p>
             <p style={{ fontSize: 12, color: TEXT3, marginTop: 2 }}>Wir helfen dir so schnell wie möglich.</p>
           </div>
         </div>
@@ -183,7 +183,7 @@ export default function SupportPage() {
                       return (
                         <div key={msg.id} style={{ display: "flex", justifyContent: isMe ? "flex-end" : "flex-start", marginTop: prevSame ? 2 : 10 }}>
                           {!isMe && !prevSame && (
-                            <div style={{ width: 28, height: 28, borderRadius: 8, background: `${ORANGE}15`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, marginRight: 8, flexShrink: 0, alignSelf: "flex-end", marginBottom: 2 }}>V</div>
+                            <img src="/flowio-icon.png" alt="Flowio Support" style={{ width: 28, height: 28, borderRadius: 8, objectFit: "cover", marginRight: 8, flexShrink: 0, alignSelf: "flex-end", marginBottom: 2 }} />
                           )}
                           {!isMe && prevSame && <div style={{ width: 36 }} />}
                           <div style={{ maxWidth: "72%" }}>

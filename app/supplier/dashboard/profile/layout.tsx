@@ -1,7 +1,7 @@
 ﻿import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Profil | Vendoro",
+  title: "Profil | Flowio",
   description: "Lieferantenprofil verwalten.",
 };
 

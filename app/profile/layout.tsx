@@ -1,8 +1,8 @@
 ﻿import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Profil | Vendoro",
-  description: "Dein Vendoro-Profil verwalten.",
+  title: "Profil | Flowio",
+  description: "Dein Flowio-Profil verwalten.",
 };
 
 export default function Layout({ children }: { children: React.ReactNode }) {

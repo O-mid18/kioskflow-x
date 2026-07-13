@@ -63,12 +63,45 @@ export async function POST(request: Request) {
         .eq("order_id", order.id);
 
       if (orderItems && orderItems.length > 0) {
-        await Promise.all(orderItems.map(async (item: any) => {
-          await db.rpc("decrement_product_stock", {
+        // Conflict-aware stock decrement: returns true if decremented, false if insufficient stock
+        const decrementResults = await Promise.all(orderItems.map(async (item: any) => {
+          const { data } = await db.rpc("decrement_product_stock", {
             p_product_id: item.product_id,
             p_qty: item.quantity,
           });
+          return { item, success: data === true };
         }));
+
+        const conflicts = decrementResults.filter(r => !r.success);
+        if (conflicts.length > 0) {
+          // Roll back successful decrements
+          await Promise.all(
+            decrementResults
+              .filter(r => r.success)
+              .map(r => db.rpc("increment_product_stock", { p_product_id: r.item.product_id, p_qty: r.item.quantity }))
+          );
+          // Cancel the order and issue Stripe refund
+          await db.from("orders").update({ status: "cancelled" }).eq("id", order.id);
+          try {
+            const paymentIntent = session.payment_intent as string;
+            if (paymentIntent) {
+              await stripe.refunds.create({ payment_intent: paymentIntent });
+            }
+          } catch (refundErr: any) {
+            console.error("[webhook] refund failed:", refundErr?.message);
+          }
+          // Notify buyer
+          if (order.buyer_id) {
+            await db.from("notifications").insert({
+              user_id: order.buyer_id,
+              type: "order_cancelled",
+              title: "Bestellung storniert — Rückerstattung eingeleitet",
+              body: `Bestellung #${(order.id as string).slice(-6).toUpperCase()} wurde wegen Lagerengpass storniert. Du erhältst eine vollständige Rückerstattung.`,
+              link: "/orders",
+            }).then(({ error }) => { if (error) console.warn("Buyer notification skipped:", error.message); });
+          }
+          return NextResponse.json({ received: true, stockConflict: true });
+        }
       }
 
       const distinctSupplierIds = Array.from(

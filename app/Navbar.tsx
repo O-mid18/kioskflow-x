@@ -42,11 +42,9 @@ export default function Navbar() {
       zIndex: 50,
     }}>
       <Link href="/marketplace" style={{ display: "flex", alignItems: "center", gap: 8, textDecoration: "none" }}>
-        <div style={{ width: 30, height: 30, background: ORANGE, borderRadius: 7, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 900, fontSize: 14, color: "#fff" }}>
-          V
-        </div>
+        <img src="/flowio-icon.png" alt="Flowio" style={{ width: 30, height: 30, borderRadius: 7, objectFit: "cover" }} />
         <span style={{ fontWeight: 800, fontSize: 15, color: "var(--kf-text)", letterSpacing: "-0.3px" }}>
-          Vendoro
+          Flowio
         </span>
       </Link>
 

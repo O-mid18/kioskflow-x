@@ -1,8 +1,8 @@
 ﻿import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Produkt hinzufuegen | Vendoro",
-  description: "Neues Produkt im Vendoro Marktplatz einstellen.",
+  title: "Produkt hinzufuegen | Flowio",
+  description: "Neues Produkt im Flowio Marktplatz einstellen.",
 };
 
 export default function Layout({ children }: { children: React.ReactNode }) {

@@ -1,7 +1,7 @@
 ﻿import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Produkte | Vendoro",
+  title: "Produkte | Flowio",
   description: "Deine Produkte verwalten.",
 };
 

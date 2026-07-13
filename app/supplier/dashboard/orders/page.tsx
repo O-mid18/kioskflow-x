@@ -83,6 +83,7 @@ export default function SupplierOrdersPage() {
               title: notifTitle,
               body: `Bestell-ID: #${orderId.slice(-6).toUpperCase()}`,
               link: "/orders",
+              orderId,
             }),
           });
         });

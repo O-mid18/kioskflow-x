@@ -1,7 +1,7 @@
 ﻿import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Nachrichten | Vendoro",
+  title: "Nachrichten | Flowio",
   description: "Nachrichten im Lieferanten-Portal.",
 };
 

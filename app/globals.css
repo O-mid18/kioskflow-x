@@ -4,7 +4,7 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* Vendoro theme tokens */
+/* Flowio theme tokens */
 :root {
   --kf-bg: #E8E4DC;
   --kf-surface: #F4F1EC;
@@ -235,7 +235,7 @@ body > main, #__next > main {
   animation: kf-page-in 0.25s ease;
 }
 
-/* ── Sync body background to Vendoro warm parchment ── */
+/* ── Sync body background to Flowio warm parchment ── */
 :root {
   --background: #E8E4DC;
   --foreground: #100E0B;

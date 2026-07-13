@@ -1,7 +1,7 @@
 ﻿import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Marktplatz | Vendoro",
+  title: "Marktplatz | Flowio",
   description: "Entdecke Getraenke und Snacks von lokalen Lieferanten.",
 };
 

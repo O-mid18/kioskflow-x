@@ -14,28 +14,28 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Vendoro — Direkt vom Hersteller zum Kiosk",
+  title: "Flowio — Direkt vom Hersteller zum Kiosk",
   description: "B2B Marktplatz fuer lokale Marken und Kiosk-Betreiber in Frankfurt. Keine Mindestmengen. Keine Zwischenhaendler.",
   keywords: ["Kiosk", "Spaeti", "Grosshandel", "Frankfurt", "B2B", "Getraenke", "Snacks"],
-  authors: [{ name: "Vendoro" }],
+  authors: [{ name: "Flowio" }],
   metadataBase: new URL("https://kioskflow-x.vercel.app"),
   openGraph: {
-    title: "Vendoro — Direkt vom Hersteller zum Kiosk",
+    title: "Flowio — Direkt vom Hersteller zum Kiosk",
     description: "B2B Marktplatz fuer lokale Marken und Kiosk-Betreiber in Frankfurt.",
     url: "https://kioskflow-x.vercel.app",
-    siteName: "Vendoro",
+    siteName: "Flowio",
     locale: "de_DE",
     type: "website",
-    images: [{ url: "/og-image.svg", width: 1200, height: 630, alt: "Vendoro" }],
+    images: [{ url: "/og-image.svg", width: 1200, height: 630, alt: "Flowio" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Vendoro — Direkt vom Hersteller zum Kiosk",
+    title: "Flowio — Direkt vom Hersteller zum Kiosk",
     description: "B2B Marktplatz fuer lokale Marken und Kiosk-Betreiber in Frankfurt.",
     images: ["/og-image.svg"],
   },
   icons: {
-    icon: [{ url: "/favicon.ico", sizes: "any" }, { url: "/icon.svg", type: "image/svg+xml" }],
+    icon: [{ url: "/favicon.ico", sizes: "any" }],
     apple: "/apple-touch-icon.png",
   },
 };

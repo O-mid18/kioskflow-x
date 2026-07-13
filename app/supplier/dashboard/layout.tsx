@@ -64,9 +64,9 @@ export default function SupplierDashboardLayout({ children }: { children: React.
         {/* Logo */}
         <div style={{ padding: "24px 20px 20px", borderBottom: `1px solid ${BORDER}` }}>
           <a href="/marketplace" style={{ display:"flex", alignItems:"center", gap:10 }}>
-            <div style={{ width:34, height:34, background:ORANGE, borderRadius:9, display:"flex", alignItems:"center", justifyContent:"center", fontFamily:"'Syne',sans-serif", fontWeight:900, fontSize:16, color:"#fff", flexShrink:0 }}>V</div>
+            <img src="/flowio-icon.png" alt="Flowio" style={{ width: 34, height: 34, borderRadius: 9, objectFit: "cover" }} />
             <div>
-              <p style={{ fontFamily:"'Syne',sans-serif", fontWeight:800, fontSize:15, color:TEXT, letterSpacing:"-0.3px", lineHeight:1 }}>Vendoro</p>
+              <p style={{ fontFamily:"'Syne',sans-serif", fontWeight:800, fontSize:15, color:TEXT, letterSpacing:"-0.3px", lineHeight:1 }}>Flowio</p>
               <p style={{ fontSize:10, color:TEXT3, marginTop:2 }}>Lieferant-Portal</p>
             </div>
           </a>

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import MobileNav from "./components/MobileNav";
 
 export const metadata: Metadata = {
-  title: "Vendoro — Direkt vom Hersteller zum Kiosk",
+  title: "Flowio — Direkt vom Hersteller zum Kiosk",
   description: "B2B Marktplatz für lokale Marken und Kiosk-Betreiber in Frankfurt. Keine Mindestmengen, Direktpreise, Lieferung in 24h.",
 };
 
@@ -44,9 +44,9 @@ export default function HomePage() {
 
       {/* NAVBAR */}
       <nav role="navigation" aria-label="Hauptnavigation" style={{ position: "sticky", top: 0, zIndex: 50, background: "var(--kf-surface)", borderBottom: "1px solid var(--kf-border)", padding: "0 32px", height: 60, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        <a href="/" aria-label="Vendoro — Startseite" style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none" }}>
-          <div style={{ width: 32, height: 32, background: ORANGE, borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Syne',sans-serif", fontWeight: 900, fontSize: 15, color: "#fff" }} aria-hidden="true">V</div>
-          <span style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 16, color: "var(--kf-text)", letterSpacing: "-0.3px" }}>Vendoro</span>
+        <a href="/" aria-label="Flowio — Startseite" style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none" }}>
+          <img src="/flowio-icon.png" alt="" aria-hidden="true" style={{ width: 32, height: 32, borderRadius: 8, objectFit: "cover" }} />
+          <span style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 16, color: "var(--kf-text)", letterSpacing: "-0.3px" }}>Flowio</span>
         </a>
         <div className="kf-nav-links" style={{ display: "flex", alignItems: "center", gap: 28 }}>
           <a href="/marketplace" className="kf-nav-link" style={{ fontSize: 14, fontWeight: 500, color: "var(--kf-text2)", textDecoration: "none" }}>Marktplatz</a>
@@ -92,9 +92,9 @@ export default function HomePage() {
           </div>
           <div style={{ width: 2, height: 20, background: "var(--kf-border)", margin: "0 auto" }} aria-hidden="true" />
           <div style={{ background: ORANGE, borderRadius: 16, padding: "20px", display: "flex", alignItems: "center", gap: 14 }}>
-            <div style={{ width: 44, height: 44, background: "rgba(255,255,255,0.2)", borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Syne',sans-serif", fontWeight: 900, fontSize: 20, color: "#fff", flexShrink: 0 }} aria-hidden="true">V</div>
+            <img src="/flowio-icon.png" alt="" aria-hidden="true" style={{ width: 44, height: 44, borderRadius: 12, objectFit: "cover", flexShrink: 0 }} />
             <div style={{ flex: 1 }}>
-              <p style={{ fontWeight: 700, fontSize: 14, color: "#fff" }}>Vendoro Marktplatz</p>
+              <p style={{ fontWeight: 700, fontSize: 14, color: "#fff" }}>Flowio Marktplatz</p>
               <p style={{ fontSize: 12, color: "rgba(255,255,255,0.7)" }}>Sichere Zahlung · Direktpreise</p>
             </div>
             <div style={{ textAlign: "right", flexShrink: 0 }}>
@@ -168,7 +168,7 @@ export default function HomePage() {
       {/* FEATURES */}
       <section style={{ maxWidth: 1200, margin: "0 auto", padding: "80px 32px" }}>
         <div style={{ textAlign: "center", marginBottom: 52 }} className="kf-reveal">
-          <p style={{ fontSize: 12, fontWeight: 700, color: ORANGE, letterSpacing: "2.5px", textTransform: "uppercase", marginBottom: 12 }}>Warum Vendoro</p>
+          <p style={{ fontSize: 12, fontWeight: 700, color: ORANGE, letterSpacing: "2.5px", textTransform: "uppercase", marginBottom: 12 }}>Warum Flowio</p>
           <h2 style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: "clamp(1.8rem,3.5vw,2.6rem)", color: "var(--kf-text)", letterSpacing: "-0.8px" }}>Gebaut für Späti-Betreiber</h2>
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16 }} className="kf-features-grid">
@@ -201,7 +201,7 @@ export default function HomePage() {
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20 }} className="kf-steps-grid">
           {([
-            { quote: "Seitdem ich über Vendoro bestelle, spare ich im Schnitt 30% gegenüber meinem alten Großhändler. Der Unterschied ist sofort spürbar.", author: "Ahmed K.", role: "Späti, Frankfurt-Sachsenhausen" },
+            { quote: "Seitdem ich über Flowio bestelle, spare ich im Schnitt 30% gegenüber meinem alten Großhändler. Der Unterschied ist sofort spürbar.", author: "Ahmed K.", role: "Späti, Frankfurt-Sachsenhausen" },
             { quote: "Keine Mindestmenge ist ein echter Gamechanger. Ich teste jetzt neue Produkte ohne Restrisiko — meine Kunden lieben die Auswahl.", author: "Marta S.", role: "Getränkeladen, Frankfurt-Bornheim" },
             { quote: "Bestellung am Abend, Lieferung am nächsten Morgen. So sollte Einkauf für Kioske immer funktionieren.", author: "Yusuf D.", role: "Kiosk, Frankfurt-Ostbahnhof" },
           ] as const).map(({ quote, author, role }, i) => (
@@ -263,8 +263,8 @@ export default function HomePage() {
         <div style={{ maxWidth: 1200, margin: "0 auto", display: "grid", gridTemplateColumns: "2fr 1fr 1fr 1fr", gap: 48, marginBottom: 36 }} className="kf-footer-grid">
           <div>
             <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
-              <div style={{ width: 28, height: 28, background: ORANGE, borderRadius: 7, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Syne',sans-serif", fontWeight: 900, fontSize: 13, color: "#fff" }} aria-hidden="true">V</div>
-              <span style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 14, color: "var(--kf-text)" }}>Vendoro</span>
+              <img src="/flowio-icon.png" alt="" aria-hidden="true" style={{ width: 28, height: 28, borderRadius: 7, objectFit: "cover" }} />
+              <span style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 14, color: "var(--kf-text)" }}>Flowio</span>
             </div>
             <p style={{ fontSize: 13, color: "var(--kf-text3)", lineHeight: 1.7, maxWidth: 260 }}>B2B Marktplatz für Kiosk-Betreiber und lokale Marken in Frankfurt, Deutschland.</p>
           </div>
@@ -284,7 +284,7 @@ export default function HomePage() {
           ))}
         </div>
         <div style={{ borderTop: "1px solid var(--kf-border)", paddingTop: 24, display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12 }}>
-          <p style={{ fontSize: 12, color: "var(--kf-text3)" }}>© 2026 Vendoro. Alle Rechte vorbehalten.</p>
+          <p style={{ fontSize: 12, color: "var(--kf-text3)" }}>© 2026 Flowio. Alle Rechte vorbehalten.</p>
           <p style={{ fontSize: 12, color: "var(--kf-text3)" }}>Made in Frankfurt 🇩🇪</p>
         </div>
       </footer>

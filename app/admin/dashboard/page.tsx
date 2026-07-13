@@ -237,8 +237,8 @@ export default function AdminDashboard() {
       {/* Header */}
       <header style={{ background: SURFACE, borderBottom: `1px solid ${BORDER}`, padding: "0 32px", height: 60, display: "flex", alignItems: "center", justifyContent: "space-between", position: "sticky", top: 0, zIndex: 50 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <div style={{ width: 32, height: 32, background: ORANGE, borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 900, fontSize: 15, color: "#fff", fontFamily: "'Syne',sans-serif" }}>V</div>
-          <span style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 15, color: TEXT }}>Vendoro</span>
+          <img src="/flowio-icon.png" alt="Flowio" style={{ width: 32, height: 32, borderRadius: 8, objectFit: "cover" }} />
+          <span style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 15, color: TEXT }}>Flowio</span>
           <span style={{ fontSize: 12, background: `${ORANGE}15`, color: ORANGE, fontWeight: 700, padding: "2px 8px", borderRadius: 100, marginLeft: 4 }}>Admin</span>
         </div>
         <div style={{ display: "flex", gap: 10 }}>
@@ -422,7 +422,7 @@ export default function AdminDashboard() {
                           const { error } = await supabase.from("suppliers").update({ verified: true }).eq("id", s.id);
                           if (error) { flash(error.message, false); return; }
                           flash("Lieferant verifiziert ✅", true);
-                          supabase.auth.getSession().then(({ data: { session } }) => { if (session) fetch("/api/notify", { method: "POST", headers: { "Content-Type": "application/json", "Authorization": `Bearer ${session.access_token}` }, body: JSON.stringify({ user_id: s.user_id, type: "info", title: "✅ Ihr Konto wurde verifiziert", body: "Vendoro hat Ihr Unternehmen bestätigt. Sie können jetzt Produkte verkaufen.", link: "/supplier/dashboard/verification" }) }); });
+                          supabase.auth.getSession().then(({ data: { session } }) => { if (session) fetch("/api/notify", { method: "POST", headers: { "Content-Type": "application/json", "Authorization": `Bearer ${session.access_token}` }, body: JSON.stringify({ user_id: s.user_id, type: "info", title: "✅ Ihr Konto wurde verifiziert", body: "Flowio hat Ihr Unternehmen bestätigt. Sie können jetzt Produkte verkaufen.", link: "/supplier/dashboard/verification" }) }); });
                           fetchAll();
                         }} style={{ background: "#16a34a", color: "#fff", border: "none", borderRadius: 8, padding: "7px 16px", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
                           Verifizieren ✅

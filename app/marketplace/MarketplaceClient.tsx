@@ -369,8 +369,8 @@ export default function MarketplacePage({ initialProducts = [], initialSuppliers
         `}</style>
         <div style={{ maxWidth:1100, margin:"0 auto", display:"flex", alignItems:"center", justifyContent:"space-between", gap:14 }}>
           <div style={{ display:"flex", alignItems:"center", gap:8 }}>
-            <div style={{ width:32, height:32, background:ORANGE, borderRadius:8, display:"flex", alignItems:"center", justifyContent:"center", fontFamily:"'Syne',sans-serif", fontWeight:800, fontSize:15, color:"#fff" }}>V</div>
-            <span style={{ fontFamily:"'Syne',sans-serif", fontWeight:800, fontSize:16, color:TEXT, letterSpacing:"-0.3px" }}>Vendoro</span>
+            <img src="/flowio-icon.png" alt="Flowio" style={{ width: 32, height: 32, borderRadius: 8, objectFit: "cover" }} />
+            <span style={{ fontFamily:"'Syne',sans-serif", fontWeight:800, fontSize:16, color:TEXT, letterSpacing:"-0.3px" }}>Flowio</span>
           </div>
           <div className="kf-search-bar" style={{ flex:1, maxWidth:380, position:"relative" }}>
             <svg style={{ position:"absolute", left:12, top:"50%", transform:"translateY(-50%)" }} width={14} height={14} fill="none" stroke={TEXT3} strokeWidth="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>

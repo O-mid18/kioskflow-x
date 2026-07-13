@@ -25,6 +25,13 @@ export async function POST(request: Request) {
   const { data: supplierItems } = await db.from("order_items").select("id").eq("order_id", orderId).eq("supplier_id", callerSupplier.id).limit(1);
   if (!supplierItems || supplierItems.length === 0) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
+  // Idempotency: claim the restoration slot — unique constraint prevents double-restore
+  const { error: claimErr } = await db.from("order_stock_restorations").insert({ order_id: orderId, supplier_id: callerSupplier.id });
+  if (claimErr) {
+    if (claimErr.code === "23505") return NextResponse.json({ ok: true, alreadyRestored: true });
+    return NextResponse.json({ error: "Failed to claim restoration slot" }, { status: 500 });
+  }
+
   const { data: orderItems } = await db.from("order_items").select("product_id, quantity").eq("order_id", orderId).eq("supplier_id", callerSupplier.id);
   if (!orderItems || orderItems.length === 0) return NextResponse.json({ ok: true });
 

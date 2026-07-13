@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Owner | Vendoro",
+  title: "Owner | Flowio",
   robots: { index: false, follow: false },
 };
 

@@ -256,13 +256,13 @@ function StripeConnectCard({ supabase }: { supabase: any }) {
       {status === "loading" && <p style={{ fontSize: 13, color: "var(--kf-text3)" }}>Status wird geladen...</p>}
       {status === "connected" && (
         <p style={{ fontSize: 13, color: "var(--kf-text2)", lineHeight: 1.6 }}>
-          Dein Stripe-Konto ist verbunden. Nach einem Verkauf erhältst du <strong>95%</strong> automatisch — Vendoro behält 5%.
+          Dein Stripe-Konto ist verbunden. Nach einem Verkauf erhältst du <strong>95%</strong> automatisch — Flowio behält 5%.
         </p>
       )}
       {status === "not_connected" && (
         <div>
           <p style={{ fontSize: 13, color: "var(--kf-text2)", lineHeight: 1.6, marginBottom: 16 }}>
-            Verbinde dein Bankkonto über Stripe. Du erhältst <strong>95%</strong> jedes Verkaufs direkt auf dein Konto — Vendoro behält 5% als Plattformgebühr.
+            Verbinde dein Bankkonto über Stripe. Du erhältst <strong>95%</strong> jedes Verkaufs direkt auf dein Konto — Flowio behält 5% als Plattformgebühr.
           </p>
           <button
             onClick={handleConnect}

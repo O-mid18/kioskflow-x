@@ -1,7 +1,7 @@
 ﻿import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Lieferanten-Dashboard | Vendoro",
+  title: "Lieferanten-Dashboard | Flowio",
   description: "Verwalte deine Produkte und Bestellungen als Lieferant.",
 };
 

@@ -110,8 +110,8 @@ export default function AddProductPage() {
       {/* Header */}
       <nav style={{ background:SURFACE, borderBottom:`1px solid ${BORDER}`, padding:"0 24px", height:60, display:"flex", alignItems:"center", justifyContent:"space-between" }}>
         <div style={{ display:"flex", alignItems:"center", gap:8 }}>
-          <div style={{ width:30, height:30, background:ORANGE, borderRadius:7, display:"flex", alignItems:"center", justifyContent:"center", fontWeight:900, fontSize:14, color:"#fff", fontFamily:"'Syne',sans-serif" }}>V</div>
-          <span style={{ fontFamily:"'Syne',sans-serif", fontWeight:800, fontSize:14, color:TEXT, letterSpacing:"-0.3px" }}>Vendoro</span>
+          <img src="/flowio-icon.png" alt="Flowio" style={{ width: 30, height: 30, borderRadius: 7, objectFit: "cover" }} />
+          <span style={{ fontFamily:"'Syne',sans-serif", fontWeight:800, fontSize:14, color:TEXT, letterSpacing:"-0.3px" }}>Flowio</span>
         </div>
         <a href="/supplier/dashboard/products" style={{ color:TEXT2, fontSize:13, textDecoration:"none", display:"flex", alignItems:"center", gap:6, fontWeight:500 }}>← Zurück zum Dashboard</a>
       </nav>
@@ -120,7 +120,7 @@ export default function AddProductPage() {
         <div style={{ marginBottom:32 }}>
           <p style={{ fontSize:11, fontWeight:700, color:TEXT3, letterSpacing:"2.5px", textTransform:"uppercase", marginBottom:8 }}>Lieferant-Dashboard</p>
           <h1 style={{ fontFamily:"'Syne',sans-serif", fontWeight:800, fontSize:28, color:TEXT, letterSpacing:"-0.8px", marginBottom:6 }}>Produkt hinzufügen</h1>
-          <p style={{ color:TEXT2, fontSize:14 }}>Neues Produkt im Vendoro Marktplatz listen.</p>
+          <p style={{ color:TEXT2, fontSize:14 }}>Neues Produkt im Flowio Marktplatz listen.</p>
         </div>
 
         {errorMsg && (
