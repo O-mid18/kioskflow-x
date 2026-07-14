@@ -5,12 +5,20 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export function translateAuthError(message: string | undefined | null): string {
+export function translateAuthError(err: { message?: string | null; status?: number } | string | undefined | null): string {
+  const err_obj = typeof err === "string" ? { message: err } : (err ?? {});
+  const message = err_obj.message;
+
+  // Status-code check first — more reliable than matching on message text
+  if ((err_obj as any).status === 429) {
+    return "Zu viele Versuche kurz hintereinander. Bitte warte 1 Minute und versuche es erneut.";
+  }
+
   if (!message) return "Registrierung fehlgeschlagen. Bitte versuche es erneut.";
   const m = message.toLowerCase();
 
-  if (m.includes("security purposes") || m.includes("rate limit")) {
-    return "Bitte warte kurz (ca. 1 Minute) und versuche es dann erneut.";
+  if (m.includes("security purposes") || m.includes("rate limit") || m.includes("too many") || m.includes("429")) {
+    return "Zu viele Versuche kurz hintereinander. Bitte warte 1 Minute und versuche es erneut.";
   }
   if (m.includes("already registered") || m.includes("already exists") || m.includes("user already")) {
     return "Für diese E-Mail-Adresse existiert bereits ein Konto. Bitte einloggen.";

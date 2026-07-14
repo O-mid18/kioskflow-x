@@ -26,7 +26,7 @@ export default function ForgotPasswordPage() {
       redirectTo: `${window.location.origin}/auth/reset-password`,
     });
     setLoading(false);
-    if (error) setErrorMsg(translateAuthError(error.message));
+    if (error) setErrorMsg(translateAuthError(error));
     else setSent(true);
   };
 
