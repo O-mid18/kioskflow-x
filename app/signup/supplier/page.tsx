@@ -37,7 +37,12 @@ export default function SupplierSignupPage() {
     setMsg(null);
     const { data, error } = await supabase.auth.signUp({ email: fields.email, password: fields.password });
     setLoading(false);
-    if (error || !data.user) { setMsg({ text: translateAuthError(error), ok: false }); return; }
+    if (error) { setMsg({ text: translateAuthError(error), ok: false }); return; }
+
+    if (!data.user) {
+      setMsg({ text: "Für diese E-Mail-Adresse existiert bereits ein Konto. Bitte einloggen.", ok: false });
+      return;
+    }
 
     if (data.user.identities && data.user.identities.length === 0) {
       setMsg({ text: "Für diese E-Mail-Adresse existiert bereits ein Konto. Bitte einloggen.", ok: false });

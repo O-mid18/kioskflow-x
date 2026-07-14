@@ -38,8 +38,16 @@ export default function BuyerSignupPage() {
     setMsg(null);
     const { data, error } = await supabase.auth.signUp({ email: fields.email, password: fields.password });
     setLoading(false);
-    if (error || !data.user) { setMsg({ text: translateAuthError(error), ok: false }); return; }
+    if (error) { setMsg({ text: translateAuthError(error), ok: false }); return; }
 
+    // Supabase anti-enumeration: returns user=null (no error) when email is
+    // already registered in some project configurations.
+    if (!data.user) {
+      setMsg({ text: "Für diese E-Mail-Adresse existiert bereits ein Konto. Bitte einloggen.", ok: false });
+      return;
+    }
+
+    // Supabase anti-enumeration variant: user returned but identities is empty.
     if (data.user.identities && data.user.identities.length === 0) {
       setMsg({ text: "Für diese E-Mail-Adresse existiert bereits ein Konto. Bitte einloggen.", ok: false });
       return;
