@@ -39,6 +39,11 @@ export default function SupplierSignupPage() {
     setLoading(false);
     if (error || !data.user) { setMsg({ text: translateAuthError(error?.message), ok: false }); return; }
 
+    if (data.user.identities && data.user.identities.length === 0) {
+      setMsg({ text: "Für diese E-Mail-Adresse existiert bereits ein Konto. Bitte einloggen.", ok: false });
+      return;
+    }
+
     if (!data.session) {
       localStorage.setItem("kf_pending_signup", JSON.stringify({ type: "supplier", ...fields }));
       setOtpStep(true);
