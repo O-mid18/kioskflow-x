@@ -51,8 +51,7 @@ export default function SupplierSignupPage() {
 
     if (!data.session) {
       localStorage.setItem("kf_pending_signup", JSON.stringify({ type: "supplier", ...fields }));
-      setOtpStep(true);
-      setMsg({ text: `Code gesendet an ${fields.email}`, ok: true });
+      router.push(`/auth/verify?email=${encodeURIComponent(fields.email)}`);
       return;
     }
 
@@ -194,6 +193,12 @@ export default function SupplierSignupPage() {
         {msg && (
           <div style={{ background: msg.ok ? "#f0fdf4" : "#fef2f2", border: `1.5px solid ${msg.ok ? "#bbf7d0" : "#fca5a5"}`, borderRadius: 10, padding: "12px 16px", marginBottom: 20 }}>
             <p style={{ color: msg.ok ? "#16a34a" : "#dc2626", fontSize: 13 }}>{msg.text}</p>
+            {!msg.ok && fields.email && (
+              <p style={{ color: "#dc2626", fontSize: 12, marginTop: 6 }}>
+                Falls du bereits eine Bestätigungs-E-Mail erhalten hast,{" "}
+                <a href={`/auth/verify?email=${encodeURIComponent(fields.email)}`} style={{ color: "#dc2626", fontWeight: 700 }}>Code hier eingeben →</a>
+              </p>
+            )}
           </div>
         )}
 
