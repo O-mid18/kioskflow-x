@@ -18,7 +18,7 @@ function VerifyInner() {
   const router = useRouter();
   const params = useSearchParams();
   const [email, setEmail] = useState(params.get("email") ?? "");
-  const [otp, setOtp] = useState(["", "", "", "", "", ""]);
+  const [otp, setOtp] = useState(["", "", "", "", "", "", "", ""]);
   const [loading, setLoading] = useState(false);
   const [resendCooldown, setResendCooldown] = useState(0);
   const [msg, setMsg] = useState<{ text: string; ok: boolean } | null>(null);
@@ -27,7 +27,7 @@ function VerifyInner() {
   const handleOtpChange = (i: number, val: string) => {
     const digit = val.replace(/\D/g, "").slice(-1);
     const next = [...otp]; next[i] = digit; setOtp(next);
-    if (digit && i < 5) otpRefs.current[i + 1]?.focus();
+    if (digit && i < 7) otpRefs.current[i + 1]?.focus();
   };
 
   const handleOtpKey = (i: number, e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -35,14 +35,14 @@ function VerifyInner() {
   };
 
   const handlePaste = (e: React.ClipboardEvent) => {
-    const text = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, 6);
-    if (text.length === 6) { setOtp(text.split("")); otpRefs.current[5]?.focus(); }
+    const text = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, 8);
+    if (text.length === 8) { setOtp(text.split("")); otpRefs.current[7]?.focus(); }
   };
 
   const handleVerify = async () => {
     if (!email) { setMsg({ text: "Bitte E-Mail-Adresse eingeben.", ok: false }); return; }
     const code = otp.join("");
-    if (code.length < 6) { setMsg({ text: "Bitte alle 6 Ziffern eingeben.", ok: false }); return; }
+    if (code.length < 8) { setMsg({ text: "Bitte alle 8 Ziffern eingeben.", ok: false }); return; }
 
     setLoading(true);
     setMsg(null);
@@ -123,7 +123,7 @@ function VerifyInner() {
           <div style={{ width: 56, height: 56, background: `${ORANGE}15`, borderRadius: 16, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28, margin: "0 auto 16px" }}>✉️</div>
           <h1 style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 24, color: TEXT, letterSpacing: "-0.6px", marginBottom: 8 }}>E-Mail bestätigen</h1>
           <p style={{ color: TEXT2, fontSize: 14, lineHeight: 1.6 }}>
-            Gib den 6-stelligen Code ein,<br />den wir dir per E-Mail gesendet haben.
+            Gib den 8-stelligen Code ein,<br />den wir dir per E-Mail gesendet haben.
           </p>
         </div>
 
@@ -145,7 +145,7 @@ function VerifyInner() {
         </div>
 
         <div style={{ marginBottom: 24 }}>
-          <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: TEXT2, marginBottom: 10, textAlign: "center" }}>6-stelliger Bestätigungscode</label>
+          <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: TEXT2, marginBottom: 10, textAlign: "center" }}>8-stelliger Bestätigungscode</label>
           <div style={{ display: "flex", gap: 10, justifyContent: "center" }} onPaste={handlePaste}>
             {otp.map((digit, i) => (
               <input

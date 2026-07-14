@@ -23,7 +23,7 @@ export default function SupplierSignupPage() {
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState<{ text: string; ok: boolean } | null>(null);
   const [otpStep, setOtpStep] = useState(false);
-  const [otp, setOtp] = useState(["", "", "", "", "", ""]);
+  const [otp, setOtp] = useState(["", "", "", "", "", "", "", ""]);
   const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   const set = (key: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => setFields(f => ({ ...f, [key]: e.target.value }));
@@ -67,7 +67,7 @@ export default function SupplierSignupPage() {
     const next = [...otp];
     next[i] = digit;
     setOtp(next);
-    if (digit && i < 5) otpRefs.current[i + 1]?.focus();
+    if (digit && i < 7) otpRefs.current[i + 1]?.focus();
   };
 
   const handleOtpKey = (i: number, e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -75,16 +75,16 @@ export default function SupplierSignupPage() {
   };
 
   const handleOtpPaste = (e: React.ClipboardEvent) => {
-    const text = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, 6);
-    if (text.length === 6) {
+    const text = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, 8);
+    if (text.length === 8) {
       setOtp(text.split(""));
-      otpRefs.current[5]?.focus();
+      otpRefs.current[7]?.focus();
     }
   };
 
   const handleVerify = async () => {
     const code = otp.join("");
-    if (code.length < 6) { setMsg({ text: "Bitte alle 6 Ziffern eingeben.", ok: false }); return; }
+    if (code.length < 8) { setMsg({ text: "Bitte alle 8 Ziffern eingeben.", ok: false }); return; }
     setLoading(true);
     setMsg(null);
     const { data, error } = await supabase.auth.verifyOtp({ email: fields.email, token: code, type: "signup" });
