@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { supabase } from "@/lib/supabase";
+import { translateAuthError } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 
 const BG = "var(--kf-bg)";
@@ -25,7 +26,7 @@ export default function LoginPage() {
     setLoading(true);
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     setLoading(false);
-    if (error) setErrorMsg(error.message);
+    if (error) setErrorMsg(translateAuthError(error.message));
     else {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {

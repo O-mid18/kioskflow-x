@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { supabase } from "@/lib/supabase";
+import { translateAuthError } from "@/lib/utils";
 
 const BG = "var(--kf-bg)";
 const SURFACE = "var(--kf-surface)";
@@ -25,7 +26,7 @@ export default function ForgotPasswordPage() {
       redirectTo: `${window.location.origin}/auth/reset-password`,
     });
     setLoading(false);
-    if (error) setErrorMsg(error.message);
+    if (error) setErrorMsg(translateAuthError(error.message));
     else setSent(true);
   };
 

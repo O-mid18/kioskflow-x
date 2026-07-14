@@ -2,6 +2,7 @@
 
 import { useState, useRef } from "react";
 import { supabase } from "@/lib/supabase";
+import { translateAuthError } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 
 const BG = "var(--kf-bg)";
@@ -36,7 +37,7 @@ export default function SupplierSignupPage() {
     setMsg(null);
     const { data, error } = await supabase.auth.signUp({ email: fields.email, password: fields.password });
     setLoading(false);
-    if (error || !data.user) { setMsg({ text: error?.message || "Registrierung fehlgeschlagen.", ok: false }); return; }
+    if (error || !data.user) { setMsg({ text: translateAuthError(error?.message), ok: false }); return; }
 
     if (!data.session) {
       localStorage.setItem("kf_pending_signup", JSON.stringify({ type: "supplier", ...fields }));
