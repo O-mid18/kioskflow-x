@@ -50,6 +50,7 @@ export default function SupplierSignupPage() {
     }
 
     // Email confirmation disabled — apply profile immediately
+    if (!data.user) return;
     await supabase.from("profiles").upsert({ id: data.user.id, role: "supplier", status: "pending", company_name: fields.companyName, full_name: fields.contactPerson, address: fields.warehouseAddress, city: fields.city, phone: fields.phone, product_category: fields.productCategory });
     await supabase.from("suppliers").insert({ user_id: data.user.id, name: fields.companyName, phone: fields.phone, city: fields.city });
     setMsg({ text: "Anfrage gesendet! Wir prüfen deinen Antrag in Kürze.", ok: true });

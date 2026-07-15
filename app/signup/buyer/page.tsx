@@ -51,6 +51,7 @@ export default function BuyerSignupPage() {
     }
 
     // Email confirmation disabled — apply profile immediately
+    if (!data.user) return;
     await supabase.from("profiles").upsert({ id: data.user.id, role: "buyer", status: "active", full_name: fields.fullName, company_name: fields.companyName, address: fields.address, postal_code: fields.postalCode, city: fields.city, phone: fields.phone });
     setMsg({ text: "Käufer-Konto erstellt! Weiterleitung...", ok: true });
     setTimeout(() => router.push("/marketplace"), 1200);
