@@ -181,7 +181,11 @@ function VerifyInner() {
             style={{ background: "none", border: "none", color: (resendCooldown > 0 || !email) ? TEXT3 : ORANGE, fontSize: 13, fontWeight: 600, cursor: (resendCooldown > 0 || !email) ? "not-allowed" : "pointer", textDecoration: "underline", fontFamily: "inherit" }}>
             {resendCooldown > 0 ? `Neuen Code anfordern (${resendCooldown}s)` : "Neuen Code anfordern"}
           </button>
-          <a href="/signup" style={{ color: TEXT3, fontSize: 13, textDecoration: "none" }}>← Zurück zur Registrierung</a>
+          <p style={{ color: TEXT3, fontSize: 12, margin: 0 }}>
+            Keinen Code erhalten?{" "}
+            <a href="/login" style={{ color: ORANGE, fontWeight: 600, textDecoration: "none" }}>Stattdessen einloggen →</a>
+          </p>
+          <a href="/signup" style={{ color: TEXT3, fontSize: 12, textDecoration: "none" }}>← Zurück zur Registrierung</a>
         </div>
       </div>
     </main>

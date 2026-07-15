@@ -39,15 +39,11 @@ export default function SupplierSignupPage() {
     setLoading(false);
     if (error) { setMsg({ text: translateAuthError(error), ok: false }); return; }
 
-    if (!data.user) {
-      setMsg({ text: "Für diese E-Mail-Adresse existiert bereits ein Konto. Bitte einloggen.", ok: false });
-      return;
-    }
-
     if (!data.session) {
-      // identities=[] means email exists but unconfirmed — Supabase resent the OTP
-      // identities=[...] means brand-new account — Supabase sent first OTP
-      // Either way, redirect to verify so the user can enter the code.
+      // No session means email confirmation is required.
+      // Anti-enumeration: Supabase may return user=null even for unconfirmed
+      // duplicate emails while still sending the OTP. Always redirect to verify —
+      // the user enters their code there, or clicks "log in" if they have no code.
       localStorage.setItem("kf_pending_signup", JSON.stringify({ type: "supplier", ...fields }));
       router.push(`/auth/verify?email=${encodeURIComponent(fields.email)}`);
       return;
