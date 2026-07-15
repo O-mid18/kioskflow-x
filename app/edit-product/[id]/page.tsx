@@ -98,8 +98,9 @@ export default function EditProductPage() {
     if (!user) { setErrorMsg("Bitte zuerst einloggen."); setSaving(false); return; }
 
     // Ownership check: verify this product belongs to the current user's supplier account
-    const { data: supplier } = await supabase.from("suppliers").select("id").eq("user_id", user.id).maybeSingle();
+    const { data: supplier } = await supabase.from("suppliers").select("id, verified").eq("user_id", user.id).maybeSingle();
     if (!supplier) { setErrorMsg("Kein Lieferantenkonto gefunden."); setSaving(false); return; }
+    if (!supplier.verified) { setErrorMsg("Dein Konto wurde noch nicht freigegeben. Produkte können erst nach der Freigabe bearbeitet werden."); setSaving(false); return; }
     const { data: productCheck } = await supabase.from("products").select("supplier_id").eq("id", String(params.id)).maybeSingle();
     if (!productCheck || productCheck.supplier_id !== supplier.id) { setErrorMsg("Keine Berechtigung, dieses Produkt zu bearbeiten."); setSaving(false); return; }
 

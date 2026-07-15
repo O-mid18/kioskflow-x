@@ -83,6 +83,7 @@ export default function AddProductPage() {
 
     const { data: supplier, error: supplierError } = await supabase.from("suppliers").select("*").eq("user_id", user.id).maybeSingle();
     if (supplierError || !supplier) { setErrorMsg("Lieferantenkonto nicht gefunden."); setIsLoading(false); return; }
+    if (!supplier.verified) { setErrorMsg("Dein Konto wurde noch nicht freigegeben. Sobald unser Team deine Daten geprüft hat, kannst du Produkte hinzufügen."); setIsLoading(false); return; }
 
     const imageUrl = await uploadImage(user.id);
     if (imageFile && !imageUrl) { setIsLoading(false); return; }

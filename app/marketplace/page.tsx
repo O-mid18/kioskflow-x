@@ -6,11 +6,14 @@ export const revalidate = 60;
 export default async function MarketplacePage() {
   try {
     const db = createAdminClient();
-    const [{ data: products }, { data: suppliers }, { data: reviews }] = await Promise.all([
-      db.from("products").select("*"),
-      db.from("suppliers").select("*"),
+    const [{ data: suppliers }, { data: reviews }] = await Promise.all([
+      db.from("suppliers").select("*").eq("verified", true),
       db.from("reviews").select("*"),
     ]);
+    const verifiedIds = (suppliers ?? []).map((s: any) => s.id);
+    const { data: products } = verifiedIds.length > 0
+      ? await db.from("products").select("*").in("supplier_id", verifiedIds)
+      : { data: [] };
     return (
       <MarketplaceClient
         initialProducts={products ?? []}

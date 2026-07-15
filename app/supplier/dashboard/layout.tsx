@@ -24,23 +24,65 @@ const NAV = [
   { label: "Profil",         href: "/supplier/dashboard/profile",        icon: "👤" },
 ];
 
+// Pages accessible even while pending approval
+const ALLOWED_WHILE_PENDING = ["/supplier/dashboard/verification", "/supplier/dashboard/profile", "/support"];
+
 export default function SupplierDashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const [supplierName, setSupplierName] = useState<string | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [verified, setVerified] = useState<boolean | null>(null);
 
   useEffect(() => {
     supabase.auth.getUser().then(async ({ data: { user } }) => {
       if (!user) { window.location.href = "/login"; return; }
       const { data: supplierRow } = await supabase
-        .from("suppliers").select("name").eq("user_id", user.id).maybeSingle();
+        .from("suppliers").select("name, verified").eq("user_id", user.id).maybeSingle();
       setSupplierName(supplierRow?.name ?? user.email ?? "Lieferant");
+      setVerified(supplierRow?.verified ?? false);
     });
   }, []);
 
   const initials = supplierName
     ? supplierName.split(" ").map(w => w[0]).slice(0,2).join("").toUpperCase()
     : "S";
+
+  const isPendingBlocked = verified === false && !ALLOWED_WHILE_PENDING.some(p => pathname.startsWith(p));
+
+  if (isPendingBlocked) {
+    return (
+      <div style={{ minHeight: "100vh", background: BG, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'DM Sans','Helvetica Neue',system-ui,sans-serif", padding: 24 }}>
+        <style>{`@import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600;700&display=swap');`}</style>
+        <div style={{ maxWidth: 480, width: "100%", textAlign: "center" }}>
+          <div style={{ fontSize: 48, marginBottom: 16 }}>⏳</div>
+          <h1 style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 24, color: TEXT, letterSpacing: "-0.5px", marginBottom: 10 }}>
+            Konto wird geprüft
+          </h1>
+          <p style={{ color: TEXT2, fontSize: 15, lineHeight: 1.7, marginBottom: 28 }}>
+            Dein Lieferantenkonto wartet auf die Freigabe durch unser Team. Sobald wir deine Daten geprüft haben, erhältst du Zugang zum Dashboard.
+          </p>
+          <div style={{ background: "var(--kf-surface)", border: `1px solid var(--kf-border)`, borderRadius: 14, padding: "20px 24px", marginBottom: 24, textAlign: "left" }}>
+            <p style={{ fontSize: 13, fontWeight: 700, color: TEXT, marginBottom: 12 }}>Was passiert als nächstes?</p>
+            {["Wir prüfen deine Unternehmensangaben.", "Du erhältst eine Benachrichtigung nach der Freigabe.", "Danach kannst du Produkte listen und Bestellungen erhalten."].map((s, i) => (
+              <div key={i} style={{ display: "flex", gap: 10, marginBottom: 8 }}>
+                <span style={{ color: ORANGE, fontWeight: 700, flexShrink: 0 }}>{i + 1}.</span>
+                <p style={{ color: TEXT2, fontSize: 13 }}>{s}</p>
+              </div>
+            ))}
+          </div>
+          <div style={{ display: "flex", gap: 10, justifyContent: "center", flexWrap: "wrap" }}>
+            <a href="/supplier/dashboard/verification" style={{ background: ORANGE, color: "#fff", borderRadius: 10, padding: "11px 20px", fontWeight: 700, fontSize: 14, textDecoration: "none" }}>
+              Verifizierungsstatus →
+            </a>
+            <button onClick={async () => { await supabase.auth.signOut(); window.location.href = "/login"; }}
+              style={{ background: "none", border: `1.5px solid var(--kf-border)`, borderRadius: 10, padding: "11px 20px", fontWeight: 600, fontSize: 14, cursor: "pointer", color: TEXT2 }}>
+              Abmelden
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div style={{ display: "flex", minHeight: "100vh", background: BG, fontFamily: "'DM Sans','Helvetica Neue',system-ui,sans-serif" }}>
@@ -96,10 +138,12 @@ export default function SupplierDashboardLayout({ children }: { children: React.
           <div style={{ height:1, background:BORDER, margin:"16px 8px" }} />
 
           <p style={{ fontSize:10, fontWeight:700, color:TEXT3, letterSpacing:"1.5px", textTransform:"uppercase", marginBottom:8, padding:"0 8px" }}>Aktionen</p>
-          <a href="/add-product" style={{ display:"flex", alignItems:"center", gap:10, padding:"10px 12px", borderRadius:10, background:ORANGE, color:"#fff", fontWeight:700, fontSize:14 }}>
-            <span style={{ fontSize:16, width:20, textAlign:"center" }}>＋</span>
-            Produkt hinzufügen
-          </a>
+          {verified && (
+            <a href="/add-product" style={{ display:"flex", alignItems:"center", gap:10, padding:"10px 12px", borderRadius:10, background:ORANGE, color:"#fff", fontWeight:700, fontSize:14 }}>
+              <span style={{ fontSize:16, width:20, textAlign:"center" }}>＋</span>
+              Produkt hinzufügen
+            </a>
+          )}
           <a href="/marketplace" style={{ display:"flex", alignItems:"center", gap:10, padding:"10px 12px", borderRadius:10, marginTop:6, color:TEXT2, fontWeight:500, fontSize:14 }}>
             <span style={{ fontSize:16, width:20, textAlign:"center" }}>🏪</span>
             Marktplatz ansehen
