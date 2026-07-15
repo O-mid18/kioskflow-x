@@ -44,12 +44,10 @@ export default function SupplierSignupPage() {
       return;
     }
 
-    if (data.user.identities && data.user.identities.length === 0) {
-      setMsg({ text: "Für diese E-Mail-Adresse existiert bereits ein Konto. Bitte einloggen.", ok: false });
-      return;
-    }
-
     if (!data.session) {
+      // identities=[] means email exists but unconfirmed — Supabase resent the OTP
+      // identities=[...] means brand-new account — Supabase sent first OTP
+      // Either way, redirect to verify so the user can enter the code.
       localStorage.setItem("kf_pending_signup", JSON.stringify({ type: "supplier", ...fields }));
       router.push(`/auth/verify?email=${encodeURIComponent(fields.email)}`);
       return;
