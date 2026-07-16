@@ -52,7 +52,11 @@ export default function BuyerSignupPage() {
 
     // Email confirmation disabled — apply profile immediately
     if (!data.user) return;
-    await supabase.from("profiles").upsert({ id: data.user.id, role: "buyer", status: "active", full_name: fields.fullName, company_name: fields.companyName, address: fields.address, postal_code: fields.postalCode, city: fields.city, phone: fields.phone });
+    const { error: profileErr } = await supabase.from("profiles").upsert({ id: data.user.id, role: "buyer", status: "active", full_name: fields.fullName, company_name: fields.companyName, address: fields.address, postal_code: fields.postalCode, city: fields.city, phone: fields.phone });
+    if (profileErr) {
+      setMsg({ text: "Konto wurde erstellt, aber dein Profil konnte nicht gespeichert werden. Bitte kontaktiere den Support.", ok: false });
+      return;
+    }
     setMsg({ text: "Käufer-Konto erstellt! Weiterleitung...", ok: true });
     setTimeout(() => router.push("/marketplace"), 1200);
   };
@@ -86,7 +90,12 @@ export default function BuyerSignupPage() {
     if (error || !data.user) { setMsg({ text: error?.message || "Ungültiger Code.", ok: false }); setLoading(false); return; }
 
     const pending = (() => { try { return JSON.parse(localStorage.getItem("kf_pending_signup") ?? "{}"); } catch { return {}; } })();
-    await supabase.from("profiles").upsert({ id: data.user.id, role: "buyer", status: "active", full_name: pending.fullName ?? fields.fullName, company_name: pending.companyName, address: pending.address, postal_code: pending.postalCode, city: pending.city, phone: pending.phone });
+    const { error: profileErr } = await supabase.from("profiles").upsert({ id: data.user.id, role: "buyer", status: "active", full_name: pending.fullName ?? fields.fullName, company_name: pending.companyName, address: pending.address, postal_code: pending.postalCode, city: pending.city, phone: pending.phone });
+    if (profileErr) {
+      setLoading(false);
+      setMsg({ text: "E-Mail bestätigt, aber dein Profil konnte nicht gespeichert werden. Bitte versuche dich einzuloggen – falls das nicht klappt, kontaktiere den Support.", ok: false });
+      return;
+    }
     localStorage.removeItem("kf_pending_signup");
     setLoading(false);
     setMsg({ text: "E-Mail bestätigt! Weiterleitung...", ok: true });

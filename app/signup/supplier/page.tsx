@@ -51,8 +51,12 @@ export default function SupplierSignupPage() {
 
     // Email confirmation disabled — apply profile immediately
     if (!data.user) return;
-    await supabase.from("profiles").upsert({ id: data.user.id, role: "supplier", status: "pending", company_name: fields.companyName, full_name: fields.contactPerson, address: fields.warehouseAddress, city: fields.city, phone: fields.phone, product_category: fields.productCategory });
-    await supabase.from("suppliers").insert({ user_id: data.user.id, name: fields.companyName, phone: fields.phone, city: fields.city });
+    const { error: profileErr } = await supabase.from("profiles").upsert({ id: data.user.id, role: "supplier", status: "pending", company_name: fields.companyName, full_name: fields.contactPerson, address: fields.warehouseAddress, city: fields.city, phone: fields.phone, product_category: fields.productCategory });
+    const { error: supplierErr } = await supabase.from("suppliers").insert({ user_id: data.user.id, name: fields.companyName, phone: fields.phone, city: fields.city });
+    if (profileErr || supplierErr) {
+      setMsg({ text: "Konto wurde erstellt, aber dein Lieferantenprofil konnte nicht gespeichert werden. Bitte kontaktiere den Support.", ok: false });
+      return;
+    }
     setMsg({ text: "Anfrage gesendet! Wir prüfen deinen Antrag in Kürze.", ok: true });
     setTimeout(() => router.push("/login"), 2000);
   };
@@ -87,8 +91,13 @@ export default function SupplierSignupPage() {
 
     const pending = (() => { try { return JSON.parse(localStorage.getItem("kf_pending_signup") ?? "{}"); } catch { return {}; } })();
     const uid = data.user.id;
-    await supabase.from("profiles").upsert({ id: uid, role: "supplier", status: "pending", company_name: pending.companyName ?? fields.companyName, full_name: pending.contactPerson, address: pending.warehouseAddress, city: pending.city, phone: pending.phone, product_category: pending.productCategory });
-    await supabase.from("suppliers").insert({ user_id: uid, name: pending.companyName ?? fields.companyName, phone: pending.phone, city: pending.city });
+    const { error: profileErr } = await supabase.from("profiles").upsert({ id: uid, role: "supplier", status: "pending", company_name: pending.companyName ?? fields.companyName, full_name: pending.contactPerson, address: pending.warehouseAddress, city: pending.city, phone: pending.phone, product_category: pending.productCategory });
+    const { error: supplierErr } = await supabase.from("suppliers").insert({ user_id: uid, name: pending.companyName ?? fields.companyName, phone: pending.phone, city: pending.city });
+    if (profileErr || supplierErr) {
+      setLoading(false);
+      setMsg({ text: "E-Mail bestätigt, aber dein Lieferantenprofil konnte nicht gespeichert werden. Bitte kontaktiere den Support.", ok: false });
+      return;
+    }
     localStorage.removeItem("kf_pending_signup");
     setLoading(false);
     setMsg({ text: "E-Mail bestätigt! Dein Antrag wird geprüft. Weiterleitung...", ok: true });

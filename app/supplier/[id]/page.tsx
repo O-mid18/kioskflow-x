@@ -117,8 +117,12 @@ export default function SupplierProfilePage() {
       {/* Supplier hero */}
       <div style={{ background: SURFACE, borderBottom: `1px solid ${BORDER}`, padding: "32px 20px" }}>
         <div style={{ maxWidth: 900, margin: "0 auto", display: "flex", alignItems: "center", gap: 20, flexWrap: "wrap" }}>
-          <div style={{ width: 72, height: 72, borderRadius: 16, overflow: "hidden", flexShrink: 0, background: BG, border: `1px solid ${BORDER}` }}>
-            <img loading="lazy" decoding="async" src={supplier.logo_url || "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=200&q=80"} alt={supplier.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+          <div style={{ width: 72, height: 72, borderRadius: 16, overflow: "hidden", flexShrink: 0, background: BG, border: `1px solid ${BORDER}`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+            {supplier.logo_url ? (
+              <img loading="lazy" decoding="async" src={supplier.logo_url} alt={supplier.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+            ) : (
+              <span style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 28, color: ORANGE }}>{supplier.name?.trim()?.[0]?.toUpperCase() ?? "?"}</span>
+            )}
           </div>
           <div style={{ flex: 1, minWidth: 200 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
