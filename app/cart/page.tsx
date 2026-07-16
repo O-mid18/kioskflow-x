@@ -181,8 +181,8 @@ export default function CartPage() {
                   </div>
                 </div>
                 <div style={{ borderTop:`1.5px solid ${BORDER}`, paddingTop:14, display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:18 }}>
-                  <span style={{ fontFamily:"'Syne',sans-serif", fontWeight:700, fontSize:15, color:TEXT }}>Gesamt</span>
-                  <span style={{ fontFamily:"'Syne',sans-serif", fontWeight:800, fontSize:22, color:TEXT, letterSpacing:"-0.5px" }}>€{total.toFixed(2)}</span>
+                  <span style={{ fontFamily:"'DM Sans',sans-serif", fontWeight:700, fontSize:15, color:TEXT }}>Gesamt</span>
+                  <span style={{ fontFamily:"'DM Sans',sans-serif", fontWeight:800, fontSize:22, color:TEXT, letterSpacing:"-0.5px" }}>€{total.toFixed(2)}</span>
                 </div>
                 <a href="/checkout" style={{ display:"block", background:ORANGE, color:"#fff", fontWeight:700, padding:"14px", borderRadius:11, textDecoration:"none", fontSize:14, textAlign:"center", boxShadow:`0 4px 14px rgba(37,99,235,0.25)` }}>Zur Kasse →</a>
                 <a href="/marketplace" style={{ display:"block", background:BG, color:TEXT2, fontWeight:600, padding:"12px", borderRadius:11, textDecoration:"none", fontSize:13, textAlign:"center", marginTop:8 }}>Weiter einkaufen</a>

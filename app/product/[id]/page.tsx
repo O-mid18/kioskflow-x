@@ -174,7 +174,7 @@ export default function ProductDetailsPage() {
             )}
 
             <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 20 }}>
-              <span style={{ fontFamily: "'Syne',sans-serif", fontSize: 36, fontWeight: 800, color: ORANGE }}>€{product.price}</span>
+              <span style={{ fontFamily: "'DM Sans',sans-serif", fontSize: 36, fontWeight: 800, color: ORANGE }}>€{product.price}</span>
               <span style={{ color: TEXT3, fontSize: 13 }}>/Stück</span>
             </div>
 
@@ -255,7 +255,7 @@ export default function ProductDetailsPage() {
                 <div key={r.id} style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 14, padding: "16px 20px" }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
                     <Stars rating={r.rating} />
-                    <span style={{ fontFamily: "'Syne',sans-serif", fontWeight: 700, fontSize: 13, color: TEXT }}>{r.rating}/5</span>
+                    <span style={{ fontFamily: "'DM Sans',sans-serif", fontWeight: 700, fontSize: 13, color: TEXT }}>{r.rating}/5</span>
                     <span style={{ color: TEXT3, fontSize: 11, marginLeft: "auto" }}>{new Date(r.created_at).toLocaleDateString("de-DE")}</span>
                   </div>
                   {r.comment && <p style={{ color: TEXT2, fontSize: 14, lineHeight: 1.7 }}>{r.comment}</p>}

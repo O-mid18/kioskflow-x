@@ -56,7 +56,7 @@ function CartDrawer({ open, onClose, items, onUpdateQty, onRemove, onClearAll }:
       <div style={{ position:"fixed", top:0, right:0, height:"100%", width:360, background:SURFACE, zIndex:100, display:"flex", flexDirection:"column", transform:open?"translateX(0)":"translateX(100%)", transition:"transform 0.3s cubic-bezier(0.4,0,0.2,1)", borderLeft:`1px solid ${BORDER}`, boxShadow:"-8px 0 40px rgba(0,0,0,0.08)" }}>
         <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"20px 24px", borderBottom:`1px solid ${BORDER}` }}>
           <div>
-            <p style={{ color:TEXT, fontWeight:700, fontSize:16, fontFamily:"'Syne',sans-serif" }}>Warenkorb</p>
+            <p style={{ color:TEXT, fontWeight:700, fontSize:16, fontFamily:"'DM Sans',sans-serif" }}>Warenkorb</p>
             <p style={{ color:TEXT3, fontSize:12, marginTop:2 }}>{items.reduce((s,i)=>s+i.quantity,0)} Artikel</p>
           </div>
           <button onClick={onClose} style={{ width:32, height:32, background:BG, border:`1px solid ${BORDER}`, borderRadius:8, cursor:"pointer", color:TEXT2, fontSize:14 }}>✕</button>
@@ -89,7 +89,7 @@ function CartDrawer({ open, onClose, items, onUpdateQty, onRemove, onClearAll }:
           <div style={{ padding:"16px 24px", borderTop:`1px solid ${BORDER}` }}>
             <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:14 }}>
               <span style={{ color:TEXT2, fontSize:13 }}>Gesamt</span>
-              <span style={{ color:TEXT, fontSize:20, fontWeight:800, fontFamily:"'Syne',sans-serif" }}>€{total.toFixed(2)}</span>
+              <span style={{ color:TEXT, fontSize:20, fontWeight:800, fontFamily:"'DM Sans',sans-serif" }}>€{total.toFixed(2)}</span>
             </div>
             <a href="/checkout" style={{ display:"block", textAlign:"center", background:ORANGE, color:"#fff", fontWeight:700, padding:"14px", borderRadius:12, textDecoration:"none", fontSize:14 }}>Zur Kasse →</a>
             <button onClick={onClearAll} style={{ width:"100%", marginTop:8, background:"none", border:"none", color:TEXT3, fontSize:12, cursor:"pointer", padding:"6px" }}>Warenkorb leeren</button>
@@ -122,8 +122,8 @@ function ProductModal({ product, reviews, onClose, onAddToCart, inWishlist, onTo
         </div>
         <div style={{ padding:"24px 24px 32px" }}>
           <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:8 }}>
-            <h2 style={{ fontFamily:"'Syne',sans-serif", color:TEXT, fontWeight:800, fontSize:22, letterSpacing:"-0.5px", flex:1, marginRight:12 }}>{product.name}</h2>
-            <span style={{ fontFamily:"'Syne',sans-serif", color:ORANGE, fontSize:24, fontWeight:800, flexShrink:0 }}>€{product.price}</span>
+            <h2 style={{ fontFamily:"'DM Sans',sans-serif", color:TEXT, fontWeight:800, fontSize:22, letterSpacing:"-0.5px", flex:1, marginRight:12 }}>{product.name}</h2>
+            <span style={{ fontFamily:"'DM Sans',sans-serif", color:ORANGE, fontSize:24, fontWeight:800, flexShrink:0 }}>€{product.price}</span>
           </div>
           {reviews.length > 0 && (
             <div style={{ display:"flex", alignItems:"center", gap:6, marginBottom:12 }}>
@@ -195,7 +195,7 @@ function OfferModal({ product, onClose, onSent }: { product: Product; onClose: (
 
         <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:20 }}>
           <div>
-            <p style={{ fontFamily:"'Syne',sans-serif", fontWeight:800, fontSize:17, color:TEXT }}>Preis verhandeln</p>
+            <p style={{ fontFamily:"'DM Sans',sans-serif", fontWeight:800, fontSize:17, color:TEXT }}>Preis verhandeln</p>
             <p style={{ fontSize:12, color:TEXT3, marginTop:2 }}>{product.name}</p>
           </div>
           <button onClick={onClose} style={{ width:30, height:30, background:BG, border:`1px solid ${BORDER}`, borderRadius:8, cursor:"pointer", color:TEXT2, fontSize:14 }}>✕</button>
@@ -203,7 +203,7 @@ function OfferModal({ product, onClose, onSent }: { product: Product; onClose: (
 
         <div style={{ background:`${ORANGE}12`, border:`1px solid ${ORANGE}30`, borderRadius:10, padding:"8px 12px", marginBottom:18, display:"flex", justifyContent:"space-between", alignItems:"center" }}>
           <span style={{ fontSize:12, color:TEXT2 }}>Listenpreis</span>
-          <span style={{ fontFamily:"'Syne',sans-serif", fontWeight:800, fontSize:16, color:ORANGE }}>€{product.price}<span style={{ fontSize:11, fontWeight:500, color:TEXT3 }}>/Stück</span></span>
+          <span style={{ fontFamily:"'DM Sans',sans-serif", fontWeight:800, fontSize:16, color:ORANGE }}>€{product.price}<span style={{ fontSize:11, fontWeight:500, color:TEXT3 }}>/Stück</span></span>
         </div>
 
         <label style={{ display:"block", fontSize:12, fontWeight:700, color:TEXT2, marginBottom:6 }}>Menge (Stück)</label>
@@ -555,7 +555,7 @@ export default function MarketplacePage({ initialProducts = [], initialSuppliers
                         </div>
                       )}
                       <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:8 }}>
-                        <span style={{ fontFamily:"'Syne',sans-serif", color:TEXT, fontSize:18, fontWeight:800 }}>€{product.price}</span>
+                        <span style={{ fontFamily:"'DM Sans',sans-serif", color:TEXT, fontSize:18, fontWeight:800 }}>€{product.price}</span>
                         <button onClick={e => { e.stopPropagation(); if ((product.stock ?? 0) > 0) addToCart(product); }}
                           disabled={(product.stock ?? 0) <= 0}
                           style={{ background:(product.stock ?? 0) <= 0 ? BORDER : ORANGE, color:(product.stock ?? 0) <= 0 ? TEXT3 : "#fff", border:"none", fontSize:11, fontWeight:700, padding:"7px 12px", borderRadius:8, cursor:(product.stock ?? 0) <= 0 ? "not-allowed" : "pointer" }}>

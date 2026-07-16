@@ -232,7 +232,7 @@ export default function CheckoutPage() {
               <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20 }}>
                 <div style={{ width: 32, height: 32, borderRadius: 8, background: `${ORANGE}15`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16 }}>📦</div>
                 <div>
-                  <p style={{ fontFamily: "'Syne',sans-serif", fontWeight: 700, fontSize: 14, color: TEXT }}>Lieferadresse</p>
+                  <p style={{ fontFamily: "'DM Sans',sans-serif", fontWeight: 700, fontSize: 14, color: TEXT }}>Lieferadresse</p>
                   <p style={{ fontSize: 12, color: TEXT3, marginTop: 1 }}>Wohin sollen wir liefern?</p>
                 </div>
               </div>
@@ -327,8 +327,8 @@ export default function CheckoutPage() {
                 </div>
               ))}
               <div style={{ borderTop: `1px solid ${BORDER}`, paddingTop: 14, marginTop: 4, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <span style={{ fontFamily: "'Syne',sans-serif", fontWeight: 700, fontSize: 15, color: TEXT }}>Gesamt</span>
-                <span style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 24, color: TEXT, letterSpacing: "-0.5px" }}>€{finalTotal.toFixed(2)}</span>
+                <span style={{ fontFamily: "'DM Sans',sans-serif", fontWeight: 700, fontSize: 15, color: TEXT }}>Gesamt</span>
+                <span style={{ fontFamily: "'DM Sans',sans-serif", fontWeight: 800, fontSize: 24, color: TEXT, letterSpacing: "-0.5px" }}>€{finalTotal.toFixed(2)}</span>
               </div>
               <p style={{ fontSize: 11, color: TEXT3, marginTop: 8, textAlign: "right" }}>Alle Preise inkl. 19% MwSt.</p>
             </div>

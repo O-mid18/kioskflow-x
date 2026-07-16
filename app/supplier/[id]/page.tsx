@@ -132,7 +132,7 @@ export default function SupplierProfilePage() {
           </div>
           <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 10, flexShrink: 0 }}>
             <div style={{ textAlign: "right" }}>
-              <p style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 28, color: ORANGE }}>{products.length}</p>
+              <p style={{ fontFamily: "'DM Sans',sans-serif", fontWeight: 800, fontSize: 28, color: ORANGE }}>{products.length}</p>
               <p style={{ color: TEXT3, fontSize: 12 }}>Produkte</p>
             </div>
             <button
@@ -176,7 +176,7 @@ export default function SupplierProfilePage() {
                     </a>
                     {product.description && <p style={{ color: TEXT3, fontSize: 12, marginBottom: 8, lineHeight: 1.5, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{product.description}</p>}
                     <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: 8 }}>
-                      <span style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 18, color: ORANGE }}>€{product.price}</span>
+                      <span style={{ fontFamily: "'DM Sans',sans-serif", fontWeight: 800, fontSize: 18, color: ORANGE }}>€{product.price}</span>
                       <button onClick={() => addToCart(product.id)}
                         style={{ background: ORANGE, color: "#fff", border: "none", fontSize: 12, fontWeight: 700, padding: "7px 14px", borderRadius: 8, cursor: "pointer" }}>
                         + Warenkorb
