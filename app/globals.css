@@ -267,3 +267,13 @@ html.dark { color-scheme: dark; }
 .dark .kf-step:hover, .dark .kf-feature-card:hover {
   box-shadow: 0 10px 36px rgba(0,0,0,0.35) !important;
 }
+/* Theme toggle — sit above the mobile bottom tab bar instead of
+   overlapping its last item (previously covered "Profil") */
+.kf-theme-toggle {
+  bottom: 24px;
+}
+@media (max-width: 640px) {
+  .kf-theme-toggle {
+    bottom: 90px;
+  }
+}

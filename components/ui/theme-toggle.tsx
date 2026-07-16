@@ -27,9 +27,9 @@ export function ThemeToggle() {
     <button
       onClick={toggle}
       title={dark ? "Zum hellen Modus wechseln" : "Zum dunklen Modus wechseln"}
+      className="kf-theme-toggle"
       style={{
         position: "fixed",
-        bottom: 24,
         right: 24,
         zIndex: 9999,
         width: 44,
