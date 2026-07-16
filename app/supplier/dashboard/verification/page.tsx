@@ -44,7 +44,7 @@ export default function VerificationPage() {
   const [registrationNr,  setRegistrationNr]  = useState("");
   const [taxId,           setTaxId]           = useState("");
   const [phone,           setPhone]           = useState("");
-  const [website,         setWebsite]         = useState("");
+  const [contactEmail,    setContactEmail]    = useState("");
 
   useEffect(() => {
     (async () => {
@@ -62,7 +62,7 @@ export default function VerificationPage() {
       setRegistrationNr(data.registration_nr ?? "");
       setTaxId(data.tax_id ?? "");
       setPhone(data.phone ?? "");
-      setWebsite(data.website ?? "");
+      setContactEmail(data.contact_email ?? "");
       setLoading(false);
     })();
   }, []);
@@ -72,11 +72,15 @@ export default function VerificationPage() {
       setMsg({ text: "Bitte alle Pflichtfelder ausfüllen.", ok: false });
       return;
     }
+    if (contactEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contactEmail)) {
+      setMsg({ text: "Bitte eine gültige E-Mail-Adresse eingeben.", ok: false });
+      return;
+    }
     setSaving(true);
     const { error } = await supabase.from("suppliers").update({
       legal_name: legalName, street, city, postal_code: postalCode,
       country, registration_nr: registrationNr, tax_id: taxId,
-      phone, website,
+      phone, contact_email: contactEmail,
     }).eq("id", supplierId!);
     setSaving(false);
     if (error) setMsg({ text: "Daten konnten nicht gespeichert werden. Bitte erneut versuchen.", ok: false });
@@ -191,8 +195,8 @@ export default function VerificationPage() {
             <Field label="Telefon">
               <input value={phone} onChange={e => setPhone(e.target.value)} placeholder="+49 69 123456" style={iStyle} onFocus={fo} onBlur={bl} />
             </Field>
-            <Field label="Website">
-              <input value={website} onChange={e => setWebsite(e.target.value)} placeholder="https://mustermann.de" style={iStyle} onFocus={fo} onBlur={bl} />
+            <Field label="Geschäftliche E-Mail">
+              <input type="email" value={contactEmail} onChange={e => setContactEmail(e.target.value)} placeholder="kontakt@mustermann.de" style={iStyle} onFocus={fo} onBlur={bl} />
             </Field>
           </div>
         </div>

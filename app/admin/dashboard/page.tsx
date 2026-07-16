@@ -13,7 +13,7 @@ const ORANGE  = "#2563EB";
 
 type Tab = "overview" | "suppliers" | "orders" | "products" | "buyers" | "support";
 
-type Supplier     = { id: string; name: string; user_id: string; created_at: string; legal_name?: string; street?: string; city?: string; postal_code?: string; country?: string; registration_nr?: string; tax_id?: string; phone?: string; website?: string; verified?: boolean; verification_note?: string; };
+type Supplier     = { id: string; name: string; user_id: string; created_at: string; legal_name?: string; street?: string; city?: string; postal_code?: string; country?: string; registration_nr?: string; tax_id?: string; phone?: string; contact_email?: string; verified?: boolean; verification_note?: string; };
 type Profile      = { id: string; role: string; status?: string; email?: string; created_at?: string; };
 type Order        = { id: string; buyer_id: string; supplier_id: string; total_price: number; status: string; created_at: string; stripe_session_id?: string; };
 type Product      = { id: string; name: string; price: number; stock: number; category?: string; image_url?: string; supplier_id: string; created_at: string; suppliers?: { name: string } | null; };
@@ -139,7 +139,7 @@ export default function AdminDashboard() {
     if (profile?.role !== "admin") { window.location.href = "/marketplace"; return; }
 
     const [{ data: supData }, { data: profData }, { data: ordData }, { data: prodData }, { data: convData }] = await Promise.all([
-      supabase.from("suppliers").select("id, name, user_id, created_at, legal_name, street, city, postal_code, country, registration_nr, tax_id, phone, website, verified, verification_note").order("created_at", { ascending: false }),
+      supabase.from("suppliers").select("id, name, user_id, created_at, legal_name, street, city, postal_code, country, registration_nr, tax_id, phone, contact_email, verified, verification_note").order("created_at", { ascending: false }),
       supabase.from("profiles").select("id, role, status, created_at").order("created_at" as any, { ascending: false }),
       supabase.from("orders").select("id, buyer_id, supplier_id, total_price, status, created_at, stripe_session_id").order("created_at", { ascending: false }),
       supabase.from("products").select("id, name, price, stock, category, image_url, supplier_id, created_at, suppliers(name)").order("created_at", { ascending: false }),
@@ -390,7 +390,7 @@ export default function AdminDashboard() {
                           {s.registration_nr && <div><p style={{ fontSize: 10, fontWeight: 700, color: TEXT3, textTransform: "uppercase", letterSpacing: "0.8px", marginBottom: 3 }}>Handelsregister</p><p style={{ fontSize: 13, color: TEXT }}>{s.registration_nr}</p></div>}
                           {s.tax_id && <div><p style={{ fontSize: 10, fontWeight: 700, color: TEXT3, textTransform: "uppercase", letterSpacing: "0.8px", marginBottom: 3 }}>USt-IdNr.</p><p style={{ fontSize: 13, color: TEXT }}>{s.tax_id}</p></div>}
                           {s.phone && <div><p style={{ fontSize: 10, fontWeight: 700, color: TEXT3, textTransform: "uppercase", letterSpacing: "0.8px", marginBottom: 3 }}>Telefon</p><p style={{ fontSize: 13, color: TEXT }}>{s.phone}</p></div>}
-                          {s.website && <div><p style={{ fontSize: 10, fontWeight: 700, color: TEXT3, textTransform: "uppercase", letterSpacing: "0.8px", marginBottom: 3 }}>Website</p><a href={s.website} target="_blank" style={{ fontSize: 13, color: ORANGE, textDecoration: "none" }}>{s.website}</a></div>}
+                          {s.contact_email && <div><p style={{ fontSize: 10, fontWeight: 700, color: TEXT3, textTransform: "uppercase", letterSpacing: "0.8px", marginBottom: 3 }}>E-Mail</p><a href={`mailto:${s.contact_email}`} style={{ fontSize: 13, color: ORANGE, textDecoration: "none" }}>{s.contact_email}</a></div>}
                         </div>
                       ) : (
                         <p style={{ fontSize: 12, color: TEXT3, fontStyle: "italic" }}>Noch keine Verifizierungsdaten eingereicht.</p>
