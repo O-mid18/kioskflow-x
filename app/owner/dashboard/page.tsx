@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import { supabase } from "@/lib/supabase";
 
 const BG = "var(--kf-bg)";
 const SURFACE = "var(--kf-surface)";
@@ -129,17 +130,22 @@ export default function OwnerDashboard() {
 
   const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(null), 2500); };
 
-  const ownerFetch = useCallback(async (path: string) => {
-    const res = await fetch(path);
-    if (res.status === 401) { window.location.href = "/owner"; return null; }
-    return res.json();
+  const authHeaders = useCallback(async (): Promise<Record<string, string>> => {
+    const { data: { session } } = await supabase.auth.getSession();
+    return session ? { Authorization: `Bearer ${session.access_token}` } : {};
   }, []);
 
-  const ownerPost = useCallback(async (body: object) => {
-    const res = await fetch("/api/owner", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+  const ownerFetch = useCallback(async (path: string) => {
+    const res = await fetch(path, { headers: await authHeaders() });
     if (res.status === 401) { window.location.href = "/owner"; return null; }
     return res.json();
-  }, []);
+  }, [authHeaders]);
+
+  const ownerPost = useCallback(async (body: object) => {
+    const res = await fetch("/api/owner", { method: "POST", headers: { "Content-Type": "application/json", ...(await authHeaders()) }, body: JSON.stringify(body) });
+    if (res.status === 401) { window.location.href = "/owner"; return null; }
+    return res.json();
+  }, [authHeaders]);
 
   useEffect(() => {
     (async () => {
@@ -215,7 +221,7 @@ export default function OwnerDashboard() {
     if (newPw !== confPw) { setPwMsg({ text: "Passwörter stimmen nicht überein", ok: false }); return; }
     if (newPw.length < 6) { setPwMsg({ text: "Mindestens 6 Zeichen", ok: false }); return; }
     setPwLoading(true);
-    const res = await fetch("/api/owner", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "change_password", currentPassword: curPw, newPassword: newPw }) });
+    const res = await fetch("/api/owner", { method: "POST", headers: { "Content-Type": "application/json", ...(await authHeaders()) }, body: JSON.stringify({ action: "change_password", currentPassword: curPw, newPassword: newPw }) });
     const data = await res.json();
     setPwLoading(false);
     setPwMsg({ text: res.ok ? "Passwort erfolgreich geändert ✓" : data.error, ok: res.ok });
@@ -225,7 +231,7 @@ export default function OwnerDashboard() {
   const broadcast = async () => {
     if (!bTitle || !bMsg) { setBResult({ text: "Titel und Nachricht erforderlich", ok: false }); return; }
     setBLoading(true);
-    const res = await fetch("/api/owner", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "broadcast_notification", title: bTitle, message: bMsg }) });
+    const res = await fetch("/api/owner", { method: "POST", headers: { "Content-Type": "application/json", ...(await authHeaders()) }, body: JSON.stringify({ action: "broadcast_notification", title: bTitle, message: bMsg }) });
     const data = await res.json();
     setBLoading(false);
     setBResult({ text: res.ok ? `✓ An ${data.sent} Nutzer gesendet` : data.error, ok: res.ok });

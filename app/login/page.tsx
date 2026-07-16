@@ -32,7 +32,7 @@ export default function LoginPage() {
       if (user) {
         const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).maybeSingle();
         const role = profile?.role;
-        if (role === "admin") router.push("/admin/dashboard");
+        if (role === "admin") router.push("/owner/dashboard");
         else if (role === "supplier") router.push("/supplier/dashboard");
         else router.push("/marketplace");
       } else {

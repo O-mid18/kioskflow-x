@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createHash, timingSafeEqual, pbkdf2Sync } from "crypto";
-import { createAdminClient } from "@/lib/supabase";
+import { createAdminClient, createServerClient } from "@/lib/supabase";
 
 const SESSION_KEY = "owner_session";
 const LEGACY_SALT = "kf-owner-v1";
@@ -63,8 +63,20 @@ function cookieOpts(maxAge = 7 * 86_400) {
 
 async function isAuthed(req: NextRequest): Promise<boolean> {
   const token = req.cookies.get(SESSION_KEY)?.value ?? "";
-  if (!token) return false;
-  return verifyToken(token, await getPwHash());
+  if (token && (await verifyToken(token, await getPwHash()))) return true;
+
+  // Alternative: a normal Supabase session for an admin-role account (so
+  // logging in via /login with an admin account reaches the owner panel
+  // too, not just the separate password-only /owner gate).
+  const authHeader = req.headers.get("Authorization");
+  const bearerToken = authHeader?.replace("Bearer ", "");
+  if (!bearerToken) return false;
+  const supabase = createServerClient(bearerToken);
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return false;
+  const db = createAdminClient();
+  const { data: profile } = await db.from("profiles").select("role").eq("id", user.id).maybeSingle();
+  return profile?.role === "admin";
 }
 
 // ── GET ───────────────────────────────────────────────────────────────────────
