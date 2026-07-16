@@ -90,18 +90,29 @@ export default function SupplierDashboardLayout({ children }: { children: React.
         @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600;700&display=swap');
         * { box-sizing: border-box; }
         a { text-decoration: none; }
+        .kf-supplier-sidebar { position: sticky; top: 0; height: 100vh; }
+        .kf-mobile-topbar { display: none; }
+        @media (max-width: 768px) {
+          .kf-supplier-sidebar {
+            position: fixed; top: 0; left: 0; height: 100vh;
+            transform: translateX(-100%);
+            transition: transform 0.2s ease;
+          }
+          .kf-supplier-sidebar.open { transform: translateX(0); }
+          .kf-mobile-topbar { display: flex; }
+        }
       `}</style>
 
       {/* Mobile overlay */}
       {sidebarOpen && (
-        <div onClick={() => setSidebarOpen(false)} style={{ position:"fixed", inset:0, background:"rgba(26,23,20,0.4)", zIndex:40, display:"none" }} className="md-overlay" />
+        <div onClick={() => setSidebarOpen(false)} style={{ position:"fixed", inset:0, background:"rgba(26,23,20,0.4)", zIndex:40 }} className="md-overlay" />
       )}
 
       {/* ── SIDEBAR ── */}
-      <aside style={{
+      <aside className={`kf-supplier-sidebar${sidebarOpen ? " open" : ""}`} style={{
         width: 240, flexShrink: 0, background: SURFACE, borderRight: `1px solid ${BORDER}`,
-        display: "flex", flexDirection: "column", position: "sticky", top: 0, height: "100vh", overflow: "hidden",
-        zIndex: 30,
+        display: "flex", flexDirection: "column", overflow: "hidden",
+        zIndex: 50,
       }}>
         {/* Logo */}
         <div style={{ padding: "24px 20px 20px", borderBottom: `1px solid ${BORDER}` }}>
@@ -167,6 +178,17 @@ export default function SupplierDashboardLayout({ children }: { children: React.
 
       {/* ── MAIN CONTENT ── */}
       <main style={{ flex:1, minWidth:0, overflowY:"auto" }}>
+        {/* Mobile top bar — always visible, so "add product" never needs hunting for */}
+        <div className="kf-mobile-topbar" style={{ position:"sticky", top:0, zIndex:20, alignItems:"center", justifyContent:"space-between", padding:"12px 16px", background:SURFACE, borderBottom:`1px solid ${BORDER}` }}>
+          <button onClick={() => setSidebarOpen(true)} aria-label="Menü öffnen"
+            style={{ background:"none", border:`1.5px solid ${BORDER}`, borderRadius:8, width:38, height:38, fontSize:18, color:TEXT, cursor:"pointer" }}>☰</button>
+          <img src="/flowio-icon.png" alt="Flowio" style={{ width:30, height:30, borderRadius:7, objectFit:"cover" }} />
+          {verified ? (
+            <a href="/add-product" style={{ display:"flex", alignItems:"center", gap:6, background:ORANGE, color:"#fff", borderRadius:9, padding:"9px 14px", fontWeight:700, fontSize:13 }}>
+              ＋ Produkt
+            </a>
+          ) : <div style={{ width:38 }} />}
+        </div>
         {children}
       </main>
     </div>
