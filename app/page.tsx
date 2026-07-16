@@ -98,7 +98,7 @@ export default function HomePage() {
               <p style={{ fontSize: 12, color: "rgba(255,255,255,0.7)" }}>Sichere Zahlung · Direktpreise</p>
             </div>
             <div style={{ textAlign: "right", flexShrink: 0 }}>
-              <p style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 20, color: "#fff", fontVariantNumeric: "tabular-nums" }}>€47.70</p>
+              <p style={{ fontFamily: "'DM Sans',sans-serif", fontWeight: 800, fontSize: 20, color: "#fff", fontVariantNumeric: "tabular-nums" }}>€47.70</p>
               <p style={{ fontSize: 11, color: "rgba(255,255,255,0.7)" }}>✓ Bezahlt</p>
             </div>
           </div>
@@ -153,7 +153,7 @@ export default function HomePage() {
           ] as const).map(({ num, svg, title, desc }, i) => (
             <div key={num} className="kf-step kf-reveal" style={{ background: "var(--kf-surface)", border: "1px solid var(--kf-border)", borderRadius: 18, padding: "28px 24px", animationDelay: `${i * 0.1}s` }}>
               <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20 }}>
-                <span style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 12, color: "var(--kf-text3)", letterSpacing: "1px" }} aria-hidden="true">{num}</span>
+                <span style={{ fontFamily: "'DM Sans',sans-serif", fontWeight: 800, fontSize: 12, color: "var(--kf-text3)", letterSpacing: "1px" }} aria-hidden="true">{num}</span>
                 <div style={{ width: 36, height: 36, background: `${ORANGE}12`, borderRadius: 9, display: "flex", alignItems: "center", justifyContent: "center" }}>{svg}</div>
               </div>
               <h3 style={{ fontFamily: "'Syne',sans-serif", fontWeight: 700, fontSize: 18, color: "var(--kf-text)", marginBottom: 10 }}>{title}</h3>
@@ -208,7 +208,7 @@ export default function HomePage() {
             { q: "Was ist, wenn ein Produkt nicht ankommt oder defekt ist?", a: "Melde dich bei uns. Wir erstatten dein Geld oder schicken Ersatz — ohne Diskussion, garantiert." },
           ] as const).map(({ q, a }, i) => (
             <div key={i} className="kf-reveal" style={{ borderBottom: "1px solid var(--kf-border)", padding: "22px 0", animationDelay: `${i * 0.08}s` }}>
-              <p style={{ fontFamily: "'Syne',sans-serif", fontWeight: 700, fontSize: 16, color: "var(--kf-text)", marginBottom: 10 }}>{q}</p>
+              <p style={{ fontFamily: "'DM Sans',sans-serif", fontWeight: 700, fontSize: 16, color: "var(--kf-text)", marginBottom: 10 }}>{q}</p>
               <p style={{ fontSize: 14, color: "var(--kf-text2)", lineHeight: 1.75 }}>{a}</p>
             </div>
           ))}
@@ -223,7 +223,7 @@ export default function HomePage() {
             <h2 style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: "clamp(1.6rem,3vw,2.4rem)", color: "#fff", letterSpacing: "-0.8px", marginBottom: 12 }}>Dein Produkt.<br />Frankfurter Kioske. Kein Aufwand.</h2>
             <p style={{ fontSize: 15, color: "rgba(255,255,255,0.78)", lineHeight: 1.6, maxWidth: 400 }}>Erstelle ein Anbieter-Konto in 5 Minuten und liste deine Produkte kostenlos. Keine Provision, direkte Zahlung.</p>
           </div>
-          <a href="/signup/supplier" className="kf-cta-btn" style={{ background: "#fff", color: ORANGE, padding: "16px 32px", borderRadius: 14, fontWeight: 800, fontSize: 16, textDecoration: "none", whiteSpace: "nowrap", boxShadow: "0 4px 20px rgba(0,0,0,0.15)", fontFamily: "'Syne',sans-serif" }}>
+          <a href="/signup/supplier" className="kf-cta-btn" style={{ background: "#fff", color: ORANGE, padding: "16px 32px", borderRadius: 14, fontWeight: 800, fontSize: 16, textDecoration: "none", whiteSpace: "nowrap", boxShadow: "0 4px 20px rgba(0,0,0,0.15)", fontFamily: "'DM Sans',sans-serif" }}>
             Jetzt kostenlos listen →
           </a>
         </div>

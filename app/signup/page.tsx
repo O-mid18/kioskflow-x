@@ -60,7 +60,7 @@ export default function SignupPage() {
                 onMouseEnter={e => (e.currentTarget.style.borderColor = ORANGE)}
                 onMouseLeave={e => (e.currentTarget.style.borderColor = BORDER)}>
                 <span style={{ fontSize: 28 }}>{opt.icon}</span>
-                <p style={{ fontFamily: "'Syne',sans-serif", fontWeight: 700, fontSize: 14, color: TEXT, textAlign: "center" }}>{opt.label}</p>
+                <p style={{ fontFamily: "'DM Sans',sans-serif", fontWeight: 700, fontSize: 14, color: TEXT, textAlign: "center" }}>{opt.label}</p>
                 <p style={{ fontSize: 12, color: TEXT3, textAlign: "center" }}>{opt.sub}</p>
               </a>
             ))}

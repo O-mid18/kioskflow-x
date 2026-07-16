@@ -144,7 +144,7 @@ export default function SupplierSignupPage() {
                 style={{
                   width: 52, height: 60, textAlign: "center", fontSize: 24, fontWeight: 700,
                   background: SURFACE, border: `2px solid ${digit ? ORANGE : BORDER}`,
-                  borderRadius: 12, color: TEXT, fontFamily: "'Syne',sans-serif",
+                  borderRadius: 12, color: TEXT, fontFamily: "'DM Sans',sans-serif",
                   outline: "none", transition: "border-color 0.15s",
                 }}
                 onFocus={e => e.currentTarget.style.borderColor = ORANGE}
@@ -207,7 +207,7 @@ export default function SupplierSignupPage() {
         )}
 
         <div style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 16, padding: "24px", display: "flex", flexDirection: "column", gap: 14 }}>
-          <h2 style={{ fontFamily: "'Syne',sans-serif", fontWeight: 700, fontSize: 14, color: TEXT, marginBottom: 4 }}>Unternehmensdaten</h2>
+          <h2 style={{ fontFamily: "'DM Sans',sans-serif", fontWeight: 700, fontSize: 14, color: TEXT, marginBottom: 4 }}>Unternehmensdaten</h2>
           {[
             { key: "companyName",      label: "Firmenname",           placeholder: "BerlinBrews GmbH", required: true },
             { key: "contactPerson",    label: "Ansprechpartner",      placeholder: "Max Mustermann" },
@@ -230,7 +230,7 @@ export default function SupplierSignupPage() {
           </div>
 
           <div style={{ height: 1, background: BORDER, margin: "4px 0" }} />
-          <h2 style={{ fontFamily: "'Syne',sans-serif", fontWeight: 700, fontSize: 14, color: TEXT, marginBottom: 4 }}>Zugangsdaten</h2>
+          <h2 style={{ fontFamily: "'DM Sans',sans-serif", fontWeight: 700, fontSize: 14, color: TEXT, marginBottom: 4 }}>Zugangsdaten</h2>
           {[
             { key: "email",    label: "E-Mail",   type: "email",    placeholder: "firma@example.de", required: true },
             { key: "password", label: "Passwort", type: "password", placeholder: "Mindestens 6 Zeichen", required: true },
