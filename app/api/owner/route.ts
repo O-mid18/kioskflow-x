@@ -140,6 +140,16 @@ export async function GET(req: NextRequest) {
     return NextResponse.json(data ?? []);
   }
 
+  if (action === "order_items") {
+    const orderId = req.nextUrl.searchParams.get("orderId");
+    if (!orderId) return NextResponse.json({ error: "Missing orderId" }, { status: 400 });
+    const { data } = await db
+      .from("order_items")
+      .select("id, quantity, price_at_purchase, products(name), suppliers(name)")
+      .eq("order_id", orderId);
+    return NextResponse.json(data ?? []);
+  }
+
   if (action === "products") {
     const { data } = await db
       .from("products")

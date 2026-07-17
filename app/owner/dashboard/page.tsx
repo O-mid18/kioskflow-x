@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, Fragment } from "react";
 import { supabase } from "@/lib/supabase";
 
 const BG = "var(--kf-bg)";
@@ -44,6 +44,12 @@ function Pill({ v }: { v: string }) {
 }
 function Btn({ label, fg, bg, onClick }: { label: string; fg: string; bg: string; onClick: () => void }) {
   return <button onClick={onClick} style={{ background: bg, color: fg, border: "none", borderRadius: 6, padding: "4px 9px", fontSize: 11, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", marginRight: 4, whiteSpace: "nowrap" }}>{label}</button>;
+}
+function matchesSearch(row: any, query: string): boolean {
+  if (!query.trim()) return true;
+  const q = query.toLowerCase();
+  return Object.values(row).some(v => typeof v === "string" && v.toLowerCase().includes(q))
+    || (row.profiles?.full_name ?? "").toLowerCase().includes(q);
 }
 function StatCard({ label, value, sub }: { label: string; value: string | number; sub?: string }) {
   return (
@@ -111,6 +117,11 @@ export default function OwnerDashboard() {
   const [users, setUsers] = useState<any[]>([]);
   const [suppliers, setSuppliers] = useState<any[]>([]);
   const [orders, setOrders] = useState<any[]>([]);
+  const [expandedOrder, setExpandedOrder] = useState<string | null>(null);
+  const [orderItemsCache, setOrderItemsCache] = useState<Record<string, any[]>>({});
+  const [orderItemsLoading, setOrderItemsLoading] = useState<string | null>(null);
+  const [userSearch, setUserSearch] = useState("");
+  const [orderSearch, setOrderSearch] = useState("");
   const [products, setProducts] = useState<any[]>([]);
   const [toast, setToast] = useState<string | null>(null);
 
@@ -172,7 +183,8 @@ export default function OwnerDashboard() {
     showToast(`Rolle → "${role}"`);
   };
   const blockUser = async (id: string, block: boolean) => {
-    await ownerPost({ action: block ? "block_user" : "unblock_user", userId: id });
+    const res = await ownerPost({ action: block ? "block_user" : "unblock_user", userId: id });
+    if (res?.error) { showToast("Fehler: " + res.error); return; }
     setUsers(prev => prev.map(u => u.id === id ? { ...u, banned: block } : u));
     showToast(block ? "Nutzer gesperrt" : "Nutzer entsperrt");
   };
@@ -185,34 +197,51 @@ export default function OwnerDashboard() {
   };
 
   const toggleVerify = async (id: number, verified: boolean) => {
-    await ownerPost({ action: verified ? "unverify_supplier" : "verify_supplier", supplierId: id });
+    const res = await ownerPost({ action: verified ? "unverify_supplier" : "verify_supplier", supplierId: id });
+    if (res?.error) { showToast("Fehler: " + res.error); return; }
     setSuppliers(prev => prev.map(s => s.id === id ? { ...s, verified: !verified } : s));
-    showToast(verified ? "Verifizierung aufgehoben" : "Lieferant verifiziert");
+    showToast(verified ? "Verifizierung aufgehoben" : "Lieferant verifiziert ✓");
   };
   const deleteSupplier = async (id: number, name: string) => {
     if (!confirm(`Lieferant "${name}" löschen? Alle Produkte → Lager 0.`)) return;
-    await ownerPost({ action: "delete_supplier", supplierId: id });
+    const res = await ownerPost({ action: "delete_supplier", supplierId: id });
+    if (res?.error) { showToast("Fehler: " + res.error); return; }
     setSuppliers(prev => prev.filter(s => s.id !== id));
     showToast("Lieferant gelöscht");
   };
 
   const updateOrderStatus = async (id: string, status: string) => {
-    await ownerPost({ action: "update_order_status", orderId: id, status });
+    const res = await ownerPost({ action: "update_order_status", orderId: id, status });
+    if (res?.error) { showToast("Fehler: " + res.error); return; }
     setOrders(prev => prev.map(o => o.id === id ? { ...o, status } : o));
-    showToast(`Status → "${status}"`);
+    showToast(`Status → "${status}" ✓`);
+  };
+
+  const toggleOrderDetails = async (id: string) => {
+    if (expandedOrder === id) { setExpandedOrder(null); return; }
+    setExpandedOrder(id);
+    if (!orderItemsCache[id]) {
+      setOrderItemsLoading(id);
+      const items = await ownerFetch(`/api/owner?action=order_items&orderId=${id}`);
+      setOrderItemsCache(prev => ({ ...prev, [id]: items ?? [] }));
+      setOrderItemsLoading(null);
+    }
   };
 
   const openEdit = (p: any) => { setEditProd(p); setEditPrice(String(p.price)); setEditStock(String(p.stock)); };
   const saveProduct = async () => {
     if (!editProd) return;
     setEditLoading(true);
-    await ownerPost({ action: "update_product", productId: editProd.id, price: Number(editPrice), stock: Number(editStock) });
+    const res = await ownerPost({ action: "update_product", productId: editProd.id, price: Number(editPrice), stock: Number(editStock) });
+    setEditLoading(false);
+    if (res?.error) { showToast("Fehler: " + res.error); return; }
     setProducts(prev => prev.map(p => p.id === editProd.id ? { ...p, price: Number(editPrice), stock: Number(editStock) } : p));
-    setEditProd(null); setEditLoading(false); showToast("Produkt aktualisiert");
+    setEditProd(null); showToast("Produkt aktualisiert ✓");
   };
   const deleteProduct = async (id: string, name: string) => {
     if (!confirm(`Produkt "${name}" löschen?`)) return;
-    await ownerPost({ action: "delete_product", productId: id });
+    const res = await ownerPost({ action: "delete_product", productId: id });
+    if (res?.error) { showToast("Fehler: " + res.error); return; }
     setProducts(prev => prev.filter(p => p.id !== id));
     showToast("Produkt gelöscht");
   };
@@ -349,15 +378,19 @@ export default function OwnerDashboard() {
         {/* ── Nutzer ── */}
         {tab === "users" && (
           <div style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 16, overflow: "hidden" }}>
-            <div style={{ padding: "16px 20px", borderBottom: `1px solid ${BORDER}`, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-              <p style={{ fontWeight: 700, color: TEXT, fontSize: 14 }}>Alle Nutzer <span style={{ color: TEXT3, fontWeight: 400 }}>({users.length})</span></p>
-              {csvBtn(users, "nutzer.csv")}
+            <div style={{ padding: "16px 20px", borderBottom: `1px solid ${BORDER}`, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
+              <p style={{ fontWeight: 700, color: TEXT, fontSize: 14 }}>Alle Nutzer <span style={{ color: TEXT3, fontWeight: 400 }}>({users.filter((u:any) => matchesSearch(u, userSearch)).length})</span></p>
+              <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+                <input value={userSearch} onChange={e => setUserSearch(e.target.value)} placeholder="Suche: Name oder E-Mail…"
+                  style={{ background: BG, border: `1px solid ${BORDER}`, borderRadius: 8, padding: "7px 12px", fontSize: 13, color: TEXT, width: 220 }} />
+                {csvBtn(users, "nutzer.csv")}
+              </div>
             </div>
             <div style={{ overflowX: "auto" }}>
               <table style={{ width: "100%", borderCollapse: "collapse" }}>
                 <thead><tr><TH ch="Name" /><TH ch="E-Mail" /><TH ch="Rolle" /><TH ch="Status" /><TH ch="Seit" /><TH ch="Aktionen" /></tr></thead>
                 <tbody>
-                  {users.map((u: any) => (
+                  {users.filter((u:any) => matchesSearch(u, userSearch)).map((u: any) => (
                     <tr key={u.id}>
                       <TD>{u.full_name || u.company_name || "—"}</TD>
                       <TD>{u.email || "—"}</TD>
@@ -418,16 +451,21 @@ export default function OwnerDashboard() {
         {/* ── Bestellungen ── */}
         {tab === "orders" && (
           <div style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 16, overflow: "hidden" }}>
-            <div style={{ padding: "16px 20px", borderBottom: `1px solid ${BORDER}`, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-              <p style={{ fontWeight: 700, color: TEXT, fontSize: 14 }}>Alle Bestellungen <span style={{ color: TEXT3, fontWeight: 400 }}>({orders.length})</span></p>
-              {csvBtn(orders, "bestellungen.csv")}
+            <div style={{ padding: "16px 20px", borderBottom: `1px solid ${BORDER}`, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
+              <p style={{ fontWeight: 700, color: TEXT, fontSize: 14 }}>Alle Bestellungen <span style={{ color: TEXT3, fontWeight: 400 }}>({orders.filter((o:any) => matchesSearch(o, orderSearch)).length})</span></p>
+              <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+                <input value={orderSearch} onChange={e => setOrderSearch(e.target.value)} placeholder="Suche: ID oder Käufer…"
+                  style={{ background: BG, border: `1px solid ${BORDER}`, borderRadius: 8, padding: "7px 12px", fontSize: 13, color: TEXT, width: 220 }} />
+                {csvBtn(orders, "bestellungen.csv")}
+              </div>
             </div>
             <div style={{ overflowX: "auto" }}>
               <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                <thead><tr><TH ch="ID" /><TH ch="Käufer" /><TH ch="Betrag" /><TH ch="Status" /><TH ch="Datum" /><TH ch="Status ändern" /></tr></thead>
+                <thead><tr><TH ch="ID" /><TH ch="Käufer" /><TH ch="Betrag" /><TH ch="Status" /><TH ch="Datum" /><TH ch="Status ändern" /><TH ch="" /></tr></thead>
                 <tbody>
-                  {orders.map((o: any) => (
-                    <tr key={o.id}>
+                  {orders.filter((o:any) => matchesSearch(o, orderSearch)).map((o: any) => (
+                    <Fragment key={o.id}>
+                    <tr>
                       <TD mono>{o.id?.slice(0, 8)}…</TD>
                       <TD>{(o.profiles as any)?.full_name || o.buyer_id?.slice(0, 8) + "…" || "—"}</TD>
                       <TD>€{(o.total_price ?? 0).toFixed(2)}</TD>
@@ -439,7 +477,41 @@ export default function OwnerDashboard() {
                           {ORDER_STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
                         </select>
                       </td>
+                      <td style={{ padding: "8px 14px", borderBottom: `1px solid ${BORDER}` }}>
+                        <Btn label={expandedOrder === o.id ? "Schließen ▴" : "Details ▾"} fg={ORANGE} bg={`${ORANGE}15`} onClick={() => toggleOrderDetails(o.id)} />
+                      </td>
                     </tr>
+                    {expandedOrder === o.id && (
+                      <tr>
+                        <td colSpan={7} style={{ padding: "12px 20px", borderBottom: `1px solid ${BORDER}`, background: BG }}>
+                          {orderItemsLoading === o.id ? (
+                            <p style={{ fontSize: 12, color: TEXT3 }}>Lade Artikel…</p>
+                          ) : (orderItemsCache[o.id]?.length ?? 0) === 0 ? (
+                            <p style={{ fontSize: 12, color: TEXT3 }}>Keine Artikel gefunden.</p>
+                          ) : (
+                            <table style={{ width: "100%", fontSize: 12 }}>
+                              <thead><tr style={{ color: TEXT3 }}>
+                                <th style={{ textAlign: "left", padding: "4px 8px" }}>Produkt</th>
+                                <th style={{ textAlign: "left", padding: "4px 8px" }}>Lieferant</th>
+                                <th style={{ textAlign: "left", padding: "4px 8px" }}>Menge</th>
+                                <th style={{ textAlign: "left", padding: "4px 8px" }}>Preis/Stk.</th>
+                              </tr></thead>
+                              <tbody>
+                                {orderItemsCache[o.id].map((it: any) => (
+                                  <tr key={it.id}>
+                                    <td style={{ padding: "4px 8px", color: TEXT }}>{it.products?.name ?? "—"}</td>
+                                    <td style={{ padding: "4px 8px", color: TEXT2 }}>{it.suppliers?.name ?? "—"}</td>
+                                    <td style={{ padding: "4px 8px", color: TEXT2 }}>{it.quantity}</td>
+                                    <td style={{ padding: "4px 8px", color: TEXT2 }}>€{(it.price_at_purchase ?? 0).toFixed(2)}</td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          )}
+                        </td>
+                      </tr>
+                    )}
+                    </Fragment>
                   ))}
                 </tbody>
               </table>
