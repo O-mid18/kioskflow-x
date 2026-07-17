@@ -36,6 +36,7 @@ export default function ProductDetailsPage() {
   const [canReview, setCanReview] = useState(false);
   const [alreadyReviewed, setAlreadyReviewed] = useState(false);
   const [cartCount, setCartCount] = useState(0);
+  const [role, setRole] = useState<string | null>(null);
 
   const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(null), 2500); };
 
@@ -44,6 +45,7 @@ export default function ProductDetailsPage() {
     if (!user) return;
     const { data } = await supabase.from("cart_items").select("quantity").eq("user_id", user.id);
     setCartCount((data ?? []).reduce((s: number, i: any) => s + (i.quantity ?? 1), 0));
+    supabase.from("profiles").select("role").eq("id", user.id).maybeSingle().then(({ data }) => setRole(data?.role ?? null));
   }, []);
 
   useEffect(() => {
@@ -141,12 +143,16 @@ export default function ProductDetailsPage() {
           <img src="/flowio-icon.png" alt="Flowio" style={{ width: 30, height: 30, borderRadius: 7, objectFit: "cover" }} />
           <span style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 15, color: TEXT, letterSpacing: "-0.3px" }}>Flowio</span>
         </div>
-        <a href="/cart" style={{ position: "relative", display: "flex", alignItems: "center", gap: 6, background: ORANGE, color: "#fff", fontWeight: 700, fontSize: 13, textDecoration: "none", padding: "7px 14px", borderRadius: 9 }}>
-          🛒 Warenkorb
-          {cartCount > 0 && (
-            <span style={{ background: "#fff", color: ORANGE, fontSize: 10, fontWeight: 900, borderRadius: "50%", width: 18, height: 18, display: "flex", alignItems: "center", justifyContent: "center" }}>{cartCount}</span>
-          )}
-        </a>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          {role === "admin" && <a href="/owner/dashboard" title="Owner-Panel" style={{ background:`${ORANGE}15`, color:ORANGE, fontWeight:700, fontSize:13, textDecoration:"none", padding:"7px 12px", borderRadius:9 }}>🏛️</a>}
+          {role === "supplier" && <a href="/supplier/dashboard" title="Lieferanten-Dashboard" style={{ background:`${ORANGE}15`, color:ORANGE, fontWeight:700, fontSize:13, textDecoration:"none", padding:"7px 12px", borderRadius:9 }}>📦</a>}
+          <a href="/cart" style={{ position: "relative", display: "flex", alignItems: "center", gap: 6, background: ORANGE, color: "#fff", fontWeight: 700, fontSize: 13, textDecoration: "none", padding: "7px 14px", borderRadius: 9 }}>
+            🛒 Warenkorb
+            {cartCount > 0 && (
+              <span style={{ background: "#fff", color: ORANGE, fontSize: 10, fontWeight: 900, borderRadius: "50%", width: 18, height: 18, display: "flex", alignItems: "center", justifyContent: "center" }}>{cartCount}</span>
+            )}
+          </a>
+        </div>
       </header>
 
       <div style={{ maxWidth: 900, margin: "0 auto", padding: "32px 20px" }}>

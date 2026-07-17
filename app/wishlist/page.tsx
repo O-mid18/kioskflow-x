@@ -16,6 +16,7 @@ type WishItem = { id: string; products: { id: string; name: string; price: numbe
 export default function WishlistPage() {
   const [items, setItems] = useState<WishItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [role, setRole] = useState<string | null>(null);
 
   useEffect(() => { fetchWishlist(); }, []);
 
@@ -23,6 +24,7 @@ export default function WishlistPage() {
     setLoading(true);
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { window.location.href = "/login"; return; }
+    supabase.from("profiles").select("role").eq("id", user.id).maybeSingle().then(({ data }) => setRole(data?.role ?? null));
     const { data } = await supabase.from("wishlist").select("id, products(id, name, price, image_url, stock, category)").eq("user_id", user.id);
     setItems(((data as unknown as WishItem[]) ?? []).filter(i => i.products !== null));
     setLoading(false);
@@ -43,7 +45,11 @@ export default function WishlistPage() {
           <img src="/flowio-icon.png" alt="Flowio" style={{ width: 30, height: 30, borderRadius: 7, objectFit: "cover" }} />
           <span style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 15, color: TEXT, letterSpacing: "-0.3px" }}>Flowio</span>
         </a>
-        <a href="/marketplace" style={{ color: TEXT2, fontSize: 13, fontWeight: 500, textDecoration: "none" }}>← Zum Marktplatz</a>
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          {role === "admin" && <a href="/owner/dashboard" title="Owner-Panel" style={{ background:`${ORANGE}15`, color:ORANGE, fontWeight:700, fontSize:13, textDecoration:"none", padding:"6px 12px", borderRadius:8 }}>🏛️</a>}
+          {role === "supplier" && <a href="/supplier/dashboard" title="Lieferanten-Dashboard" style={{ background:`${ORANGE}15`, color:ORANGE, fontWeight:700, fontSize:13, textDecoration:"none", padding:"6px 12px", borderRadius:8 }}>📦</a>}
+          <a href="/marketplace" style={{ color: TEXT2, fontSize: 13, fontWeight: 500, textDecoration: "none" }}>← Zum Marktplatz</a>
+        </div>
       </header>
 
       <div style={{ maxWidth: 1100, margin: "0 auto", padding: "32px 24px" }}>

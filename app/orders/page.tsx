@@ -84,6 +84,7 @@ export default function OrdersPage() {
   const [loading, setLoading]         = useState(true);
   const [statusFilter, setStatusFilter] = useState("all");
   const [expandedId, setExpandedId]   = useState<string | null>(null);
+  const [role, setRole]               = useState<string | null>(null);
 
   useEffect(() => { fetchOrders(); }, []);
 
@@ -104,6 +105,7 @@ export default function OrdersPage() {
     setLoading(true);
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { window.location.href = "/login"; return; }
+    supabase.from("profiles").select("role").eq("id", user.id).maybeSingle().then(({ data }) => setRole(data?.role ?? null));
 
     const { data, error: fetchErr } = await supabase
       .from("orders")
@@ -141,6 +143,8 @@ export default function OrdersPage() {
           <span style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 14, color: TEXT }}>Flowio</span>
         </a>
         <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+          {role === "admin" && <a href="/owner/dashboard" title="Owner-Panel" style={{ background:`${ORANGE}15`, color:ORANGE, fontWeight:700, fontSize:13, textDecoration:"none", padding:"6px 12px", borderRadius:8 }}>🏛️</a>}
+          {role === "supplier" && <a href="/supplier/dashboard" title="Lieferanten-Dashboard" style={{ background:`${ORANGE}15`, color:ORANGE, fontWeight:700, fontSize:13, textDecoration:"none", padding:"6px 12px", borderRadius:8 }}>📦</a>}
           <a href="/marketplace" style={{ fontSize: 13, color: TEXT2, textDecoration: "none", fontWeight: 500, padding: "6px 14px", borderRadius: 8 }}>Marktplatz</a>
           <a href="/cart" style={{ fontSize: 13, color: TEXT2, textDecoration: "none", fontWeight: 500, padding: "6px 14px", borderRadius: 8 }}>Warenkorb</a>
           <a href="/profile" style={{ fontSize: 13, color: TEXT2, textDecoration: "none", fontWeight: 500, padding: "6px 14px", borderRadius: 8 }}>Profil</a>

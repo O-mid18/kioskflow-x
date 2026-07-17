@@ -24,6 +24,7 @@ export default function BuyerMessagesPage() {
   const [loading, setLoading]     = useState(true);
   const [suppliers, setSuppliers] = useState<Sup[]>([]);
   const [showNew, setShowNew]     = useState(false);
+  const [isAdmin, setIsAdmin]     = useState(false);
   const channelRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
   const endRef     = useRef<HTMLDivElement>(null);
 
@@ -32,6 +33,7 @@ export default function BuyerMessagesPage() {
       if (!user) { window.location.href = "/login"; return; }
       const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).maybeSingle();
       if (profile?.role === "supplier") { window.location.href = "/supplier/dashboard/messages"; return; }
+      setIsAdmin(profile?.role === "admin");
       setUserId(user.id);
       await loadConvs(user.id);
       setLoading(false);
@@ -116,7 +118,9 @@ export default function BuyerMessagesPage() {
           <span style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 14, color: TEXT, letterSpacing: "-0.3px" }}>Flowio</span>
         </a>
         <p style={{ fontFamily: "'Syne',sans-serif", fontWeight: 700, fontSize: 15, color: TEXT }}>Nachrichten</p>
-        <div style={{ width: 80 }} />
+        {isAdmin
+          ? <a href="/owner/dashboard" title="Owner-Panel" style={{ background:`${ORANGE}15`, color:ORANGE, fontWeight:700, fontSize:13, textDecoration:"none", padding:"6px 12px", borderRadius:8 }}>🏛️</a>
+          : <div style={{ width: 80 }} />}
       </nav>
 
       {/* Body */}

@@ -299,6 +299,7 @@ export default function ProfilePage() {
   const [roleId, setRoleId]       = useState<string | null>(null);
   const [userId, setUserId]       = useState<string | null>(null);
   const [loading, setLoading]     = useState(true);
+  const [isAdmin, setIsAdmin]     = useState(false);
 
   useEffect(() => {
     const detect = async () => {
@@ -306,6 +307,9 @@ export default function ProfilePage() {
       if (!user) { window.location.href = "/login"; return; }
       setEmail(user.email ?? "");
       setUserId(user.id);
+
+      const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).maybeSingle();
+      setIsAdmin(profile?.role === "admin");
 
       const { data: supplier } = await supabase.from("suppliers").select("id").eq("user_id", user.id).maybeSingle();
       if (supplier) { setRole("supplier"); setRoleId(supplier.id); setLoading(false); return; }
@@ -331,7 +335,11 @@ export default function ProfilePage() {
           <img src="/flowio-icon.png" alt="Flowio" style={{ width: 30, height: 30, borderRadius: 7, objectFit: "cover" }} />
           <span style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 15, color: TEXT, letterSpacing: "-0.3px" }}>Flowio</span>
         </a>
-        <span style={{ fontSize: 13, color: TEXT3 }}>Mein Profil</span>
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          {isAdmin && <a href="/owner/dashboard" title="Owner-Panel" style={{ background:`${ORANGE}15`, color:ORANGE, fontWeight:700, fontSize:13, textDecoration:"none", padding:"6px 12px", borderRadius:8 }}>🏛️</a>}
+          {role === "supplier" && <a href="/supplier/dashboard" title="Lieferanten-Dashboard" style={{ background:`${ORANGE}15`, color:ORANGE, fontWeight:700, fontSize:13, textDecoration:"none", padding:"6px 12px", borderRadius:8 }}>📦</a>}
+          <span style={{ fontSize: 13, color: TEXT3 }}>Mein Profil</span>
+        </div>
       </header>
 
       <div style={{ maxWidth: 640, margin: "0 auto", padding: "32px 24px" }}>

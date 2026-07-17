@@ -20,6 +20,7 @@ export default function SupplierProfilePage() {
   const [toast, setToast] = useState<string | null>(null);
   const [cartCount, setCartCount] = useState(0);
   const [chatting, setChatting] = useState(false);
+  const [role, setRole] = useState<string | null>(null);
 
   const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(null), 2500); };
 
@@ -28,6 +29,7 @@ export default function SupplierProfilePage() {
     if (!user) return;
     const { data } = await supabase.from("cart_items").select("quantity").eq("user_id", user.id);
     setCartCount((data ?? []).reduce((s: number, i: any) => s + (i.quantity ?? 1), 0));
+    supabase.from("profiles").select("role").eq("id", user.id).maybeSingle().then(({ data }) => setRole(data?.role ?? null));
   }, []);
 
   useEffect(() => {
@@ -104,6 +106,8 @@ export default function SupplierProfilePage() {
           <span style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 15, color: TEXT, letterSpacing: "-0.3px" }}>Flowio</span>
         </a>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          {role === "admin" && <a href="/owner/dashboard" title="Owner-Panel" style={{ background:`${ORANGE}15`, color:ORANGE, fontWeight:700, fontSize:13, textDecoration:"none", padding:"7px 12px", borderRadius:9 }}>🏛️</a>}
+          {role === "supplier" && <a href="/supplier/dashboard" title="Lieferanten-Dashboard" style={{ background:`${ORANGE}15`, color:ORANGE, fontWeight:700, fontSize:13, textDecoration:"none", padding:"7px 12px", borderRadius:9 }}>📦</a>}
           <a href="/marketplace" style={{ color: TEXT2, fontSize: 13, fontWeight: 500, textDecoration: "none" }}>← Marktplatz</a>
           <a href="/cart" style={{ position: "relative", display: "flex", alignItems: "center", gap: 6, background: ORANGE, color: "#fff", fontWeight: 700, fontSize: 13, textDecoration: "none", padding: "7px 14px", borderRadius: 9 }}>
             🛒 Warenkorb
