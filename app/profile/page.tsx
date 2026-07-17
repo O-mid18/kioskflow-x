@@ -50,6 +50,11 @@ function BuyerProfile({ email, buyerId, userId }: { email: string; buyerId: stri
   const [phone, setPhone]             = useState("");
   const [saving, setSaving]           = useState(false);
   const [msg, setMsg]                 = useState<{ text: string; ok: boolean } | null>(null);
+  const [approved, setApproved]       = useState(false);
+  const [docUrl, setDocUrl]           = useState("");
+  const [docFile, setDocFile]         = useState<File | null>(null);
+  const [docUploading, setDocUploading] = useState(false);
+  const [docMsg, setDocMsg]           = useState<{ text: string; ok: boolean } | null>(null);
 
   useEffect(() => {
     supabase.from("profiles").select("*").eq("id", buyerId).maybeSingle().then(({ data }) => {
@@ -59,9 +64,29 @@ function BuyerProfile({ email, buyerId, userId }: { email: string; buyerId: stri
         setAddress(data.address ?? "");
         setCity(data.city ?? "");
         setPhone(data.phone ?? "");
+        setApproved(data.approved ?? false);
+        setDocUrl(data.verification_document_url ?? "");
       }
     });
   }, [buyerId]);
+
+  const uploadDoc = async () => {
+    if (!docFile) return;
+    setDocUploading(true);
+    const ext = docFile.name.split(".").pop();
+    const path = `${buyerId}/gewerbeschein.${ext}`;
+    const { error: upErr } = await supabase.storage.from("verification-documents").upload(path, docFile, { upsert: true, contentType: docFile.type });
+    if (upErr) {
+      setDocUploading(false);
+      setDocMsg({ text: "Upload fehlgeschlagen. Bitte erneut versuchen.", ok: false });
+      return;
+    }
+    const { error: updErr } = await supabase.from("profiles").update({ verification_document_url: path }).eq("id", buyerId);
+    setDocUploading(false);
+    if (updErr) { setDocMsg({ text: "Dokument hochgeladen, aber Profil konnte nicht aktualisiert werden.", ok: false }); return; }
+    setDocUrl(path);
+    setDocMsg({ text: "Dokument hochgeladen! Wir prüfen es in Kürze.", ok: true });
+  };
 
   const save = async () => {
     setSaving(true);
@@ -96,6 +121,33 @@ function BuyerProfile({ email, buyerId, userId }: { email: string; buyerId: stri
           <Field label="Stadt" value={city} onChange={setCity} placeholder="Frankfurt" />
           <Field label="Telefon" value={phone} onChange={setPhone} placeholder="+49 170 0000000" />
         </div>
+      </div>
+
+      {/* Verification card */}
+      <div style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 18, padding: 28, marginBottom: 16 }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
+          <h2 style={{ fontFamily: "'Syne',sans-serif", fontWeight: 700, fontSize: 14, color: TEXT }}>Kiosk-Verifizierung</h2>
+          {approved
+            ? <span style={{ background: "#dcfce7", color: "#16a34a", fontSize: 11, fontWeight: 700, padding: "3px 10px", borderRadius: 100 }}>✓ Verifiziert</span>
+            : <span style={{ background: "#fef9c3", color: "#ca8a04", fontSize: 11, fontWeight: 700, padding: "3px 10px", borderRadius: 100 }}>⏳ Ausstehend</span>}
+        </div>
+        {!approved && (
+          <>
+            <p style={{ fontSize: 13, color: TEXT2, marginBottom: 16, lineHeight: 1.6 }}>
+              Um bei Flowio einzukaufen, lade bitte deinen Gewerbeschein (oder ein vergleichbares Dokument, das deinen Kiosk/Späti bestätigt) hoch. Erst nach Prüfung kannst du eine Bestellung abschließen.
+            </p>
+            {docUrl && <p style={{ fontSize: 12, color: "#16a34a", marginBottom: 10 }}>✓ Dokument hochgeladen — wird geprüft.</p>}
+            <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
+              <input type="file" accept="image/*,application/pdf" onChange={e => setDocFile(e.target.files?.[0] ?? null)}
+                style={{ fontSize: 13, color: TEXT2 }} />
+              <button onClick={uploadDoc} disabled={!docFile || docUploading}
+                style={{ background: (!docFile || docUploading) ? "rgba(37,99,235,0.4)" : ORANGE, color: "#fff", border: "none", borderRadius: 9, padding: "9px 18px", fontSize: 13, fontWeight: 700, cursor: (!docFile || docUploading) ? "not-allowed" : "pointer" }}>
+                {docUploading ? "Wird hochgeladen…" : "Hochladen →"}
+              </button>
+            </div>
+            {docMsg && <p style={{ fontSize: 12, marginTop: 10, color: docMsg.ok ? "#16a34a" : "#dc2626" }}>{docMsg.text}</p>}
+          </>
+        )}
       </div>
 
       {msg && (

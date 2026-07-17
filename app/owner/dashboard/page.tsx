@@ -178,9 +178,21 @@ export default function OwnerDashboard() {
   const logout = async () => { await ownerPost({ action: "logout" }); window.location.href = "/owner"; };
 
   const changeRole = async (id: string, role: string) => {
-    await ownerPost({ action: "change_role", userId: id, role });
+    const res = await ownerPost({ action: "change_role", userId: id, role });
+    if (res?.error) { showToast("Fehler: " + res.error); return; }
     setUsers(prev => prev.map(u => u.id === id ? { ...u, role } : u));
-    showToast(`Rolle → "${role}"`);
+    showToast(`Rolle → "${role}" ✓`);
+  };
+  const approveBuyer = async (id: string, approve: boolean) => {
+    const res = await ownerPost({ action: approve ? "approve_buyer" : "unapprove_buyer", userId: id });
+    if (res?.error) { showToast("Fehler: " + res.error); return; }
+    setUsers(prev => prev.map(u => u.id === id ? { ...u, approved: approve } : u));
+    showToast(approve ? "Käufer verifiziert ✓" : "Verifizierung aufgehoben");
+  };
+  const viewDocument = async (id: string) => {
+    const res = await ownerFetch(`/api/owner?action=verification_doc_url&userId=${id}`);
+    if (res?.error || !res?.url) { showToast("Fehler: " + (res?.error ?? "Dokument nicht gefunden")); return; }
+    window.open(res.url, "_blank");
   };
   const blockUser = async (id: string, block: boolean) => {
     const res = await ownerPost({ action: block ? "block_user" : "unblock_user", userId: id });
@@ -388,7 +400,7 @@ export default function OwnerDashboard() {
             </div>
             <div style={{ overflowX: "auto" }}>
               <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                <thead><tr><TH ch="Name" /><TH ch="E-Mail" /><TH ch="Rolle" /><TH ch="Status" /><TH ch="Seit" /><TH ch="Aktionen" /></tr></thead>
+                <thead><tr><TH ch="Name" /><TH ch="E-Mail" /><TH ch="Rolle" /><TH ch="Status" /><TH ch="Verifizierung" /><TH ch="Seit" /><TH ch="Aktionen" /></tr></thead>
                 <tbody>
                   {users.filter((u:any) => matchesSearch(u, userSearch)).map((u: any) => (
                     <tr key={u.id}>
@@ -396,6 +408,19 @@ export default function OwnerDashboard() {
                       <TD>{u.email || "—"}</TD>
                       <TD><Pill v={u.role || "—"} /></TD>
                       <TD>{u.banned ? <span style={{ color: "#dc2626", fontSize: 11, fontWeight: 700 }}>🔒 Gesperrt</span> : <span style={{ color: "#16a34a", fontSize: 11 }}>✓ Aktiv</span>}</TD>
+                      <TD>
+                        {u.role === "buyer" ? (
+                          <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
+                            {u.approved
+                              ? <span style={{ background: "#dcfce7", color: "#16a34a", fontSize: 10, fontWeight: 700, padding: "2px 8px", borderRadius: 100 }}>✓ Verifiziert</span>
+                              : <span style={{ background: "#fef9c3", color: "#ca8a04", fontSize: 10, fontWeight: 700, padding: "2px 8px", borderRadius: 100 }}>⏳ Ausstehend</span>}
+                            {u.verification_document_url && <Btn label="Dokument 📄" fg={ORANGE} bg={`${ORANGE}15`} onClick={() => viewDocument(u.id)} />}
+                            {u.approved
+                              ? <Btn label="Zurückziehen" fg="#dc2626" bg="#fee2e2" onClick={() => approveBuyer(u.id, false)} />
+                              : <Btn label="Verifizieren ✓" fg="#16a34a" bg="#dcfce7" onClick={() => approveBuyer(u.id, true)} />}
+                          </div>
+                        ) : <span style={{ color: TEXT3, fontSize: 12 }}>—</span>}
+                      </TD>
                       <TD>{fmt(u.created_at)}</TD>
                       <td style={{ padding: "8px 14px", borderBottom: `1px solid ${BORDER}`, whiteSpace: "nowrap" }}>
                         {u.role !== "admin"

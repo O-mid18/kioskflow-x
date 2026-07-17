@@ -131,6 +131,16 @@ export async function GET(req: NextRequest) {
     return NextResponse.json(data ?? []);
   }
 
+  if (action === "verification_doc_url") {
+    const userId = req.nextUrl.searchParams.get("userId");
+    if (!userId) return NextResponse.json({ error: "Missing userId" }, { status: 400 });
+    const { data: profile } = await db.from("profiles").select("verification_document_url").eq("id", userId).maybeSingle();
+    if (!profile?.verification_document_url) return NextResponse.json({ error: "Kein Dokument vorhanden" }, { status: 404 });
+    const { data, error } = await db.storage.from("verification-documents").createSignedUrl(profile.verification_document_url, 300);
+    if (error || !data) return NextResponse.json({ error: "Konnte Dokument nicht laden" }, { status: 500 });
+    return NextResponse.json({ url: data.signedUrl });
+  }
+
   if (action === "orders") {
     const { data } = await db
       .from("orders")
@@ -240,6 +250,16 @@ export async function POST(req: NextRequest) {
   }
 
   // ── User actions ─────────────────────────────────────────────────────────────
+  if (body.action === "approve_buyer") {
+    await db.from("profiles").update({ approved: true }).eq("id", body.userId);
+    return NextResponse.json({ ok: true });
+  }
+
+  if (body.action === "unapprove_buyer") {
+    await db.from("profiles").update({ approved: false }).eq("id", body.userId);
+    return NextResponse.json({ ok: true });
+  }
+
   if (body.action === "change_role") {
     if (!["buyer", "supplier", "admin"].includes(body.role)) return NextResponse.json({ error: "Ungültige Rolle" }, { status: 400 });
     await db.from("profiles").update({ role: body.role }).eq("id", body.userId);

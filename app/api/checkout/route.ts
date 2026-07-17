@@ -19,6 +19,13 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  // Buyers (kiosks) must be verified (business-license document reviewed)
+  // before they can complete a purchase.
+  const { data: buyerProfile } = await supabase.from("profiles").select("role, approved").eq("id", user.id).maybeSingle();
+  if (buyerProfile?.role === "buyer" && !buyerProfile.approved) {
+    return NextResponse.json({ error: "Dein Konto muss erst verifiziert werden, bevor du bestellen kannst. Bitte lade dein Gewerbedokument in deinem Profil hoch." }, { status: 403 });
+  }
+
   try {
     let shippingAddress: Record<string, string> = {};
     const discountPct = 0;
