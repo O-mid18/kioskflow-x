@@ -19,6 +19,7 @@ export default function CartPage() {
   const [items, setItems] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [role, setRole] = useState<string | null>(null);
 
   const fetchCart = async () => {
     try {
@@ -26,6 +27,7 @@ export default function CartPage() {
       setError(null);
       const { data: { user }, error: authError } = await supabase.auth.getUser();
       if (authError || !user) { window.location.href = "/login"; return; }
+      supabase.from("profiles").select("role").eq("id", user.id).maybeSingle().then(({ data }) => setRole(data?.role ?? null));
       const { data, error } = await supabase.from("cart_items").select(`id, quantity, products (id, name, price, image_url, stock)`).eq("user_id", user.id);
       if (error) throw error;
       setItems(((data as unknown as CartItem[]) || []).filter(item => item.products != null));
@@ -103,7 +105,11 @@ export default function CartPage() {
           <img src="/flowio-icon.png" alt="Flowio" style={{ width: 30, height: 30, borderRadius: 7, objectFit: "cover" }} />
           <span style={{ fontFamily:"'Syne',sans-serif", fontWeight:800, fontSize:15, color:TEXT, letterSpacing:"-0.3px" }}>Flowio</span>
         </div>
-        <a href="/marketplace" style={{ color:TEXT2, fontSize:13, fontWeight:500, textDecoration:"none", display:"flex", alignItems:"center", gap:5 }}>← Weiter einkaufen</a>
+        <div style={{ display:"flex", alignItems:"center", gap:14 }}>
+          {role === "admin" && <a href="/owner/dashboard" title="Owner-Panel" style={{ background:`${ORANGE}15`, color:ORANGE, fontWeight:700, fontSize:13, textDecoration:"none", padding:"7px 12px", borderRadius:8 }}>🏛️</a>}
+          {role === "supplier" && <a href="/supplier/dashboard" title="Lieferanten-Dashboard" style={{ background:`${ORANGE}15`, color:ORANGE, fontWeight:700, fontSize:13, textDecoration:"none", padding:"7px 12px", borderRadius:8 }}>📦</a>}
+          <a href="/marketplace" style={{ color:TEXT2, fontSize:13, fontWeight:500, textDecoration:"none", display:"flex", alignItems:"center", gap:5 }}>← Weiter einkaufen</a>
+        </div>
       </header>
 
       {/* Step breadcrumb */}
