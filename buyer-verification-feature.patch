@@ -1,0 +1,194 @@
+diff --git a/app/api/checkout/route.ts b/app/api/checkout/route.ts
+index 2351c56..a224d4c 100644
+--- a/app/api/checkout/route.ts
++++ b/app/api/checkout/route.ts
+@@ -19,6 +19,13 @@ export async function POST(request: Request) {
+     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+   }
+ 
++  // Buyers (kiosks) must be verified (business-license document reviewed)
++  // before they can complete a purchase.
++  const { data: buyerProfile } = await supabase.from("profiles").select("role, approved").eq("id", user.id).maybeSingle();
++  if (buyerProfile?.role === "buyer" && !buyerProfile.approved) {
++    return NextResponse.json({ error: "Dein Konto muss erst verifiziert werden, bevor du bestellen kannst. Bitte lade dein Gewerbedokument in deinem Profil hoch." }, { status: 403 });
++  }
++
+   try {
+     let shippingAddress: Record<string, string> = {};
+     const discountPct = 0;
+diff --git a/app/api/owner/route.ts b/app/api/owner/route.ts
+index 0e8f1a6..33bf662 100644
+--- a/app/api/owner/route.ts
++++ b/app/api/owner/route.ts
+@@ -131,6 +131,16 @@ export async function GET(req: NextRequest) {
+     return NextResponse.json(data ?? []);
+   }
+ 
++  if (action === "verification_doc_url") {
++    const userId = req.nextUrl.searchParams.get("userId");
++    if (!userId) return NextResponse.json({ error: "Missing userId" }, { status: 400 });
++    const { data: profile } = await db.from("profiles").select("verification_document_url").eq("id", userId).maybeSingle();
++    if (!profile?.verification_document_url) return NextResponse.json({ error: "Kein Dokument vorhanden" }, { status: 404 });
++    const { data, error } = await db.storage.from("verification-documents").createSignedUrl(profile.verification_document_url, 300);
++    if (error || !data) return NextResponse.json({ error: "Konnte Dokument nicht laden" }, { status: 500 });
++    return NextResponse.json({ url: data.signedUrl });
++  }
++
+   if (action === "orders") {
+     const { data } = await db
+       .from("orders")
+@@ -240,6 +250,16 @@ export async function POST(req: NextRequest) {
+   }
+ 
+   // ── User actions ─────────────────────────────────────────────────────────────
++  if (body.action === "approve_buyer") {
++    await db.from("profiles").update({ approved: true }).eq("id", body.userId);
++    return NextResponse.json({ ok: true });
++  }
++
++  if (body.action === "unapprove_buyer") {
++    await db.from("profiles").update({ approved: false }).eq("id", body.userId);
++    return NextResponse.json({ ok: true });
++  }
++
+   if (body.action === "change_role") {
+     if (!["buyer", "supplier", "admin"].includes(body.role)) return NextResponse.json({ error: "Ungültige Rolle" }, { status: 400 });
+     await db.from("profiles").update({ role: body.role }).eq("id", body.userId);
+diff --git a/app/owner/dashboard/page.tsx b/app/owner/dashboard/page.tsx
+index 46625db..fb0e5b0 100644
+--- a/app/owner/dashboard/page.tsx
++++ b/app/owner/dashboard/page.tsx
+@@ -178,9 +178,21 @@ export default function OwnerDashboard() {
+   const logout = async () => { await ownerPost({ action: "logout" }); window.location.href = "/owner"; };
+ 
+   const changeRole = async (id: string, role: string) => {
+-    await ownerPost({ action: "change_role", userId: id, role });
++    const res = await ownerPost({ action: "change_role", userId: id, role });
++    if (res?.error) { showToast("Fehler: " + res.error); return; }
+     setUsers(prev => prev.map(u => u.id === id ? { ...u, role } : u));
+-    showToast(`Rolle → "${role}"`);
++    showToast(`Rolle → "${role}" ✓`);
++  };
++  const approveBuyer = async (id: string, approve: boolean) => {
++    const res = await ownerPost({ action: approve ? "approve_buyer" : "unapprove_buyer", userId: id });
++    if (res?.error) { showToast("Fehler: " + res.error); return; }
++    setUsers(prev => prev.map(u => u.id === id ? { ...u, approved: approve } : u));
++    showToast(approve ? "Käufer verifiziert ✓" : "Verifizierung aufgehoben");
++  };
++  const viewDocument = async (id: string) => {
++    const res = await ownerFetch(`/api/owner?action=verification_doc_url&userId=${id}`);
++    if (res?.error || !res?.url) { showToast("Fehler: " + (res?.error ?? "Dokument nicht gefunden")); return; }
++    window.open(res.url, "_blank");
+   };
+   const blockUser = async (id: string, block: boolean) => {
+     const res = await ownerPost({ action: block ? "block_user" : "unblock_user", userId: id });
+@@ -388,7 +400,7 @@ export default function OwnerDashboard() {
+             </div>
+             <div style={{ overflowX: "auto" }}>
+               <table style={{ width: "100%", borderCollapse: "collapse" }}>
+-                <thead><tr><TH ch="Name" /><TH ch="E-Mail" /><TH ch="Rolle" /><TH ch="Status" /><TH ch="Seit" /><TH ch="Aktionen" /></tr></thead>
++                <thead><tr><TH ch="Name" /><TH ch="E-Mail" /><TH ch="Rolle" /><TH ch="Status" /><TH ch="Verifizierung" /><TH ch="Seit" /><TH ch="Aktionen" /></tr></thead>
+                 <tbody>
+                   {users.filter((u:any) => matchesSearch(u, userSearch)).map((u: any) => (
+                     <tr key={u.id}>
+@@ -396,6 +408,19 @@ export default function OwnerDashboard() {
+                       <TD>{u.email || "—"}</TD>
+                       <TD><Pill v={u.role || "—"} /></TD>
+                       <TD>{u.banned ? <span style={{ color: "#dc2626", fontSize: 11, fontWeight: 700 }}>🔒 Gesperrt</span> : <span style={{ color: "#16a34a", fontSize: 11 }}>✓ Aktiv</span>}</TD>
++                      <TD>
++                        {u.role === "buyer" ? (
++                          <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
++                            {u.approved
++                              ? <span style={{ background: "#dcfce7", color: "#16a34a", fontSize: 10, fontWeight: 700, padding: "2px 8px", borderRadius: 100 }}>✓ Verifiziert</span>
++                              : <span style={{ background: "#fef9c3", color: "#ca8a04", fontSize: 10, fontWeight: 700, padding: "2px 8px", borderRadius: 100 }}>⏳ Ausstehend</span>}
++                            {u.verification_document_url && <Btn label="Dokument 📄" fg={ORANGE} bg={`${ORANGE}15`} onClick={() => viewDocument(u.id)} />}
++                            {u.approved
++                              ? <Btn label="Zurückziehen" fg="#dc2626" bg="#fee2e2" onClick={() => approveBuyer(u.id, false)} />
++                              : <Btn label="Verifizieren ✓" fg="#16a34a" bg="#dcfce7" onClick={() => approveBuyer(u.id, true)} />}
++                          </div>
++                        ) : <span style={{ color: TEXT3, fontSize: 12 }}>—</span>}
++                      </TD>
+                       <TD>{fmt(u.created_at)}</TD>
+                       <td style={{ padding: "8px 14px", borderBottom: `1px solid ${BORDER}`, whiteSpace: "nowrap" }}>
+                         {u.role !== "admin"
+diff --git a/app/profile/page.tsx b/app/profile/page.tsx
+index 32d833a..2bad775 100644
+--- a/app/profile/page.tsx
++++ b/app/profile/page.tsx
+@@ -50,6 +50,11 @@ function BuyerProfile({ email, buyerId, userId }: { email: string; buyerId: stri
+   const [phone, setPhone]             = useState("");
+   const [saving, setSaving]           = useState(false);
+   const [msg, setMsg]                 = useState<{ text: string; ok: boolean } | null>(null);
++  const [approved, setApproved]       = useState(false);
++  const [docUrl, setDocUrl]           = useState("");
++  const [docFile, setDocFile]         = useState<File | null>(null);
++  const [docUploading, setDocUploading] = useState(false);
++  const [docMsg, setDocMsg]           = useState<{ text: string; ok: boolean } | null>(null);
+ 
+   useEffect(() => {
+     supabase.from("profiles").select("*").eq("id", buyerId).maybeSingle().then(({ data }) => {
+@@ -59,10 +64,30 @@ function BuyerProfile({ email, buyerId, userId }: { email: string; buyerId: stri
+         setAddress(data.address ?? "");
+         setCity(data.city ?? "");
+         setPhone(data.phone ?? "");
++        setApproved(data.approved ?? false);
++        setDocUrl(data.verification_document_url ?? "");
+       }
+     });
+   }, [buyerId]);
+ 
++  const uploadDoc = async () => {
++    if (!docFile) return;
++    setDocUploading(true);
++    const ext = docFile.name.split(".").pop();
++    const path = `${buyerId}/gewerbeschein.${ext}`;
++    const { error: upErr } = await supabase.storage.from("verification-documents").upload(path, docFile, { upsert: true, contentType: docFile.type });
++    if (upErr) {
++      setDocUploading(false);
++      setDocMsg({ text: "Upload fehlgeschlagen. Bitte erneut versuchen.", ok: false });
++      return;
++    }
++    const { error: updErr } = await supabase.from("profiles").update({ verification_document_url: path }).eq("id", buyerId);
++    setDocUploading(false);
++    if (updErr) { setDocMsg({ text: "Dokument hochgeladen, aber Profil konnte nicht aktualisiert werden.", ok: false }); return; }
++    setDocUrl(path);
++    setDocMsg({ text: "Dokument hochgeladen! Wir prüfen es in Kürze.", ok: true });
++  };
++
+   const save = async () => {
+     setSaving(true);
+     const { error } = await supabase.from("profiles").update({ full_name: fullName, company_name: companyName, address, city, phone }).eq("id", buyerId);
+@@ -98,6 +123,33 @@ function BuyerProfile({ email, buyerId, userId }: { email: string; buyerId: stri
+         </div>
+       </div>
+ 
++      {/* Verification card */}
++      <div style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 18, padding: 28, marginBottom: 16 }}>
++        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
++          <h2 style={{ fontFamily: "'Syne',sans-serif", fontWeight: 700, fontSize: 14, color: TEXT }}>Kiosk-Verifizierung</h2>
++          {approved
++            ? <span style={{ background: "#dcfce7", color: "#16a34a", fontSize: 11, fontWeight: 700, padding: "3px 10px", borderRadius: 100 }}>✓ Verifiziert</span>
++            : <span style={{ background: "#fef9c3", color: "#ca8a04", fontSize: 11, fontWeight: 700, padding: "3px 10px", borderRadius: 100 }}>⏳ Ausstehend</span>}
++        </div>
++        {!approved && (
++          <>
++            <p style={{ fontSize: 13, color: TEXT2, marginBottom: 16, lineHeight: 1.6 }}>
++              Um bei Flowio einzukaufen, lade bitte deinen Gewerbeschein (oder ein vergleichbares Dokument, das deinen Kiosk/Späti bestätigt) hoch. Erst nach Prüfung kannst du eine Bestellung abschließen.
++            </p>
++            {docUrl && <p style={{ fontSize: 12, color: "#16a34a", marginBottom: 10 }}>✓ Dokument hochgeladen — wird geprüft.</p>}
++            <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
++              <input type="file" accept="image/*,application/pdf" onChange={e => setDocFile(e.target.files?.[0] ?? null)}
++                style={{ fontSize: 13, color: TEXT2 }} />
++              <button onClick={uploadDoc} disabled={!docFile || docUploading}
++                style={{ background: (!docFile || docUploading) ? "rgba(37,99,235,0.4)" : ORANGE, color: "#fff", border: "none", borderRadius: 9, padding: "9px 18px", fontSize: 13, fontWeight: 700, cursor: (!docFile || docUploading) ? "not-allowed" : "pointer" }}>
++                {docUploading ? "Wird hochgeladen…" : "Hochladen →"}
++              </button>
++            </div>
++            {docMsg && <p style={{ fontSize: 12, marginTop: 10, color: docMsg.ok ? "#16a34a" : "#dc2626" }}>{docMsg.text}</p>}
++          </>
++        )}
++      </div>
++
+       {msg && (
+         <div style={{ background: msg.ok ? "#f0fdf4" : "#fef2f2", border: `1.5px solid ${msg.ok ? "#bbf7d0" : "#fca5a5"}`, borderRadius: 10, padding: "12px 16px", marginBottom: 16 }}>
+           <p style={{ color: msg.ok ? "#16a34a" : "#dc2626", fontSize: 13, fontWeight: 600 }}>{msg.text}</p>
