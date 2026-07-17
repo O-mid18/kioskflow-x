@@ -107,7 +107,14 @@ function BuyerProfile({ email, buyerId, userId }: { email: string; buyerId: stri
             {initials}
           </div>
           <div>
-            <p style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 18, color: TEXT, marginBottom: 3 }}>{fullName || companyName || "—"}</p>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 3 }}>
+              <p style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 18, color: TEXT }}>{fullName || companyName || "—"}</p>
+              {approved && (
+                <span title="Verifizierter Kiosk" style={{ display: "inline-flex", alignItems: "center", gap: 4, background: "#dcfce7", color: "#16a34a", fontSize: 11, fontWeight: 700, padding: "2px 9px", borderRadius: 100 }}>
+                  ✓ Verifizierter Kiosk
+                </span>
+              )}
+            </div>
             <p style={{ fontSize: 13, color: TEXT2 }}>{email}</p>
             <span style={{ display: "inline-block", marginTop: 6, background: `${ORANGE}15`, color: ORANGE, fontSize: 11, fontWeight: 700, padding: "3px 10px", borderRadius: 100 }}>Käufer</span>
           </div>
@@ -134,7 +141,7 @@ function BuyerProfile({ email, buyerId, userId }: { email: string; buyerId: stri
         {!approved && (
           <>
             <p style={{ fontSize: 13, color: TEXT2, marginBottom: 16, lineHeight: 1.6 }}>
-              Um bei Flowio einzukaufen, lade bitte deinen Gewerbeschein (oder ein vergleichbares Dokument, das deinen Kiosk/Späti bestätigt) hoch. Erst nach Prüfung kannst du eine Bestellung abschließen.
+              Lade deinen Gewerbeschein (oder ein vergleichbares Dokument, das deinen Kiosk/Späti bestätigt) hoch, um das <strong>&ldquo;Verifizierter Kiosk&rdquo;</strong>-Abzeichen auf deinem Profil zu erhalten. Du kannst schon jetzt bestellen — die Verifizierung ist optional, hilft aber Lieferanten, dir zu vertrauen.
             </p>
             {docUrl && <p style={{ fontSize: 12, color: "#16a34a", marginBottom: 10 }}>✓ Dokument hochgeladen — wird geprüft.</p>}
             <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
