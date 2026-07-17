@@ -8,11 +8,16 @@ const ORANGE = "#2563EB";
 
 export default function Navbar() {
   const [userEmail, setUserEmail] = useState<string | null>(null);
+  const [role, setRole] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data: { user } }) => {
+    supabase.auth.getUser().then(async ({ data: { user } }) => {
       setUserEmail(user?.email ?? null);
+      if (user) {
+        const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).maybeSingle();
+        setRole(profile?.role ?? null);
+      }
       setLoading(false);
     });
 
@@ -58,6 +63,17 @@ export default function Navbar() {
         <Link href="/cart" style={{ color: "var(--kf-text2)", fontWeight: 500, fontSize: 14, textDecoration: "none" }}>
           Warenkorb
         </Link>
+
+        {role === "admin" && (
+          <Link href="/owner/dashboard" title="Owner-Panel" style={{ display: "flex", alignItems: "center", gap: 6, background: `${ORANGE}15`, color: ORANGE, fontWeight: 700, fontSize: 13, textDecoration: "none", padding: "6px 12px", borderRadius: 8 }}>
+            🏛️ Mein Panel
+          </Link>
+        )}
+        {role === "supplier" && (
+          <Link href="/supplier/dashboard" title="Lieferanten-Dashboard" style={{ display: "flex", alignItems: "center", gap: 6, background: `${ORANGE}15`, color: ORANGE, fontWeight: 700, fontSize: 13, textDecoration: "none", padding: "6px 12px", borderRadius: 8 }}>
+            📦 Mein Dashboard
+          </Link>
+        )}
 
         {!loading && (
           userEmail ? (

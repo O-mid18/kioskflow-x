@@ -352,7 +352,12 @@ export default function OwnerDashboard() {
           <span style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 14, color: TEXT }}>Flowio</span>
           <span style={{ fontSize: 10, fontWeight: 700, background: "#fef3c7", color: "#d97706", padding: "2px 8px", borderRadius: 100 }}>OWNER</span>
         </div>
-        <button onClick={logout} style={{ background: "none", border: `1.5px solid ${BORDER}`, borderRadius: 8, padding: "6px 14px", fontSize: 13, color: TEXT2, cursor: "pointer", fontFamily: "inherit", fontWeight: 600 }}>Abmelden</button>
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <a href="/marketplace" style={{ display: "flex", alignItems: "center", gap: 6, background: `${ORANGE}15`, color: ORANGE, fontWeight: 700, fontSize: 13, textDecoration: "none", padding: "6px 12px", borderRadius: 8 }}>
+            🏪 Marktplatz
+          </a>
+          <button onClick={logout} style={{ background: "none", border: `1.5px solid ${BORDER}`, borderRadius: 8, padding: "6px 14px", fontSize: 13, color: TEXT2, cursor: "pointer", fontFamily: "inherit", fontWeight: 600 }}>Abmelden</button>
+        </div>
       </header>
 
       <div style={{ maxWidth: 1100, margin: "0 auto", padding: "28px 24px" }}>
