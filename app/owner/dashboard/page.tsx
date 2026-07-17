@@ -22,7 +22,7 @@ const TABS: { key: Tab; label: string; icon: string }[] = [
   { key: "settings",  label: "Einstellungen", icon: "🔒" },
 ];
 
-const ORDER_STATUSES = ["pending", "paid", "shipped", "delivered", "cancelled"];
+const ORDER_STATUSES = ["pending", "paid", "preparing", "shipped", "delivered", "cancelled"];
 
 // ── Small UI helpers ───────────────────────────────────────────────────────────
 function TH({ ch }: { ch: string }) {
@@ -34,6 +34,7 @@ function TD({ children, mono }: { children: React.ReactNode; mono?: boolean }) {
 function Pill({ v }: { v: string }) {
   const map: Record<string, { bg: string; fg: string }> = {
     paid: { bg: "#dcfce7", fg: "#16a34a" }, pending: { bg: "#fef9c3", fg: "#ca8a04" },
+    preparing: { bg: "#cffafe", fg: "#0891b2" },
     shipped: { bg: "#dbeafe", fg: "#2563eb" }, delivered: { bg: "#f3e8ff", fg: "#9333ea" },
     cancelled: { bg: "#fee2e2", fg: "#dc2626" },
     buyer: { bg: "#dbeafe", fg: "#2563eb" }, supplier: { bg: "#dcfce7", fg: "#16a34a" },

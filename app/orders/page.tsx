@@ -12,16 +12,18 @@ const TEXT3   = "var(--kf-text3)";
 const ORANGE  = "#2563EB";
 
 const STATUS: Record<string, { label: string; color: string; bg: string; icon: string }> = {
-  pending:   { label: "Ausstehend", color: "#ea580c", bg: "#fff7ed", icon: "⏳" },
-  paid:      { label: "Bezahlt",    color: "#16a34a", bg: "#f0fdf4", icon: "✅" },
-  shipped:   { label: "Versandt",   color: "#2563eb", bg: "#eff6ff", icon: "🚚" },
-  delivered: { label: "Geliefert",  color: "#16a34a", bg: "#f0fdf4", icon: "📦" },
-  cancelled: { label: "Storniert",  color: "#dc2626", bg: "#fef2f2", icon: "❌" },
+  pending:   { label: "Ausstehend",       color: "#ea580c", bg: "#fff7ed", icon: "⏳" },
+  paid:      { label: "Bezahlt",          color: "#16a34a", bg: "#f0fdf4", icon: "✅" },
+  preparing: { label: "Wird vorbereitet", color: "#7c3aed", bg: "#f3e8ff", icon: "📦" },
+  shipped:   { label: "Versandt",         color: "#2563eb", bg: "#eff6ff", icon: "🚚" },
+  delivered: { label: "Geliefert",        color: "#16a34a", bg: "#f0fdf4", icon: "📦" },
+  cancelled: { label: "Storniert",        color: "#dc2626", bg: "#fef2f2", icon: "❌" },
 };
 
 const STEPS = [
   { key: "pending",   label: "Bestellt" },
   { key: "paid",      label: "Bezahlt"  },
+  { key: "preparing", label: "Vorbereitung" },
   { key: "shipped",   label: "Versandt" },
   { key: "delivered", label: "Geliefert"},
 ];

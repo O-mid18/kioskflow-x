@@ -20,19 +20,21 @@ type OrderItem = {
 };
 
 const NEXT_STATUS: Record<string, string[]> = {
-  pending:   ["shipped", "cancelled"],
-  paid:      ["shipped", "cancelled"],
+  pending:   ["preparing", "shipped", "cancelled"],
+  paid:      ["preparing", "shipped", "cancelled"],
+  preparing: ["shipped", "cancelled"],
   shipped:   ["delivered", "cancelled"],
   delivered: [],
   cancelled: [],
 };
 
 const STATUS_MAP: Record<string, { label:string; color:string; bg:string }> = {
-  pending:   { label:"Ausstehend", color:"#ea580c", bg:"#fff7ed" },
-  paid:      { label:"Bezahlt",    color:"#16a34a", bg:"#f0fdf4" },
-  shipped:   { label:"Versandt",   color:"#2563eb", bg:"#eff6ff" },
-  delivered: { label:"Geliefert",  color:"#16a34a", bg:"#f0fdf4" },
-  cancelled: { label:"Storniert",  color:"#dc2626", bg:"#fef2f2" },
+  pending:   { label:"Ausstehend",       color:"#ea580c", bg:"#fff7ed" },
+  paid:      { label:"Bezahlt",          color:"#16a34a", bg:"#f0fdf4" },
+  preparing: { label:"Wird vorbereitet", color:"#7c3aed", bg:"#f3e8ff" },
+  shipped:   { label:"Versandt",         color:"#2563eb", bg:"#eff6ff" },
+  delivered: { label:"Geliefert",        color:"#16a34a", bg:"#f0fdf4" },
+  cancelled: { label:"Storniert",        color:"#dc2626", bg:"#fef2f2" },
 };
 
 export default function SupplierOrdersPage() {
@@ -45,6 +47,7 @@ export default function SupplierOrdersPage() {
   useEffect(() => { fetchOrders(); }, []);
 
   const STATUS_NOTIFY: Record<string, string> = {
+    preparing: "📦 Deine Bestellung wird vorbereitet",
     shipped:   "🚚 Deine Bestellung wurde versandt",
     delivered: "📦 Deine Bestellung wurde geliefert",
     cancelled: "❌ Deine Bestellung wurde storniert",
