@@ -75,7 +75,7 @@ export async function POST(request: Request) {
     if (order) {
       const { data: orderItems } = await db
         .from("order_items")
-        .select("product_id, quantity, supplier_id, price_at_purchase")
+        .select("product_id, quantity, supplier_id, price_at_purchase, shipping_cost_at_purchase")
         .eq("order_id", order.id);
 
       if (orderItems && orderItems.length > 0) {
@@ -157,8 +157,10 @@ export async function POST(request: Request) {
           console.error("[webhook] could not fetch actual Stripe fee, falling back to 0:", feeErr?.message);
         }
 
+        // Gross total of the WHOLE charge (products + shipping) — needed to
+        // correctly prorate Stripe's real fee across suppliers.
         const grossOrderTotalCents = (orderItems ?? []).reduce(
-          (sum: number, i: any) => sum + Math.round((i.price_at_purchase ?? 0) * 100) * i.quantity,
+          (sum: number, i: any) => sum + Math.round((i.price_at_purchase ?? 0) * 100) * i.quantity + Math.round((i.shipping_cost_at_purchase ?? 0) * 100),
           0
         );
 
@@ -166,15 +168,23 @@ export async function POST(request: Request) {
           // Auto-transfer to supplier if they have Stripe Connect set up
           if (s.stripe_account_id && s.stripe_onboarded) {
             const supplierItems = (orderItems ?? []).filter((i: any) => i.supplier_id === s.id);
+            // Product revenue — this is what the platform's commission applies to.
             const supplierGrossCents = supplierItems.reduce(
               (sum: number, i: any) => sum + Math.round((i.price_at_purchase ?? 0) * 100) * i.quantity,
               0
             );
+            // Shipping is a pass-through reimbursement for the supplier's own
+            // delivery cost — no platform commission on it.
+            const supplierShippingCents = supplierItems.reduce(
+              (sum: number, i: any) => sum + Math.round((i.shipping_cost_at_purchase ?? 0) * 100),
+              0
+            );
+            const supplierTotalCents = supplierGrossCents + supplierShippingCents;
             const platformCommissionCents = Math.round(supplierGrossCents * PLATFORM_FEE_PERCENT);
             const supplierShareOfStripeFee = grossOrderTotalCents > 0
-              ? Math.round(stripeFeeCents * (supplierGrossCents / grossOrderTotalCents))
+              ? Math.round(stripeFeeCents * (supplierTotalCents / grossOrderTotalCents))
               : 0;
-            const transferAmount = supplierGrossCents - platformCommissionCents - supplierShareOfStripeFee;
+            const transferAmount = supplierTotalCents - platformCommissionCents - supplierShareOfStripeFee;
             if (transferAmount > 0) {
               try {
                 await stripe.transfers.create({

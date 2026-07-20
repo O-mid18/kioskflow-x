@@ -31,6 +31,7 @@ export default function AddProductPage() {
   const [name, setName]               = useState("");
   const [price, setPrice]             = useState("");
   const [stock, setStock]             = useState("");
+  const [shippingCost, setShippingCost] = useState("");
   const [imageFile, setImageFile]     = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [category, setCategory]       = useState("");
@@ -76,6 +77,7 @@ export default function AddProductPage() {
     if (!name || !price || !stock) { setErrorMsg("Name, Preis und Lagerbestand sind Pflichtfelder."); return; }
     if (Number(price) <= 0) { setErrorMsg("Der Preis muss größer als 0 sein."); return; }
     if (Number(stock) < 0) { setErrorMsg("Der Lagerbestand darf nicht negativ sein."); return; }
+    if (shippingCost && Number(shippingCost) < 0) { setErrorMsg("Die Versandkosten dürfen nicht negativ sein."); return; }
     setIsLoading(true);
 
     const { data: { user } } = await supabase.auth.getUser();
@@ -90,6 +92,7 @@ export default function AddProductPage() {
 
     const { error } = await supabase.from("products").insert({
       name, price: Number(price), stock: Number(stock),
+      shipping_cost: shippingCost ? Number(shippingCost) : 0,
       image_url: imageUrl ?? null,
       supplier_id: supplier.id,
       category: category || null,
@@ -192,7 +195,7 @@ export default function AddProductPage() {
           {/* Preis & Lager */}
           <div style={{ background:SURFACE, border:`1px solid ${BORDER}`, borderRadius:16, padding:"24px" }}>
             <h2 style={{ fontFamily:"'Syne',sans-serif", fontWeight:700, fontSize:14, color:TEXT, marginBottom:20 }}>Preis & Lagerbestand</h2>
-            <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:16 }}>
+            <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:16 }}>
               <Field label="Preis" required>
                 <div style={{ position:"relative" }}>
                   <span style={{ position:"absolute", left:14, top:"50%", transform:"translateY(-50%)", color:TEXT3, fontSize:14, fontWeight:600 }}>€</span>
@@ -202,7 +205,14 @@ export default function AddProductPage() {
               <Field label="Lagerbestand" required>
                 <input type="number" min="0" placeholder="0" value={stock} onChange={e => setStock(e.target.value)} style={inputStyle()} onFocus={focus} onBlur={blur} />
               </Field>
+              <Field label="Versandkosten">
+                <div style={{ position:"relative" }}>
+                  <span style={{ position:"absolute", left:14, top:"50%", transform:"translateY(-50%)", color:TEXT3, fontSize:14, fontWeight:600 }}>€</span>
+                  <input type="number" min="0" step="0.01" placeholder="0.00" value={shippingCost} onChange={e => setShippingCost(e.target.value)} style={{ ...inputStyle({ paddingLeft:30 }) }} onFocus={focus} onBlur={blur} />
+                </div>
+              </Field>
             </div>
+            <p style={{ fontSize:12, color:TEXT3, marginTop:10 }}>Einmalig pro Bestellposition, egal wie viele Stück bestellt werden. Leer lassen für kostenlosen Versand.</p>
           </div>
 
           {/* Actions */}

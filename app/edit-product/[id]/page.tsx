@@ -35,6 +35,7 @@ export default function EditProductPage() {
   const [name, setName]               = useState("");
   const [price, setPrice]             = useState("");
   const [stock, setStock]             = useState("");
+  const [shippingCost, setShippingCost] = useState("");
   const [existingImageUrl, setExistingImageUrl] = useState("");
   const [imageFile, setImageFile]     = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -62,6 +63,7 @@ export default function EditProductPage() {
         setName(data.name || "");
         setPrice(String(data.price || ""));
         setStock(String(data.stock || ""));
+        setShippingCost(data.shipping_cost ? String(data.shipping_cost) : "");
         setExistingImageUrl(data.image_url || "");
         setCategory(data.category || "");
         setDescription(data.description || "");
@@ -113,6 +115,7 @@ export default function EditProductPage() {
 
     const { error } = await supabase.from("products").update({
       name, price: Number(price), stock: Number(stock),
+      shipping_cost: shippingCost ? Number(shippingCost) : 0,
       image_url: finalImageUrl || null,
       category: category || null,
       description: description || null,
@@ -237,7 +240,7 @@ export default function EditProductPage() {
           {/* Preis & Lager */}
           <div style={{ background:SURFACE, border:`1px solid ${BORDER}`, borderRadius:16, padding:"24px" }}>
             <h2 style={{ fontFamily:"'Syne',sans-serif", fontWeight:700, fontSize:14, color:TEXT, marginBottom:20 }}>Preis & Lagerbestand</h2>
-            <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:16 }}>
+            <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:16 }}>
               <Field label="Preis" required>
                 <div style={{ position:"relative" }}>
                   <span style={{ position:"absolute", left:14, top:"50%", transform:"translateY(-50%)", color:TEXT3, fontSize:14, fontWeight:600 }}>€</span>
@@ -246,6 +249,12 @@ export default function EditProductPage() {
               </Field>
               <Field label="Lagerbestand" required>
                 <input type="number" min="0" value={stock} onChange={e => setStock(e.target.value)} style={inputStyle()} onFocus={focus} onBlur={blur} />
+              </Field>
+              <Field label="Versandkosten">
+                <div style={{ position:"relative" }}>
+                  <span style={{ position:"absolute", left:14, top:"50%", transform:"translateY(-50%)", color:TEXT3, fontSize:14, fontWeight:600 }}>€</span>
+                  <input type="number" min="0" step="0.01" placeholder="0.00" value={shippingCost} onChange={e => setShippingCost(e.target.value)} style={{ ...inputStyle({ paddingLeft:30 }) }} onFocus={focus} onBlur={blur} />
+                </div>
               </Field>
             </div>
           </div>

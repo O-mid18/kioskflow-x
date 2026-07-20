@@ -12,7 +12,7 @@ const TEXT2 = "var(--kf-text2)";
 const TEXT3 = "var(--kf-text3)";
 const ORANGE = "#2563EB";
 
-interface Product { id: string; name: string; price: number; image_url: string | null; stock?: number; }
+interface Product { id: string; name: string; price: number; image_url: string | null; stock?: number; shipping_cost?: number; }
 interface CartItem { id: string; quantity: number; products: Product; }
 
 export default function CartPage() {
@@ -28,7 +28,7 @@ export default function CartPage() {
       const { data: { user }, error: authError } = await supabase.auth.getUser();
       if (authError || !user) { window.location.href = "/login"; return; }
       supabase.from("profiles").select("role").eq("id", user.id).maybeSingle().then(({ data }) => setRole(data?.role ?? null));
-      const { data, error } = await supabase.from("cart_items").select(`id, quantity, products (id, name, price, image_url, stock)`).eq("user_id", user.id);
+      const { data, error } = await supabase.from("cart_items").select(`id, quantity, products (id, name, price, image_url, stock, shipping_cost)`).eq("user_id", user.id);
       if (error) throw error;
       setItems(((data as unknown as CartItem[]) || []).filter(item => item.products != null));
     } catch {
@@ -66,7 +66,8 @@ export default function CartPage() {
   };
 
   const subtotal = items.reduce((sum, item) => sum + item.products.price * item.quantity, 0);
-  const total = subtotal;
+  const shippingTotal = items.reduce((sum, item) => sum + (item.products.shipping_cost ?? 0), 0);
+  const total = subtotal + shippingTotal;
   const cartCount = items.reduce((s, i) => s + i.quantity, 0);
 
   if (loading) {
@@ -183,7 +184,9 @@ export default function CartPage() {
                   </div>
                   <div style={{ display:"flex", justifyContent:"space-between" }}>
                     <span style={{ color:TEXT2, fontSize:13 }}>Lieferung</span>
-                    <span style={{ color:"#16a34a", fontSize:13, fontWeight:600 }}>Kostenlos</span>
+                    {shippingTotal > 0
+                      ? <span style={{ color:TEXT, fontSize:13, fontWeight:600 }}>€{shippingTotal.toFixed(2)}</span>
+                      : <span style={{ color:"#16a34a", fontSize:13, fontWeight:600 }}>Kostenlos</span>}
                   </div>
                 </div>
                 <div style={{ borderTop:`1.5px solid ${BORDER}`, paddingTop:14, display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:18 }}>

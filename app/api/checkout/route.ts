@@ -29,7 +29,7 @@ export async function POST(request: Request) {
 
     const { data: cartItems, error: cartError } = await supabase
       .from("cart_items")
-      .select("quantity, products(id, name, price, supplier_id, stock)")
+      .select("quantity, products(id, name, price, supplier_id, stock, shipping_cost)")
       .eq("user_id", user.id);
 
     if (cartError) {
@@ -55,9 +55,13 @@ export async function POST(request: Request) {
       );
     }
 
+    // Shipping cost is charged once per distinct product line, not per unit —
+    // ordering 1 or 10 units of the same product only adds the fee once.
     const totalCents = Math.round(
       cartItems.reduce((sum: number, item: any) => {
-        return sum + Math.round(item.products.price * 100) * item.quantity;
+        const lineTotal = Math.round(item.products.price * 100) * item.quantity;
+        const shipping = Math.round((item.products.shipping_cost ?? 0) * 100);
+        return sum + lineTotal + shipping;
       }, 0) * (1 - discountPct)
     );
 
@@ -67,14 +71,26 @@ export async function POST(request: Request) {
     try {
       stripeSession = await stripe.checkout.sessions.create({
         payment_method_types: ["card"],
-        line_items: cartItems.map((item: any) => ({
-          price_data: {
-            currency: "eur",
-            product_data: { name: item.products.name },
-            unit_amount: Math.round(item.products.price * 100 * (1 - discountPct)),
-          },
-          quantity: item.quantity,
-        })),
+        line_items: [
+          ...cartItems.map((item: any) => ({
+            price_data: {
+              currency: "eur",
+              product_data: { name: item.products.name },
+              unit_amount: Math.round(item.products.price * 100 * (1 - discountPct)),
+            },
+            quantity: item.quantity,
+          })),
+          ...(cartItems as any[])
+            .filter((item) => (item.products.shipping_cost ?? 0) > 0)
+            .map((item) => ({
+              price_data: {
+                currency: "eur",
+                product_data: { name: `Versand: ${item.products.name}` },
+                unit_amount: Math.round(item.products.shipping_cost * 100 * (1 - discountPct)),
+              },
+              quantity: 1,
+            })),
+        ],
         mode: "payment",
         success_url: `${baseUrl}/success?session_id={CHECKOUT_SESSION_ID}`,
         cancel_url: `${baseUrl}/cart`,
@@ -124,6 +140,7 @@ export async function POST(request: Request) {
         supplier_id: item.products.supplier_id ?? null,
         quantity: item.quantity,
         price_at_purchase: item.products.price,
+        shipping_cost_at_purchase: item.products.shipping_cost ?? 0,
       }))
     );
     if (itemsError) {

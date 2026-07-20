@@ -11,7 +11,7 @@ const TEXT2   = "var(--kf-text2)";
 const TEXT3   = "var(--kf-text3)";
 const ORANGE  = "#2563EB";
 
-interface Product  { name: string; price: number; }
+interface Product  { name: string; price: number; shipping_cost?: number; }
 interface CartItem { id: string; quantity: number; products: Product; }
 
 const LS_KEY = "kf_shipping_address";
@@ -25,6 +25,8 @@ const iStyle: React.CSSProperties = {
 export default function CheckoutPage() {
   const [items, setItems]   = useState<CartItem[]>([]);
   const [total, setTotal]   = useState(0);
+  const [productSubtotal, setProductSubtotal] = useState(0);
+  const [shippingTotal, setShippingTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [paying, setPaying] = useState(false);
   const [error, setError]   = useState<string | null>(null);
@@ -74,13 +76,17 @@ export default function CheckoutPage() {
       if (!user) { setLoading(false); return; }
       const { data, error } = await supabase
         .from("cart_items")
-        .select("id, quantity, products (name, price)")
+        .select("id, quantity, products (name, price, shipping_cost)")
         .eq("user_id", user.id);
       if (error) throw error;
       if (data) {
         const cartItems = data as unknown as CartItem[];
         setItems(cartItems);
-        setTotal(cartItems.reduce((s, i) => s + i.products.price * i.quantity, 0));
+        const productOnly = cartItems.reduce((s, i) => s + i.products.price * i.quantity, 0);
+        const shipping = cartItems.reduce((s, i) => s + (i.products.shipping_cost ?? 0), 0);
+        setProductSubtotal(productOnly);
+        setShippingTotal(shipping);
+        setTotal(productOnly + shipping);
       }
     } catch { setError("Warenkorb konnte nicht geladen werden."); }
     finally { setLoading(false); }
@@ -317,8 +323,8 @@ export default function CheckoutPage() {
             {/* ── Summary ── */}
             <div style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 16, padding: "20px 18px", marginBottom: 16 }}>
               {[
-                { label: "Zwischensumme", value: `€${total.toFixed(2)}`, valueColor: TEXT },
-                { label: "Lieferung",     value: "Kostenlos",             valueColor: "#16a34a" },
+                { label: "Zwischensumme", value: `€${productSubtotal.toFixed(2)}`, valueColor: TEXT },
+                { label: "Lieferung",     value: shippingTotal > 0 ? `€${shippingTotal.toFixed(2)}` : "Kostenlos", valueColor: shippingTotal > 0 ? TEXT : "#16a34a" },
                 ...(discountInfo ? [{ label: `Rabatt (${discountInfo.pct * 100}%)`, value: `-€${discountAmount.toFixed(2)}`, valueColor: "#16a34a" }] : []),
               ].map(row => (
                 <div key={row.label} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>

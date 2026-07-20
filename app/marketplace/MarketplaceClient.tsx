@@ -125,6 +125,9 @@ function ProductModal({ product, reviews, onClose, onAddToCart, inWishlist, onTo
             <h2 style={{ fontFamily:"'DM Sans',sans-serif", color:TEXT, fontWeight:800, fontSize:22, letterSpacing:"-0.5px", flex:1, marginRight:12 }}>{product.name}</h2>
             <span style={{ fontFamily:"'DM Sans',sans-serif", color:ORANGE, fontSize:24, fontWeight:800, flexShrink:0 }}>€{product.price}</span>
           </div>
+          {(product as any).shipping_cost > 0 && (
+            <p style={{ fontSize:12, color:TEXT3, marginTop:-4, marginBottom:12 }}>+ €{(product as any).shipping_cost} Versand (einmalig, unabhängig von der Menge)</p>
+          )}
           {reviews.length > 0 && (
             <div style={{ display:"flex", alignItems:"center", gap:6, marginBottom:12 }}>
               <Stars rating={avg} size={13} />
@@ -205,6 +208,9 @@ function OfferModal({ product, onClose, onSent }: { product: Product; onClose: (
           <span style={{ fontSize:12, color:TEXT2 }}>Listenpreis</span>
           <span style={{ fontFamily:"'DM Sans',sans-serif", fontWeight:800, fontSize:16, color:ORANGE }}>€{product.price}<span style={{ fontSize:11, fontWeight:500, color:TEXT3 }}>/Stück</span></span>
         </div>
+        {(product as any).shipping_cost > 0 && (
+          <p style={{ fontSize:11, color:TEXT3, marginTop:-12, marginBottom:16 }}>+ €{(product as any).shipping_cost} Versand (einmalig)</p>
+        )}
 
         <label style={{ display:"block", fontSize:12, fontWeight:700, color:TEXT2, marginBottom:6 }}>Menge (Stück)</label>
         <input type="number" min="1" value={qty} onChange={e => setQty(e.target.value)} placeholder="z.B. 50"

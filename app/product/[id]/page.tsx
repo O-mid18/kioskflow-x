@@ -179,10 +179,13 @@ export default function ProductDetailsPage() {
               </div>
             )}
 
-            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 20 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
               <span style={{ fontFamily: "'DM Sans',sans-serif", fontSize: 36, fontWeight: 800, color: ORANGE }}>€{product.price}</span>
               <span style={{ color: TEXT3, fontSize: 13 }}>/Stück</span>
             </div>
+            {(product as any).shipping_cost > 0 && (
+              <p style={{ fontSize: 13, color: TEXT3, marginBottom: 16 }}>+ €{(product as any).shipping_cost} Versand (einmalig, unabhängig von der Menge)</p>
+            )}
 
             {product.stock !== undefined && (
               <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: product.stock > 0 ? "#dcfce7" : "#fee2e2", borderRadius: 8, padding: "5px 12px", marginBottom: 20 }}>
