@@ -275,6 +275,7 @@ export default function MarketplacePage({ initialProducts = [], initialSuppliers
   const [offerProduct, setOfferProduct] = useState<Product|null>(null);
   const [visibleCount, setVisibleCount] = useState(20);
   const [role, setRole] = useState<string | null>(null);
+  const [restockRecs, setRestockRecs] = useState<any[]>([]);
 
   const showToast = useCallback((msg:string) => { setToast(msg); setTimeout(() => setToast(null),2500); },[]);
 
@@ -287,6 +288,15 @@ export default function MarketplacePage({ initialProducts = [], initialSuppliers
         if (wl) setWishlist((wl as any[]).map(w => w.products).filter(Boolean));
         const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).maybeSingle();
         setRole(profile?.role ?? null);
+        if (profile?.role === "buyer" || !profile?.role) {
+          const { data: { session } } = await supabase.auth.getSession();
+          if (session) {
+            fetch("/api/smart-restock", { headers: { Authorization: `Bearer ${session.access_token}` } })
+              .then(r => r.ok ? r.json() : { recommendations: [] })
+              .then(d => setRestockRecs(d.recommendations ?? []))
+              .catch(() => {});
+          }
+        }
       }
     });
     if (initialProducts.length === 0) {
@@ -490,6 +500,34 @@ export default function MarketplacePage({ initialProducts = [], initialSuppliers
           </select>
         </div>
 
+
+        {/* ── SMART RESTOCK ── */}
+        {restockRecs.length > 0 && (
+          <div style={{ marginBottom:28, background:`${ORANGE}0d`, border:`1px solid ${ORANGE}30`, borderRadius:16, padding:"18px 20px" }}>
+            <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:14 }}>
+              <span style={{ fontSize:18 }}>🔄</span>
+              <h2 style={{ fontFamily:"'Syne',sans-serif", fontWeight:800, fontSize:16, color:TEXT }}>Zeit zum Nachbestellen?</h2>
+              <span style={{ fontSize:11, color:TEXT3 }}>· basierend auf deinen bisherigen Bestellungen</span>
+            </div>
+            <div style={{ display:"flex", gap:12, overflowX:"auto", paddingBottom:4 }}>
+              {restockRecs.map((rec: any) => (
+                <div key={rec.product.id} style={{ flexShrink:0, width:200, background:SURFACE, border:`1px solid ${BORDER}`, borderRadius:12, padding:12 }}>
+                  <div style={{ width:"100%", height:80, borderRadius:8, overflow:"hidden", marginBottom:8, background:BG }}>
+                    <img loading="lazy" decoding="async" src={rec.product.image_url || "https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?w=200&q=60"} alt="" style={{ width:"100%", height:"100%", objectFit:"cover" }} />
+                  </div>
+                  <p style={{ fontSize:13, fontWeight:700, color:TEXT, marginBottom:2 }}>{rec.product.name}</p>
+                  <p style={{ fontSize:11, color: rec.overdue ? "#dc2626" : TEXT3, marginBottom:8 }}>
+                    {rec.overdue ? "⏰ Überfällig" : "🔔 Bald fällig"} – zuletzt vor {rec.daysSinceLastOrder} Tagen (∅ alle {rec.avgIntervalDays} Tage)
+                  </p>
+                  <button onClick={() => addToCart(rec.product)}
+                    style={{ width:"100%", background:ORANGE, color:"#fff", border:"none", borderRadius:8, padding:"7px", fontSize:12, fontWeight:700, cursor:"pointer" }}>
+                    + In den Warenkorb
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* ── FEATURED ── */}
         {!loading && products.length > 0 && (
