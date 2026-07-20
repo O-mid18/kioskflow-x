@@ -5,7 +5,7 @@ import { supabase } from "@/lib/supabase";
 import { NotificationBell } from "@/components/ui/notification-bell";
 import { CATEGORY_MAP, DEFAULT_CATEGORY } from "@/lib/categories";
 
-interface Product { id: number; name: string; description?: string; price: number; category?: string; image_url?: string; stock?: number; supplier_id?: number; }
+interface Product { id: number; name: string; description?: string; price: number; category?: string; image_url?: string; stock?: number; supplier_id?: number; created_at?: string; }
 interface Supplier { id: number; name: string; description?: string; logo_url?: string; }
 interface Review { id: number; product_id: number; rating: number; comment?: string; }
 interface CartItem extends Product { quantity: number; }
@@ -433,6 +433,43 @@ export default function MarketplacePage({ initialProducts = [], initialSuppliers
           </div>
         </div>
 
+        {/* ── TOP LIEFERANTEN (Faire-style brand discovery) ── */}
+        {!loading && suppliers.length > 0 && (
+          <div style={{ marginBottom:24 }}>
+            <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:14 }}>
+              <div>
+                <h2 style={{ fontFamily:"'Syne',sans-serif", fontWeight:800, fontSize:17, color:TEXT }}>Top Lieferanten</h2>
+                <p style={{ fontSize:12, color:TEXT3, marginTop:2 }}>Direkt von lokalen Herstellern bestellen</p>
+              </div>
+            </div>
+            <div style={{ display:"flex", gap:12, overflowX:"auto", scrollbarWidth:"none", paddingBottom:6 }}>
+              {suppliers.map(supplier => {
+                const count = products.filter(p => p.supplier_id === supplier.id).length;
+                return (
+                  <a key={supplier.id} href={`/supplier/${supplier.id}`}
+                    style={{ flexShrink:0, display:"flex", flexDirection:"column", alignItems:"center", gap:10, background:SURFACE, border:`1.5px solid ${BORDER}`, borderRadius:18, padding:"18px 20px", minWidth:130, textDecoration:"none", transition:"all 0.2s", cursor:"pointer" }}
+                    onMouseEnter={e => { e.currentTarget.style.borderColor = ORANGE; e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = `0 8px 24px rgba(37,99,235,0.12)`; }}
+                    onMouseLeave={e => { e.currentTarget.style.borderColor = BORDER; e.currentTarget.style.transform = ""; e.currentTarget.style.boxShadow = ""; }}>
+                    <div style={{ width:60, height:60, borderRadius:16, overflow:"hidden", background:BG, flexShrink:0, display:"flex", alignItems:"center", justifyContent:"center", border:`1px solid ${BORDER}` }}>
+                      {supplier.logo_url ? (
+                        <img loading="lazy" src={supplier.logo_url} alt={supplier.name} style={{ width:"100%", height:"100%", objectFit:"cover" }} />
+                      ) : (
+                        <span style={{ fontSize:24 }}>🏭</span>
+                      )}
+                    </div>
+                    <div style={{ textAlign:"center" }}>
+                      <p style={{ fontWeight:700, fontSize:12, color:TEXT, marginBottom:3, maxWidth:110, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{supplier.name}</p>
+                      <div style={{ display:"inline-flex", alignItems:"center", gap:4, background:`${ORANGE}12`, borderRadius:100, padding:"2px 8px" }}>
+                        <span style={{ fontSize:10, fontWeight:700, color:ORANGE }}>{count} Produkte</span>
+                      </div>
+                    </div>
+                  </a>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
         {/* ── CATEGORIES ── */}
         <div style={{ display:"flex", gap:10, overflowX:"auto", padding:"4px 0 12px", scrollbarWidth:"none" }}>
           {categories.map(cat => {
@@ -463,6 +500,7 @@ export default function MarketplacePage({ initialProducts = [], initialSuppliers
             <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(300px,1fr))", gap:14 }}>
               {products.slice(0,3).map(p => {
                 const cat = CATS[p.category||""] || CATS.default;
+                const fIsNew = p.created_at ? (Date.now() - new Date(p.created_at).getTime()) < 7 * 24 * 60 * 60 * 1000 : false;
                 return (
                   <div key={p.id} onClick={() => { if (p.supplier_id) window.location.href = `/supplier/${p.supplier_id}`; }} style={{ position:"relative", height:200, borderRadius:16, overflow:"hidden", cursor:"pointer" }}>
                     <img loading="lazy" decoding="async" src={p.image_url||"https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?w=600&q=80"} alt={p.name} style={{ width:"100%", height:"100%", objectFit:"cover", transition:"transform 0.4s" }}
@@ -471,7 +509,10 @@ export default function MarketplacePage({ initialProducts = [], initialSuppliers
                       onError={e => { (e.currentTarget as HTMLImageElement).src = "https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?w=400&q=80"; }} />
                     <div style={{ position:"absolute", inset:0, background:"linear-gradient(to top,rgba(0,0,0,0.65) 0%,transparent 60%)" }} />
                     <div style={{ position:"absolute", bottom:0, left:0, right:0, padding:"16px" }}>
-                      <span style={{ background:cat.color, color:"#fff", fontSize:9, fontWeight:800, padding:"3px 8px", borderRadius:100, marginBottom:6, display:"inline-block" }}>{cat.emoji} {p.category}</span>
+                      <div style={{ display:"flex", gap:5, marginBottom:6 }}>
+                        <span style={{ background:cat.color, color:"#fff", fontSize:9, fontWeight:800, padding:"3px 8px", borderRadius:100 }}>{cat.emoji} {p.category}</span>
+                        {fIsNew && <span style={{ background:"#16a34a", color:"#fff", fontSize:9, fontWeight:800, padding:"3px 8px", borderRadius:100 }}>✦ NEU</span>}
+                      </div>
                       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center" }}>
                         <h3 style={{ color:"#fff", fontFamily:"'Syne',sans-serif", fontWeight:700, fontSize:16 }}>{p.name}</h3>
                         <button onClick={e => { e.stopPropagation(); if ((p.stock ?? 0) > 0) addToCart(p); }}
@@ -542,6 +583,8 @@ export default function MarketplacePage({ initialProducts = [], initialSuppliers
                 const avg = getAvg(product.id);
                 const inWish = wishlistedIds.includes(product.id);
                 const isLow = product.stock !== undefined && product.stock < 30;
+                const isNew = product.created_at ? (Date.now() - new Date(product.created_at).getTime()) < 7 * 24 * 60 * 60 * 1000 : false;
+                const isTopRated = avg >= 4.0 && pReviews.length >= 2;
 
                 return (
                   <div key={product.id} className="pcard" style={{ animationDelay:`${i*0.03}s`, background:SURFACE, border:`1px solid ${BORDER}`, borderRadius:16, overflow:"hidden", cursor:"pointer", boxShadow:"0 2px 8px rgba(0,0,0,0.04)" }}
@@ -560,6 +603,8 @@ export default function MarketplacePage({ initialProducts = [], initialSuppliers
                         <span style={{ position:"absolute", top:10, left:10, background:cat.bg, color:cat.color, fontSize:10, fontWeight:700, padding:"3px 8px", borderRadius:100 }}>{cat.emoji} {product.category}</span>
                       )}
                       {isLow && <span style={{ position:"absolute", bottom:10, left:10, background:"#fef2f2", color:"#ef4444", fontSize:9, fontWeight:800, padding:"3px 8px", borderRadius:100 }}>Nur {product.stock} übrig</span>}
+                      {isNew && !isLow && <span style={{ position:"absolute", bottom:10, left:10, background:"#16a34a", color:"#fff", fontSize:9, fontWeight:800, padding:"3px 8px", borderRadius:100 }}>✦ NEU</span>}
+                      {isTopRated && <span style={{ position:"absolute", bottom:10, right:10, background:"#f59e0b", color:"#fff", fontSize:9, fontWeight:800, padding:"3px 8px", borderRadius:100 }}>★ TOP</span>}
                     </div>
                     <div style={{ padding:"12px 14px 14px" }}>
                       <h3 style={{ color:TEXT, fontWeight:600, fontSize:13, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", marginBottom:4 }}>{product.name}</h3>
@@ -599,6 +644,25 @@ export default function MarketplacePage({ initialProducts = [], initialSuppliers
               style={{ background:SURFACE, border:`1.5px solid ${BORDER}`, borderRadius:12, padding:"12px 32px", color:TEXT, fontWeight:600, fontSize:14, cursor:"pointer" }}>
               Mehr laden ({filtered.length - visibleCount} weitere)
             </button>
+          </div>
+        )}
+
+        {/* ── FAIRE-STYLE TRUST BAND ── */}
+        {!loading && (
+          <div style={{ margin:"32px 0", display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:12 }}>
+            {[
+              { icon:"🛡️", title:"Sichere Zahlung", desc:"Stripe-verschlüsselt. Dein Geld ist geschützt." },
+              { icon:"🔄", title:"Risikofrei bestellen", desc:"Problem mit der Lieferung? Wir erstatten sofort." },
+              { icon:"🚀", title:"Direktlieferung in 24h", desc:"Vom Hersteller direkt zu dir. Kein Umweg." },
+            ].map(t => (
+              <div key={t.title} style={{ background:SURFACE, border:`1px solid ${BORDER}`, borderRadius:14, padding:"18px 16px", display:"flex", gap:12, alignItems:"flex-start" }}>
+                <span style={{ fontSize:22, flexShrink:0 }}>{t.icon}</span>
+                <div>
+                  <p style={{ fontWeight:700, fontSize:13, color:TEXT, marginBottom:3 }}>{t.title}</p>
+                  <p style={{ fontSize:12, color:TEXT2, lineHeight:1.5 }}>{t.desc}</p>
+                </div>
+              </div>
+            ))}
           </div>
         )}
 

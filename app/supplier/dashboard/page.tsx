@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
-import { BudgetCard } from "@/components/ui/analytics-bento";
 
 const BG = "var(--kf-bg)";
 const SURFACE = "var(--kf-surface)";
@@ -125,8 +124,20 @@ export default function SupplierDashboardPage() {
   }
   const topProducts = Object.values(productCount).sort((a,b) => b.revenue - a.revenue).slice(0,5);
 
-  // Simple weekly sparkline mock (in real app: group by day)
-  const weekRevenue = [320, 480, 390, 610, 520, 740, Math.round(totalRevenue % 1000 || 680)];
+  // Monthly revenue grouped from real order data (last 6 months)
+  const monthlyRevenue: { month: string; revenue: number }[] = [];
+  for (let i = 5; i >= 0; i--) {
+    const d = new Date();
+    d.setMonth(d.getMonth() - i);
+    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+    const label = d.toLocaleDateString("de-DE", { month: "short" });
+    const rev = orderItems
+      .filter(item => item.orders?.created_at?.startsWith(key))
+      .reduce((s, item) => s + item.price_at_purchase * item.quantity, 0);
+    monthlyRevenue.push({ month: label, revenue: rev });
+  }
+  const maxMonthRev = Math.max(...monthlyRevenue.map(m => m.revenue), 1);
+  const weekRevenue = monthlyRevenue.map(m => m.revenue);
 
   if (loading) {
     return (
@@ -258,8 +269,43 @@ export default function SupplierDashboardPage() {
           )}
         </div>
 
-        {/* Budget chart */}
-        <BudgetCard />
+        {/* Monthly revenue bar chart (Shopify-style) */}
+        <div style={{ background:SURFACE, border:`1px solid ${BORDER}`, borderRadius:18, padding:"20px 22px" }}>
+          <div style={{ marginBottom:16 }}>
+            <h2 style={{ fontFamily:"'Syne',sans-serif", fontWeight:800, fontSize:16, color:TEXT }}>Monatsumsatz</h2>
+            <p style={{ fontSize:12, color:TEXT3, marginTop:2 }}>Letzte 6 Monate</p>
+          </div>
+          <div style={{ display:"flex", alignItems:"flex-end", gap:8, height:120 }}>
+            {monthlyRevenue.map((m, i) => {
+              const pct = maxMonthRev > 0 ? (m.revenue / maxMonthRev) : 0;
+              const barH = Math.max(pct * 90, m.revenue > 0 ? 4 : 2);
+              const isCurrent = i === monthlyRevenue.length - 1;
+              return (
+                <div key={m.month} style={{ flex:1, display:"flex", flexDirection:"column", alignItems:"center", gap:4 }}>
+                  <div style={{ fontSize:9, fontWeight:700, color:isCurrent ? ORANGE : TEXT3, marginBottom:2 }}>
+                    {m.revenue > 0 ? `€${m.revenue.toFixed(0)}` : ""}
+                  </div>
+                  <div style={{ width:"100%", borderRadius:"4px 4px 0 0", background: isCurrent ? ORANGE : `${ORANGE}40`, height:`${barH}px`, transition:"height 0.5s ease", minHeight:2 }} />
+                  <span style={{ fontSize:10, color: isCurrent ? ORANGE : TEXT3, fontWeight: isCurrent ? 700 : 500 }}>{m.month}</span>
+                </div>
+              );
+            })}
+          </div>
+          <div style={{ marginTop:16, paddingTop:12, borderTop:`1px solid ${BORDER}`, display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+            <div>
+              <p style={{ fontSize:11, color:TEXT3 }}>Gesamtumsatz (6M)</p>
+              <p style={{ fontFamily:"'Syne',sans-serif", fontWeight:800, fontSize:20, color:TEXT }}>
+                €{monthlyRevenue.reduce((s,m) => s+m.revenue, 0).toFixed(2)}
+              </p>
+            </div>
+            <div style={{ textAlign:"right" }}>
+              <p style={{ fontSize:11, color:TEXT3 }}>Diesen Monat</p>
+              <p style={{ fontFamily:"'Syne',sans-serif", fontWeight:800, fontSize:20, color:ORANGE }}>
+                €{(monthlyRevenue[monthlyRevenue.length - 1]?.revenue ?? 0).toFixed(2)}
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* ── Bottom row ── */}

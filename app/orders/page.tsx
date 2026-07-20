@@ -85,6 +85,8 @@ export default function OrdersPage() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [expandedId, setExpandedId]   = useState<string | null>(null);
   const [role, setRole]               = useState<string | null>(null);
+  const [reordering, setReordering]   = useState<string | null>(null);
+  const [reorderToast, setReorderToast] = useState<string | null>(null);
 
   useEffect(() => { fetchOrders(); }, []);
 
@@ -99,6 +101,24 @@ export default function OrdersPage() {
       .eq("status", "pending");
     if (error) { alert("Stornierung fehlgeschlagen. Bitte versuche es erneut."); return; }
     setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: "cancelled" } : o));
+  };
+
+  const reorderItems = async (orderId: string, items: OrderItem[]) => {
+    setReordering(orderId);
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) { window.location.href = "/login"; return; }
+    for (const item of items) {
+      if (!item.product_id) continue;
+      const { data: existing } = await supabase.from("cart_items").select("id, quantity").eq("user_id", user.id).eq("product_id", item.product_id).maybeSingle();
+      if (existing) {
+        await supabase.from("cart_items").update({ quantity: existing.quantity + item.quantity }).eq("id", existing.id);
+      } else {
+        await supabase.from("cart_items").insert({ user_id: user.id, product_id: item.product_id, quantity: item.quantity });
+      }
+    }
+    setReordering(null);
+    setReorderToast("Alle Artikel zum Warenkorb hinzugefügt ✓");
+    setTimeout(() => setReorderToast(null), 2500);
   };
 
   const fetchOrders = async () => {
@@ -135,6 +155,13 @@ export default function OrdersPage() {
   return (
     <main style={{ minHeight: "100vh", background: BG, fontFamily: "'DM Sans','Helvetica Neue',system-ui,sans-serif", color: TEXT, paddingBottom: 60 }}>
       <style>{`@import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600;700&display=swap'); *{box-sizing:border-box}`}</style>
+      {reorderToast && (
+        <div style={{ position:"fixed", bottom:90, right:20, zIndex:999, background:"var(--kf-toast-bg,#1a1714)", color:"var(--kf-toast-fg,#fff)", fontSize:13, padding:"12px 18px", borderRadius:12, display:"flex", alignItems:"center", gap:8, boxShadow:"0 4px 24px rgba(0,0,0,0.15)" }}>
+          <span style={{ width:18, height:18, background:"#22c55e", borderRadius:"50%", display:"flex", alignItems:"center", justifyContent:"center", fontSize:9, fontWeight:900 }}>✓</span>
+          {reorderToast}
+          <a href="/cart" style={{ color:ORANGE, fontWeight:700, fontSize:12, marginLeft:6 }}>Zum Warenkorb →</a>
+        </div>
+      )}
 
       {/* Navbar */}
       <nav style={{ background: SURFACE, borderBottom: `1px solid ${BORDER}`, padding: "0 28px", height: 60, display: "flex", alignItems: "center", justifyContent: "space-between", position: "sticky", top: 0, zIndex: 40 }}>
@@ -269,9 +296,17 @@ export default function OrdersPage() {
                             ))}
                           </div>
 
-                          <div style={{ display: "flex", justifyContent: "space-between", padding: "14px 14px 0", borderTop: `1px solid ${BORDER}`, marginTop: 8 }}>
-                            <p style={{ fontSize: 13, fontWeight: 700, color: TEXT2 }}>Gesamtbetrag</p>
-                            <p style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 16, color: ORANGE }}>€{Number(order.total_price).toFixed(2)}</p>
+                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 14px 0", borderTop: `1px solid ${BORDER}`, marginTop: 8 }}>
+                            <div>
+                              <p style={{ fontSize: 13, fontWeight: 700, color: TEXT2 }}>Gesamtbetrag</p>
+                              <p style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 16, color: ORANGE }}>€{Number(order.total_price).toFixed(2)}</p>
+                            </div>
+                            <button
+                              onClick={() => reorderItems(order.id, order.order_items ?? [])}
+                              disabled={reordering === order.id}
+                              style={{ display:"flex", alignItems:"center", gap:7, background: reordering === order.id ? BORDER : ORANGE, color:"#fff", border:"none", borderRadius:10, padding:"10px 18px", fontWeight:700, fontSize:13, cursor: reordering === order.id ? "not-allowed" : "pointer", transition:"all 0.2s" }}>
+                              {reordering === order.id ? "..." : "🔄 Wieder bestellen"}
+                            </button>
                           </div>
                         </div>
                       )}
