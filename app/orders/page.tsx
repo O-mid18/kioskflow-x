@@ -106,6 +106,16 @@ export default function OrdersPage() {
     setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: "cancelled" } : o));
   };
 
+  const downloadInvoice = async (orderId: string) => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) return;
+    const res = await fetch(`/api/invoice/${orderId}`, { headers: { Authorization: `Bearer ${session.access_token}` } });
+    if (!res.ok) { const d = await res.json().catch(() => ({})); alert(d?.error ?? "Rechnung konnte nicht geladen werden."); return; }
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    window.open(url, "_blank");
+  };
+
   const payNow = async (orderId: string) => {
     setPaying(orderId);
     const { data: { session } } = await supabase.auth.getSession();
@@ -281,6 +291,13 @@ export default function OrdersPage() {
                           disabled={paying === order.id}
                           style={{ background: paying === order.id ? "#9ca3af" : "#d97706", border: "none", borderRadius: 8, padding: "5px 12px", color: "#fff", fontSize: 11, fontWeight: 700, cursor: paying === order.id ? "not-allowed" : "pointer" }}>
                           {paying === order.id ? "..." : "💳 Jetzt bezahlen →"}
+                        </button>
+                      )}
+                      {["paid", "preparing", "shipped", "delivered"].includes(order.status) && (
+                        <button
+                          onClick={e => { e.stopPropagation(); downloadInvoice(order.id); }}
+                          style={{ background: "none", border: `1.5px solid ${BORDER}`, borderRadius: 8, padding: "5px 12px", color: TEXT2, fontSize: 11, fontWeight: 700, cursor: "pointer" }}>
+                          🧾 Rechnung
                         </button>
                       )}
                       {order.status === "pending" && (

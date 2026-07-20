@@ -101,6 +101,16 @@ export default function SupplierOrdersPage() {
     setUpdating(null);
   };
 
+  const downloadInvoice = async (orderId: string) => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) return;
+    const res = await fetch(`/api/invoice/${orderId}`, { headers: { Authorization: `Bearer ${session.access_token}` } });
+    if (!res.ok) { const d = await res.json().catch(() => ({})); alert(d?.error ?? "Rechnung konnte nicht geladen werden."); return; }
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    window.open(url, "_blank");
+  };
+
   const submitQuote = async (orderId: string) => {
     const val = quoteInputs[orderId];
     const cost = parseFloat(val ?? "");
@@ -275,6 +285,13 @@ export default function SupplierOrdersPage() {
                         </select>
                       ) : (
                         <span style={{ fontSize:12, color:TEXT3 }}>—</span>
+                      )}
+                      {["paid","preparing","shipped","delivered"].includes(item.orders?.status ?? "") && (
+                        <button
+                          onClick={() => item.orders?.id && downloadInvoice(item.orders.id)}
+                          style={{ marginTop:6, display:"block", background:"none", border:`1.5px solid ${BORDER}`, borderRadius:8, padding:"5px 10px", color:TEXT2, fontSize:11, fontWeight:700, cursor:"pointer" }}>
+                          🧾 Rechnung
+                        </button>
                       )}
                     </td>
                   </tr>
