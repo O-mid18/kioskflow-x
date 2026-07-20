@@ -12,6 +12,8 @@ const TEXT3   = "var(--kf-text3)";
 const ORANGE  = "#2563EB";
 
 const STATUS: Record<string, { label: string; color: string; bg: string; icon: string }> = {
+  awaiting_quote:   { label: "Wartet auf Versandkosten", color: "#dc2626", bg: "#fef2f2", icon: "📦" },
+  awaiting_payment: { label: "Zahlung erforderlich",     color: "#d97706", bg: "#fffbeb", icon: "💳" },
   pending:   { label: "Ausstehend",       color: "#ea580c", bg: "#fff7ed", icon: "⏳" },
   paid:      { label: "Bezahlt",          color: "#16a34a", bg: "#f0fdf4", icon: "✅" },
   preparing: { label: "Wird vorbereitet", color: "#7c3aed", bg: "#f3e8ff", icon: "📦" },
@@ -87,6 +89,7 @@ export default function OrdersPage() {
   const [role, setRole]               = useState<string | null>(null);
   const [reordering, setReordering]   = useState<string | null>(null);
   const [reorderToast, setReorderToast] = useState<string | null>(null);
+  const [paying, setPaying]           = useState<string | null>(null);
 
   useEffect(() => { fetchOrders(); }, []);
 
@@ -101,6 +104,21 @@ export default function OrdersPage() {
       .eq("status", "pending");
     if (error) { alert("Stornierung fehlgeschlagen. Bitte versuche es erneut."); return; }
     setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: "cancelled" } : o));
+  };
+
+  const payNow = async (orderId: string) => {
+    setPaying(orderId);
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) { window.location.href = "/login"; return; }
+    const res = await fetch("/api/pay-order", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Authorization": `Bearer ${session.access_token}` },
+      body: JSON.stringify({ orderId }),
+    });
+    const data = await res.json();
+    setPaying(null);
+    if (!res.ok) { alert(data?.error ?? "Fehler beim Bezahlen"); return; }
+    window.location.href = data.url;
   };
 
   const reorderItems = async (orderId: string, items: OrderItem[]) => {
@@ -257,6 +275,14 @@ export default function OrdersPage() {
                       <p style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 18, color: TEXT }}>
                         €{Number(order.total_price).toFixed(2)}
                       </p>
+                      {order.status === "awaiting_payment" && (
+                        <button
+                          onClick={e => { e.stopPropagation(); payNow(order.id); }}
+                          disabled={paying === order.id}
+                          style={{ background: paying === order.id ? "#9ca3af" : "#d97706", border: "none", borderRadius: 8, padding: "5px 12px", color: "#fff", fontSize: 11, fontWeight: 700, cursor: paying === order.id ? "not-allowed" : "pointer" }}>
+                          {paying === order.id ? "..." : "💳 Jetzt bezahlen →"}
+                        </button>
+                      )}
                       {order.status === "pending" && (
                         <button
                           onClick={e => { e.stopPropagation(); cancelOrder(order.id); }}

@@ -128,8 +128,8 @@ export default function CheckoutPage() {
       const text = await res.text();
       let data: any;
       try { data = JSON.parse(text); } catch { data = { error: text.slice(0, 300) }; }
-      if (!res.ok) { setError(`[${res.status}] ${data?.error ?? "Payment failed"}`); setPaying(false); return; }
-      window.location.href = data.url;
+      if (!res.ok) { setError(`[${res.status}] ${data?.error ?? "Bestellung fehlgeschlagen"}`); setPaying(false); return; }
+      window.location.href = "/orders?submitted=1";
     } catch (e: any) { setError("Fetch-Fehler: " + (e?.message ?? String(e))); }
     finally { setPaying(false); }
   };
@@ -324,7 +324,7 @@ export default function CheckoutPage() {
             <div style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 16, padding: "20px 18px", marginBottom: 16 }}>
               {[
                 { label: "Zwischensumme", value: `€${productSubtotal.toFixed(2)}`, valueColor: TEXT },
-                { label: "Lieferung",     value: shippingTotal > 0 ? `€${shippingTotal.toFixed(2)}` : "Kostenlos", valueColor: shippingTotal > 0 ? TEXT : "#16a34a" },
+                { label: "Lieferung (Schätzung)", value: "Wird vom Lieferanten festgelegt", valueColor: TEXT3 },
                 ...(discountInfo ? [{ label: `Rabatt (${discountInfo.pct * 100}%)`, value: `-€${discountAmount.toFixed(2)}`, valueColor: "#16a34a" }] : []),
               ].map(row => (
                 <div key={row.label} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
@@ -333,10 +333,10 @@ export default function CheckoutPage() {
                 </div>
               ))}
               <div style={{ borderTop: `1px solid ${BORDER}`, paddingTop: 14, marginTop: 4, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <span style={{ fontFamily: "'DM Sans',sans-serif", fontWeight: 700, fontSize: 15, color: TEXT }}>Gesamt</span>
-                <span style={{ fontFamily: "'DM Sans',sans-serif", fontWeight: 800, fontSize: 24, color: TEXT, letterSpacing: "-0.5px" }}>€{finalTotal.toFixed(2)}</span>
+                <span style={{ fontFamily: "'DM Sans',sans-serif", fontWeight: 700, fontSize: 15, color: TEXT }}>Zwischensumme (vorläufig)</span>
+                <span style={{ fontFamily: "'DM Sans',sans-serif", fontWeight: 800, fontSize: 24, color: TEXT, letterSpacing: "-0.5px" }}>≈ €{productSubtotal.toFixed(2)}</span>
               </div>
-              <p style={{ fontSize: 11, color: TEXT3, marginTop: 8, textAlign: "right" }}>Alle Preise inkl. 19% MwSt.</p>
+              <p style={{ fontSize: 11, color: TEXT3, marginTop: 8, textAlign: "right" }}>Endpreis inkl. Versand nach Lieferantenbestätigung.</p>
             </div>
 
             {/* Trust badges */}
@@ -352,10 +352,10 @@ export default function CheckoutPage() {
             {/* CTA */}
             <button onClick={handlePayment} disabled={paying}
               style={{ width: "100%", background: paying ? `rgba(37,99,235,0.55)` : ORANGE, color: "#fff", border: "none", borderRadius: 12, padding: "16px", fontFamily: "'DM Sans',sans-serif", fontWeight: 700, fontSize: 15, cursor: paying ? "not-allowed" : "pointer", transition: "opacity 0.2s", marginBottom: 12, boxShadow: `0 4px 16px rgba(37,99,235,0.25)` }}>
-              {paying ? "Weiterleitung zu Stripe..." : `Jetzt kaufen — €${finalTotal.toFixed(2)}`}
+              {paying ? "Wird gesendet..." : "Bestellung senden →"}
             </button>
 
-            <p style={{ textAlign: "center", color: TEXT3, fontSize: 12 }}>Bezahlung sicher über Stripe · SSL-verschlüsselt</p>
+            <p style={{ textAlign: "center", color: TEXT3, fontSize: 12 }}>Der Lieferant bestätigt die Versandkosten — dann kannst du sicher bezahlen.</p>
           </>
         )}
       </div>

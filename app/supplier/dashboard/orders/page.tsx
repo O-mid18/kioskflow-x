@@ -20,6 +20,8 @@ type OrderItem = {
 };
 
 const NEXT_STATUS: Record<string, string[]> = {
+  awaiting_quote:   [],
+  awaiting_payment: [],
   pending:   ["preparing", "shipped", "cancelled"],
   paid:      ["preparing", "shipped", "cancelled"],
   preparing: ["shipped", "cancelled"],
@@ -29,6 +31,8 @@ const NEXT_STATUS: Record<string, string[]> = {
 };
 
 const STATUS_MAP: Record<string, { label:string; color:string; bg:string }> = {
+  awaiting_quote:   { label:"Versandkosten ausstehend", color:"#dc2626", bg:"#fef2f2" },
+  awaiting_payment: { label:"Wartet auf Zahlung",       color:"#d97706", bg:"#fffbeb" },
   pending:   { label:"Ausstehend",       color:"#ea580c", bg:"#fff7ed" },
   paid:      { label:"Bezahlt",          color:"#16a34a", bg:"#f0fdf4" },
   preparing: { label:"Wird vorbereitet", color:"#7c3aed", bg:"#f3e8ff" },
@@ -38,11 +42,13 @@ const STATUS_MAP: Record<string, { label:string; color:string; bg:string }> = {
 };
 
 export default function SupplierOrdersPage() {
-  const [items,    setItems]    = useState<OrderItem[]>([]);
-  const [loading,  setLoading]  = useState(true);
-  const [filter,   setFilter]   = useState("all");
-  const [search,   setSearch]   = useState("");
-  const [updating, setUpdating] = useState<string | null>(null);
+  const [items,       setItems]       = useState<OrderItem[]>([]);
+  const [loading,     setLoading]     = useState(true);
+  const [filter,      setFilter]      = useState("all");
+  const [search,      setSearch]      = useState("");
+  const [updating,    setUpdating]    = useState<string | null>(null);
+  const [quoteInputs, setQuoteInputs] = useState<Record<string, string>>({});
+  const [quoting,     setQuoting]     = useState<string | null>(null);
 
   useEffect(() => { fetchOrders(); }, []);
 
@@ -93,6 +99,29 @@ export default function SupplierOrdersPage() {
       }
     }
     setUpdating(null);
+  };
+
+  const submitQuote = async (orderId: string) => {
+    const val = quoteInputs[orderId];
+    const cost = parseFloat(val ?? "");
+    if (isNaN(cost) || cost < 0) { alert("Bitte einen gültigen Versandpreis eingeben."); return; }
+    setQuoting(orderId);
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) { setQuoting(null); return; }
+    const res = await fetch("/api/quote-shipping", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Authorization": `Bearer ${session.access_token}` },
+      body: JSON.stringify({ orderId, shippingCost: cost }),
+    });
+    const data = await res.json();
+    setQuoting(null);
+    if (!res.ok) { alert(data?.error ?? "Fehler beim Senden"); return; }
+    setItems(prev => prev.map(item =>
+      item.orders?.id === orderId
+        ? { ...item, orders: { ...item.orders!, status: data.fullyQuoted ? "awaiting_payment" : "awaiting_quote" } }
+        : item
+    ));
+    setQuoteInputs(prev => { const n = { ...prev }; delete n[orderId]; return n; });
   };
 
   const fetchOrders = async () => {
@@ -214,7 +243,25 @@ export default function SupplierOrdersPage() {
                       <span style={{ background:s.bg, color:s.color, fontSize:11, fontWeight:700, padding:"4px 10px", borderRadius:100 }}>{s.label}</span>
                     </td>
                     <td style={{ padding:"14px 20px" }}>
-                      {NEXT_STATUS[item.orders?.status ?? ""]?.length > 0 ? (
+                      {item.orders?.status === "awaiting_quote" ? (
+                        <div style={{ display:"flex", gap:6, alignItems:"center" }}>
+                          <input
+                            type="number"
+                            min="0"
+                            step="0.01"
+                            placeholder="€ Versand"
+                            value={quoteInputs[item.orders.id] ?? ""}
+                            onChange={e => setQuoteInputs(prev => ({ ...prev, [item.orders!.id]: e.target.value }))}
+                            style={{ width:90, background:SURFACE, border:`1.5px solid ${BORDER}`, borderRadius:8, padding:"5px 8px", color:TEXT, fontSize:12, outline:"none" }}
+                          />
+                          <button
+                            onClick={() => item.orders?.id && submitQuote(item.orders.id)}
+                            disabled={quoting === item.orders.id}
+                            style={{ background:"#d97706", color:"#fff", border:"none", borderRadius:8, padding:"5px 10px", fontSize:11, fontWeight:700, cursor: quoting === item.orders.id ? "not-allowed" : "pointer" }}>
+                            {quoting === item.orders.id ? "..." : "Senden"}
+                          </button>
+                        </div>
+                      ) : NEXT_STATUS[item.orders?.status ?? ""]?.length > 0 ? (
                         <select
                           value=""
                           disabled={updating === item.orders?.id}
