@@ -226,6 +226,23 @@ export default function KioskPageManage() {
       const list = [...(p[item.id] ?? []), { inventory_id: item.id, quantity: qty, delta: qty - prev, recorded_at: new Date().toISOString() }];
       return { ...p, [item.id]: list };
     });
+
+    if (item.auto_restock_enabled && item.min_stock_threshold != null && qty <= item.min_stock_threshold && prev > item.min_stock_threshold) {
+      const newStatus = qty === 0 ? "out" : "low";
+      await setStatus({ ...item, quantity: qty }, newStatus);
+      await supabase.from("notifications").insert({
+        user_id: userId,
+        type: "auto_restock_detected",
+        title: "🤖 Automatische Bestandsprüfung",
+        body: `"${item.name}" ist auf ${qty} Stück gesunken (Grenze: ${item.min_stock_threshold}). Eine Bestellung wurde vorbereitet → bitte bestätige sie unten.`,
+        link: "/kiosk-page/manage",
+      });
+    }
+  };
+
+  const updateAutoRestockConfig = async (item: any, changes: Partial<{ auto_restock_enabled: boolean; min_stock_threshold: number | null; auto_reorder_quantity: number | null }>) => {
+    await supabase.from("kiosk_inventory").update(changes).eq("id", item.id);
+    setItems(p => p.map(i => i.id === item.id ? { ...i, ...changes } : i));
   };
 
   const predictDaysLeft = (itemId: string, currentQty: number): number | null => {
@@ -260,11 +277,12 @@ export default function KioskPageManage() {
   const confirmSuggestedOrder = async (item: any) => {
     if (!userId || !item.linked_product_id) return;
     setConfirmingOrder(item.id);
+    const qtyToAdd = item.auto_reorder_quantity && item.auto_reorder_quantity > 0 ? item.auto_reorder_quantity : 1;
     const { data: existing } = await supabase.from("cart_items").select("id, quantity").eq("user_id", userId).eq("product_id", item.linked_product_id).maybeSingle();
     if (existing) {
-      await supabase.from("cart_items").update({ quantity: existing.quantity + 1 }).eq("id", existing.id);
+      await supabase.from("cart_items").update({ quantity: existing.quantity + qtyToAdd }).eq("id", existing.id);
     } else {
-      await supabase.from("cart_items").insert({ user_id: userId, product_id: item.linked_product_id, quantity: 1 });
+      await supabase.from("cart_items").insert({ user_id: userId, product_id: item.linked_product_id, quantity: qtyToAdd });
     }
     setConfirmingOrder(null);
     setSuggestions(prev => prev.filter(s => s.id !== item.id));
@@ -499,6 +517,31 @@ export default function KioskPageManage() {
                         <button onClick={() => deleteItem(item.id)} style={{ background: "none", border: "none", color: "#dc2626", cursor: "pointer", fontSize: 13 }}>✕</button>
                       </div>
                     </div>
+                    {item.linked_product_id && (
+                      <div style={{ marginTop: 10, paddingTop: 10, borderTop: `1px solid ${BORDER}`, display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+                        <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 11, color: TEXT2, cursor: "pointer" }}>
+                          <input type="checkbox" checked={item.auto_restock_enabled ?? false}
+                            onChange={e => updateAutoRestockConfig(item, { auto_restock_enabled: e.target.checked })} />
+                          🤖 Automatisch erkennen
+                        </label>
+                        {item.auto_restock_enabled && (
+                          <>
+                            <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                              <span style={{ fontSize: 11, color: TEXT3 }}>Grenze:</span>
+                              <input type="number" min="0" defaultValue={item.min_stock_threshold ?? ""} placeholder="z.B. 20"
+                                onBlur={e => updateAutoRestockConfig(item, { min_stock_threshold: e.target.value ? Number(e.target.value) : null })}
+                                style={{ width: 55, padding: "3px 6px", borderRadius: 6, border: `1px solid ${BORDER}`, background: SURFACE, color: TEXT, fontSize: 11 }} />
+                            </div>
+                            <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                              <span style={{ fontSize: 11, color: TEXT3 }}>Nachbestellmenge:</span>
+                              <input type="number" min="0" defaultValue={item.auto_reorder_quantity ?? ""} placeholder="z.B. 5"
+                                onBlur={e => updateAutoRestockConfig(item, { auto_reorder_quantity: e.target.value ? Number(e.target.value) : null })}
+                                style={{ width: 55, padding: "3px 6px", borderRadius: 6, border: `1px solid ${BORDER}`, background: SURFACE, color: TEXT, fontSize: 11 }} />
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    )}
                   </div>
                 );
               })}
