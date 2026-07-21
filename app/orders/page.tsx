@@ -202,6 +202,7 @@ export default function OrdersPage() {
           {role === "supplier" && <a href="/supplier/dashboard" title="Lieferanten-Dashboard" style={{ background:`${ORANGE}15`, color:ORANGE, fontWeight:700, fontSize:13, textDecoration:"none", padding:"6px 12px", borderRadius:8 }}>📦</a>}
           <a href="/marketplace" style={{ fontSize: 13, color: TEXT2, textDecoration: "none", fontWeight: 500, padding: "6px 14px", borderRadius: 8 }}>Marktplatz</a>
           <a href="/cart" style={{ fontSize: 13, color: TEXT2, textDecoration: "none", fontWeight: 500, padding: "6px 14px", borderRadius: 8 }}>Warenkorb</a>
+          <a href="/analytics" style={{ fontSize: 13, color: TEXT2, textDecoration: "none", fontWeight: 500, padding: "6px 14px", borderRadius: 8 }}>📊 Analytik</a>
           <a href="/profile" style={{ fontSize: 13, color: TEXT2, textDecoration: "none", fontWeight: 500, padding: "6px 14px", borderRadius: 8 }}>Profil</a>
           <button onClick={async () => { await supabase.auth.signOut(); window.location.href = "/login"; }}
             style={{ marginLeft: 8, background: "none", border: `1.5px solid ${BORDER}`, borderRadius: 8, padding: "6px 14px", color: TEXT2, fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
