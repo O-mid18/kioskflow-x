@@ -36,6 +36,9 @@ export default function EditProductPage() {
   const [price, setPrice]             = useState("");
   const [stock, setStock]             = useState("");
   const [shippingCost, setShippingCost] = useState("");
+  const [saleEnabled, setSaleEnabled] = useState(false);
+  const [originalPrice, setOriginalPrice] = useState("");
+  const [saleEndsAt, setSaleEndsAt] = useState("");
   const [existingImageUrl, setExistingImageUrl] = useState("");
   const [imageFile, setImageFile]     = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -64,6 +67,11 @@ export default function EditProductPage() {
         setPrice(String(data.price || ""));
         setStock(String(data.stock || ""));
         setShippingCost(data.shipping_cost ? String(data.shipping_cost) : "");
+        if (data.original_price && data.sale_ends_at && new Date(data.sale_ends_at) > new Date()) {
+          setSaleEnabled(true);
+          setOriginalPrice(String(data.original_price));
+          setSaleEndsAt(new Date(data.sale_ends_at).toISOString().slice(0, 16));
+        }
         setExistingImageUrl(data.image_url || "");
         setCategory(data.category || "");
         setDescription(data.description || "");
@@ -94,6 +102,10 @@ export default function EditProductPage() {
   const updateProduct = async () => {
     setErrorMsg("");
     if (!name || !price || !stock) { setErrorMsg("Name, Preis und Lagerbestand sind Pflichtfelder."); return; }
+    if (saleEnabled) {
+      if (!originalPrice || Number(originalPrice) <= Number(price)) { setErrorMsg("Der ursprüngliche Preis muss höher als der aktuelle Preis sein."); return; }
+      if (!saleEndsAt || new Date(saleEndsAt) <= new Date()) { setErrorMsg("Bitte ein gültiges Enddatum in der Zukunft für das Angebot wählen."); return; }
+    }
     setSaving(true);
 
     const { data: { user } } = await supabase.auth.getUser();
@@ -116,6 +128,8 @@ export default function EditProductPage() {
     const { error } = await supabase.from("products").update({
       name, price: Number(price), stock: Number(stock),
       shipping_cost: shippingCost ? Number(shippingCost) : 0,
+      original_price: saleEnabled ? Number(originalPrice) : null,
+      sale_ends_at: saleEnabled ? new Date(saleEndsAt).toISOString() : null,
       image_url: finalImageUrl || null,
       category: category || null,
       description: description || null,
@@ -257,6 +271,34 @@ export default function EditProductPage() {
                 </div>
               </Field>
             </div>
+          </div>
+
+          {/* Sale / discount */}
+          <div style={{ background:SURFACE, border:`1px solid ${BORDER}`, borderRadius:16, padding:"24px" }}>
+            <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom: saleEnabled ? 20 : 0 }}>
+              <div>
+                <h2 style={{ fontFamily:"'Syne',sans-serif", fontWeight:700, fontSize:14, color:TEXT }}>🔥 Zeitlich begrenztes Angebot</h2>
+                <p style={{ fontSize:12, color:TEXT3, marginTop:4 }}>Erscheint im "Angebote heute"-Panel für Käufer.</p>
+              </div>
+              <label style={{ position:"relative", display:"inline-block", width:44, height:24, cursor:"pointer" }}>
+                <input type="checkbox" checked={saleEnabled} onChange={e => setSaleEnabled(e.target.checked)} style={{ opacity:0, width:0, height:0 }} />
+                <span style={{ position:"absolute", inset:0, background: saleEnabled ? ORANGE : BORDER, borderRadius:24, transition:"background 0.2s" }} />
+                <span style={{ position:"absolute", top:3, left: saleEnabled ? 23 : 3, width:18, height:18, background:"#fff", borderRadius:"50%", transition:"left 0.2s" }} />
+              </label>
+            </div>
+            {saleEnabled && (
+              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:16 }}>
+                <Field label="Ursprünglicher Preis" required>
+                  <div style={{ position:"relative" }}>
+                    <span style={{ position:"absolute", left:14, top:"50%", transform:"translateY(-50%)", color:TEXT3, fontSize:14, fontWeight:600 }}>€</span>
+                    <input type="number" min="0" step="0.01" placeholder={`> ${price || "0.00"}`} value={originalPrice} onChange={e => setOriginalPrice(e.target.value)} style={{ ...inputStyle({ paddingLeft:30 }) }} onFocus={focus} onBlur={blur} />
+                  </div>
+                </Field>
+                <Field label="Angebot endet am" required>
+                  <input type="datetime-local" value={saleEndsAt} onChange={e => setSaleEndsAt(e.target.value)} style={inputStyle()} onFocus={focus} onBlur={blur} />
+                </Field>
+              </div>
+            )}
           </div>
 
           {/* Actions */}

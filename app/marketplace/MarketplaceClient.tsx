@@ -276,8 +276,13 @@ export default function MarketplacePage({ initialProducts = [], initialSuppliers
   const [visibleCount, setVisibleCount] = useState(20);
   const [role, setRole] = useState<string | null>(null);
   const [restockRecs, setRestockRecs] = useState<any[]>([]);
+  const [dailyDeals, setDailyDeals] = useState<{ deals: any[]; freeShipping: any[]; bestsellers: any[]; endingSoon: any[] } | null>(null);
 
   const showToast = useCallback((msg:string) => { setToast(msg); setTimeout(() => setToast(null),2500); },[]);
+
+  useEffect(() => {
+    fetch("/api/daily-deals").then(r => r.ok ? r.json() : null).then(d => d && setDailyDeals(d)).catch(() => {});
+  }, []);
 
   useEffect(() => {
     supabase.auth.getUser().then(async ({ data }) => {
@@ -500,6 +505,63 @@ export default function MarketplacePage({ initialProducts = [], initialSuppliers
           </select>
         </div>
 
+
+        {/* ── DAILY DEALS ── */}
+        {dailyDeals && (dailyDeals.deals.length > 0 || dailyDeals.freeShipping.length > 0 || dailyDeals.bestsellers.length > 0) && (
+          <div style={{ marginBottom:28 }}>
+            <h2 style={{ fontFamily:"'Syne',sans-serif", fontWeight:800, fontSize:19, color:TEXT, marginBottom:16 }}>🎯 Angebote heute</h2>
+
+            {dailyDeals.endingSoon.length > 0 && (
+              <div style={{ marginBottom:16, background:"#fef2f2", border:"1px solid #fca5a5", borderRadius:14, padding:16 }}>
+                <p style={{ fontSize:13, fontWeight:700, color:"#dc2626", marginBottom:10 }}>⏰ Angebote, die bald enden</p>
+                <div style={{ display:"flex", gap:10, overflowX:"auto" }}>
+                  {dailyDeals.endingSoon.map((p: any) => (
+                    <a key={p.id} href={`/product/${p.id}`} style={{ flexShrink:0, width:150, textDecoration:"none", background:"#fff", borderRadius:10, padding:10 }}>
+                      <p style={{ fontSize:12, fontWeight:700, color:"#111", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{p.name}</p>
+                      <p style={{ fontSize:11, color:"#dc2626", fontWeight:700 }}>-{p.discountPct}% · nur bis {new Date(p.sale_ends_at).toLocaleTimeString("de-DE",{hour:"2-digit",minute:"2-digit"})}</p>
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(260px,1fr))", gap:14 }}>
+              {dailyDeals.deals.length > 0 && (
+                <div style={{ background:SURFACE, border:`1px solid ${BORDER}`, borderRadius:14, padding:16 }}>
+                  <p style={{ fontSize:13, fontWeight:700, color:TEXT, marginBottom:10 }}>🔥 Rabatte</p>
+                  {dailyDeals.deals.slice(0,4).map((p: any) => (
+                    <a key={p.id} href={`/product/${p.id}`} style={{ display:"flex", justifyContent:"space-between", padding:"6px 0", textDecoration:"none", borderBottom:`1px solid ${BORDER}` }}>
+                      <span style={{ fontSize:13, color:TEXT }}>{p.name}</span>
+                      <span style={{ fontSize:13, fontWeight:700, color:"#dc2626" }}>-{p.discountPct}%</span>
+                    </a>
+                  ))}
+                </div>
+              )}
+              {dailyDeals.freeShipping.length > 0 && (
+                <div style={{ background:SURFACE, border:`1px solid ${BORDER}`, borderRadius:14, padding:16 }}>
+                  <p style={{ fontSize:13, fontWeight:700, color:TEXT, marginBottom:10 }}>⚡ Kostenloser Versand</p>
+                  {dailyDeals.freeShipping.slice(0,4).map((p: any) => (
+                    <a key={p.id} href={`/product/${p.id}`} style={{ display:"flex", justifyContent:"space-between", padding:"6px 0", textDecoration:"none", borderBottom:`1px solid ${BORDER}` }}>
+                      <span style={{ fontSize:13, color:TEXT }}>{p.name}</span>
+                      <span style={{ fontSize:13, fontWeight:700, color:"#16a34a" }}>€{p.price}</span>
+                    </a>
+                  ))}
+                </div>
+              )}
+              {dailyDeals.bestsellers.length > 0 && (
+                <div style={{ background:SURFACE, border:`1px solid ${BORDER}`, borderRadius:14, padding:16 }}>
+                  <p style={{ fontSize:13, fontWeight:700, color:TEXT, marginBottom:10 }}>🏆 Bestseller diese Woche</p>
+                  {dailyDeals.bestsellers.map((p: any, i: number) => (
+                    <a key={p.id} href={`/product/${p.id}`} style={{ display:"flex", justifyContent:"space-between", padding:"6px 0", textDecoration:"none", borderBottom:`1px solid ${BORDER}` }}>
+                      <span style={{ fontSize:13, color:TEXT }}>{["1️⃣","2️⃣","3️⃣","4️⃣","5️⃣"][i]} {p.name}</span>
+                      <span style={{ fontSize:12, color:TEXT3 }}>{p.units} Stk.</span>
+                    </a>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* ── SMART RESTOCK ── */}
         {restockRecs.length > 0 && (
