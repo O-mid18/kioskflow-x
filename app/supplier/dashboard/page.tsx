@@ -46,6 +46,9 @@ function Sparkline({ values, color }: { values:number[]; color:string }) {
 export default function SupplierDashboardPage() {
   const [products,   setProducts]   = useState<Product[]>([]);
   const [orderItems, setOrderItems] = useState<OrderItem[]>([]);
+  const [restockAlerts, setRestockAlerts] = useState<any[]>([]);
+  const [offerDrafts, setOfferDrafts] = useState<Record<string, { price: string; discount: string; delivery: string; message: string }>>({});
+  const [sendingOffer, setSendingOffer] = useState<string | null>(null);
   const [loading,    setLoading]    = useState(true);
   const [initError,  setInitError]  = useState<string | null>(null);
   const [supplierName, setSupplierName] = useState("");
@@ -92,7 +95,44 @@ export default function SupplierDashboardPage() {
     ]);
     setProducts((prods as unknown as Product[]) ?? []);
     setOrderItems((items as unknown as OrderItem[]) ?? []);
+
+    const { data: alerts } = await supabase
+      .from("kiosk_inventory")
+      .select("id, name, stock_status, kiosk_id, profiles!kiosk_inventory_kiosk_id_fkey(company_name, full_name, city), restock_offers(id, status)")
+      .eq("linked_supplier_id", supplier.id)
+      .in("stock_status", ["low", "out"]);
+    setRestockAlerts((alerts ?? []).filter((a: any) => !(a.restock_offers ?? []).some((o: any) => o.status === "pending")));
+
     setLoading(false);
+  };
+
+  const sendOffer = async (alert: any) => {
+    const draft = offerDrafts[alert.id] ?? { price: "", discount: "", delivery: "", message: "" };
+    setSendingOffer(alert.id);
+    const { data: { user } } = await supabase.auth.getUser();
+    const { data: supplier } = await supabase.from("suppliers").select("id").eq("user_id", user!.id).maybeSingle();
+    if (!supplier) { setSendingOffer(null); return; }
+
+    const { error } = await supabase.from("restock_offers").insert({
+      inventory_id: alert.id,
+      supplier_id: supplier.id,
+      kiosk_id: alert.kiosk_id,
+      price: draft.price ? Number(draft.price) : null,
+      discount_pct: draft.discount ? Number(draft.discount) : null,
+      delivery_estimate: draft.delivery || null,
+      message: draft.message || null,
+    });
+    setSendingOffer(null);
+    if (!error) {
+      await supabase.from("notifications").insert({
+        user_id: alert.kiosk_id,
+        type: "restock_offer",
+        title: "💬 Neues Angebot von einem Lieferanten",
+        body: `Für "${alert.name}" wurde dir ein Angebot gesendet.`,
+        link: "/kiosk-page/manage",
+      });
+      setRestockAlerts(prev => prev.filter(a => a.id !== alert.id));
+    }
   };
 
   // ── Derived stats ──
@@ -181,6 +221,48 @@ export default function SupplierDashboardPage() {
           </a>
         </div>
       </div>
+
+      {/* ── Restock alerts ── */}
+      {restockAlerts.length > 0 && (
+        <div style={{ background: SURFACE, border: `1.5px solid #f59e0b`, borderRadius: 14, padding: 20, marginBottom: 24 }}>
+          <h3 style={{ fontSize: 14, fontWeight: 700, color: TEXT, marginBottom: 14 }}>📦 Kiosk-Nachbestellanfragen ({restockAlerts.length})</h3>
+          <div style={{ display: "grid", gap: 12 }}>
+            {restockAlerts.map((alert: any) => {
+              const draft = offerDrafts[alert.id] ?? { price: "", discount: "", delivery: "", message: "" };
+              const kiosk = alert.profiles;
+              return (
+                <div key={alert.id} style={{ background: BG, border: `1px solid ${BORDER}`, borderRadius: 12, padding: 14 }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+                    <div>
+                      <p style={{ fontSize: 13, fontWeight: 700, color: TEXT }}>{alert.name}</p>
+                      <p style={{ fontSize: 12, color: TEXT3 }}>{kiosk?.company_name || kiosk?.full_name || "Kiosk"} · {kiosk?.city || ""}</p>
+                    </div>
+                    <span style={{ background: alert.stock_status === "out" ? "#fee2e2" : "#fef3c7", color: alert.stock_status === "out" ? "#dc2626" : "#d97706", fontSize: 11, fontWeight: 700, padding: "3px 10px", borderRadius: 100 }}>
+                      {alert.stock_status === "out" ? "Ausverkauft" : "Wird knapp"}
+                    </span>
+                  </div>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, marginBottom: 8 }}>
+                    <input value={draft.price} onChange={e => setOfferDrafts(prev => ({ ...prev, [alert.id]: { ...draft, price: e.target.value } }))}
+                      placeholder="Preis (€)" type="number" style={{ padding: "6px 10px", borderRadius: 8, border: `1px solid ${BORDER}`, background: SURFACE, color: TEXT, fontSize: 12, fontFamily: "inherit" }} />
+                    <input value={draft.discount} onChange={e => setOfferDrafts(prev => ({ ...prev, [alert.id]: { ...draft, discount: e.target.value } }))}
+                      placeholder="Rabatt %" type="number" style={{ padding: "6px 10px", borderRadius: 8, border: `1px solid ${BORDER}`, background: SURFACE, color: TEXT, fontSize: 12, fontFamily: "inherit" }} />
+                    <input value={draft.delivery} onChange={e => setOfferDrafts(prev => ({ ...prev, [alert.id]: { ...draft, delivery: e.target.value } }))}
+                      placeholder="Lieferzeit" style={{ padding: "6px 10px", borderRadius: 8, border: `1px solid ${BORDER}`, background: SURFACE, color: TEXT, fontSize: 12, fontFamily: "inherit" }} />
+                  </div>
+                  <div style={{ display: "flex", gap: 8 }}>
+                    <input value={draft.message} onChange={e => setOfferDrafts(prev => ({ ...prev, [alert.id]: { ...draft, message: e.target.value } }))}
+                      placeholder="Nachricht (optional)" style={{ flex: 1, padding: "6px 10px", borderRadius: 8, border: `1px solid ${BORDER}`, background: SURFACE, color: TEXT, fontSize: 12, fontFamily: "inherit" }} />
+                    <button onClick={() => sendOffer(alert)} disabled={sendingOffer === alert.id}
+                      style={{ background: ORANGE, color: "#fff", border: "none", borderRadius: 8, padding: "6px 14px", fontSize: 12, fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap" }}>
+                      {sendingOffer === alert.id ? "Sendet…" : "Angebot senden"}
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* ── Alert banner ── */}
       {(lowStock.length > 0 || outOfStock > 0) && (

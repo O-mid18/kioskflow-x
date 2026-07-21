@@ -45,6 +45,7 @@ export default function VerificationPage() {
   const [taxId,           setTaxId]           = useState("");
   const [phone,           setPhone]           = useState("");
   const [contactEmail,    setContactEmail]    = useState("");
+  const [minOrderQty,     setMinOrderQty]     = useState("");
 
   useEffect(() => {
     (async () => {
@@ -63,6 +64,7 @@ export default function VerificationPage() {
       setTaxId(data.tax_id ?? "");
       setPhone(data.phone ?? "");
       setContactEmail(data.contact_email ?? "");
+      setMinOrderQty(data.min_order_quantity ? String(data.min_order_quantity) : "");
       setLoading(false);
     })();
   }, []);
@@ -81,6 +83,7 @@ export default function VerificationPage() {
       legal_name: legalName, street, city, postal_code: postalCode,
       country, registration_nr: registrationNr, tax_id: taxId,
       phone, contact_email: contactEmail,
+      min_order_quantity: minOrderQty ? Number(minOrderQty) : null,
     }).eq("id", supplierId!);
     setSaving(false);
     if (error) setMsg({ text: "Daten konnten nicht gespeichert werden. Bitte erneut versuchen.", ok: false });
@@ -197,6 +200,9 @@ export default function VerificationPage() {
             </Field>
             <Field label="Geschäftliche E-Mail">
               <input type="email" value={contactEmail} onChange={e => setContactEmail(e.target.value)} placeholder="kontakt@mustermann.de" style={iStyle} onFocus={fo} onBlur={bl} />
+            </Field>
+            <Field label="Mindestbestellmenge (Stück)">
+              <input type="number" min="0" value={minOrderQty} onChange={e => setMinOrderQty(e.target.value)} placeholder="z.B. 10 (leer = kein Minimum)" style={iStyle} onFocus={fo} onBlur={bl} />
             </Field>
           </div>
         </div>

@@ -50,6 +50,10 @@ export default function KioskPageManage() {
 
   const [items, setItems] = useState<any[]>([]);
   const [myProducts, setMyProducts] = useState<any[]>([]);
+  const [historyCache, setHistoryCache] = useState<Record<string, any[]>>({});
+  const [offers, setOffers] = useState<any[]>([]);
+  const [suggestions, setSuggestions] = useState<any[]>([]);
+  const [confirmingOrder, setConfirmingOrder] = useState<string | null>(null);
 
   const [newName, setNewName] = useState("");
   const [newCategory, setNewCategory] = useState("");
@@ -80,6 +84,17 @@ export default function KioskPageManage() {
       const { data: inv } = await supabase.from("kiosk_inventory").select("*").eq("kiosk_id", user.id).order("created_at", { ascending: false });
       setItems(inv ?? []);
 
+      const { data: histRows } = await supabase.from("kiosk_inventory_history").select("*").eq("kiosk_id", user.id).order("recorded_at", { ascending: true });
+      const cache: Record<string, any[]> = {};
+      for (const h of (histRows ?? [])) {
+        if (!cache[h.inventory_id]) cache[h.inventory_id] = [];
+        cache[h.inventory_id].push(h);
+      }
+      setHistoryCache(cache);
+
+      const { data: offRows } = await supabase.from("restock_offers").select("*, suppliers(id, user_id, profiles!suppliers_user_id_fkey(full_name, company_name))").eq("kiosk_id", user.id).eq("status", "pending");
+      setOffers(offRows ?? []);
+
       // Products this kiosk has actually ordered before — used to pre-populate
       // the "link to supplier for restock alerts" dropdown with relevant options.
       const { data: pastItems } = await supabase
@@ -95,6 +110,11 @@ export default function KioskPageManage() {
       setLoading(false);
     })();
   }, []);
+
+  useEffect(() => {
+    const lowItems = items.filter(i => (i.stock_status === "low" || i.stock_status === "out") && i.linked_product_id);
+    setSuggestions(lowItems);
+  }, [items]);
 
   const uploadLogo = async (): Promise<string | null> => {
     if (!logoFile || !userId) return logoUrl || null;
@@ -194,6 +214,61 @@ export default function KioskPageManage() {
         });
       }
     }
+  };
+
+  const updateQuantity = async (item: any, qty: number) => {
+    if (!userId) return;
+    const prev = item.quantity ?? 0;
+    await supabase.from("kiosk_inventory").update({ quantity: qty, updated_at: new Date().toISOString() }).eq("id", item.id);
+    setItems(p => p.map(i => i.id === item.id ? { ...i, quantity: qty } : i));
+    await supabase.from("kiosk_inventory_history").insert({ kiosk_id: userId, inventory_id: item.id, quantity: qty, delta: qty - prev });
+    setHistoryCache(p => {
+      const list = [...(p[item.id] ?? []), { inventory_id: item.id, quantity: qty, delta: qty - prev, recorded_at: new Date().toISOString() }];
+      return { ...p, [item.id]: list };
+    });
+  };
+
+  const predictDaysLeft = (itemId: string, currentQty: number): number | null => {
+    const hist = historyCache[itemId] ?? [];
+    const negDeltas = hist.filter((h: any) => h.delta < 0);
+    if (negDeltas.length < 2) return null;
+    const totalConsumed = negDeltas.reduce((s: number, h: any) => s + Math.abs(h.delta), 0);
+    const span = (new Date(negDeltas[negDeltas.length - 1].recorded_at).getTime() - new Date(negDeltas[0].recorded_at).getTime()) / 86400000;
+    if (span <= 0) return null;
+    const dailyRate = totalConsumed / span;
+    return dailyRate > 0 ? Math.round(currentQty / dailyRate) : null;
+  };
+
+  const respondToOffer = async (offerId: string, accept: boolean) => {
+    const status = accept ? "accepted" : "rejected";
+    await supabase.from("restock_offers").update({ status }).eq("id", offerId);
+    setOffers(prev => prev.filter(o => o.id !== offerId));
+    if (accept) {
+      const offer = offers.find(o => o.id === offerId);
+      if (offer?.suppliers?.user_id) {
+        await supabase.from("notifications").insert({
+          user_id: offer.suppliers.user_id,
+          type: "offer_accepted",
+          title: "✅ Angebot angenommen",
+          body: "Dein Angebot wurde vom Kiosk angenommen.",
+          link: "/supplier/dashboard",
+        });
+      }
+    }
+  };
+
+  const confirmSuggestedOrder = async (item: any) => {
+    if (!userId || !item.linked_product_id) return;
+    setConfirmingOrder(item.id);
+    const { data: existing } = await supabase.from("cart_items").select("id, quantity").eq("user_id", userId).eq("product_id", item.linked_product_id).maybeSingle();
+    if (existing) {
+      await supabase.from("cart_items").update({ quantity: existing.quantity + 1 }).eq("id", existing.id);
+    } else {
+      await supabase.from("cart_items").insert({ user_id: userId, product_id: item.linked_product_id, quantity: 1 });
+    }
+    setConfirmingOrder(null);
+    setSuggestions(prev => prev.filter(s => s.id !== item.id));
+    window.location.href = "/cart";
   };
 
   if (loading) return <div style={{ minHeight: "100vh", background: BG, display: "flex", alignItems: "center", justifyContent: "center", color: TEXT2 }}>Lade…</div>;
@@ -302,6 +377,65 @@ export default function KioskPageManage() {
           </div>
         </div>
 
+        {suggestions.length > 0 && (
+          <div style={{ background: "#fefce8", border: "1.5px solid #fcd34d", borderRadius: 16, padding: 20, marginBottom: 20 }}>
+            <h2 style={{ fontFamily: "'Syne',sans-serif", fontWeight: 700, fontSize: 14, color: "#92400e", marginBottom: 12 }}>📦 Vorbereitete Bestellungen</h2>
+            <p style={{ fontSize: 12, color: "#78350f", marginBottom: 12 }}>Diese Artikel sind knapp — Flowio hat passende Bestellungen vorbereitet.</p>
+            <div style={{ display: "grid", gap: 8 }}>
+              {suggestions.map((item: any) => (
+                <div key={item.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", background: "#fff", border: "1px solid #fcd34d", borderRadius: 10, padding: "10px 14px" }}>
+                  <div>
+                    <p style={{ fontSize: 13, fontWeight: 600, color: "#92400e" }}>{item.name}</p>
+                    <p style={{ fontSize: 11, color: "#b45309" }}>{item.stock_status === "out" ? "Ausverkauft" : "Wird knapp"}</p>
+                  </div>
+                  <button onClick={() => confirmSuggestedOrder(item)} disabled={confirmingOrder === item.id}
+                    style={{ background: "#f59e0b", color: "#fff", border: "none", borderRadius: 8, padding: "7px 14px", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
+                    {confirmingOrder === item.id ? "…" : "In den Warenkorb"}
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {offers.length > 0 && (
+          <div style={{ background: SURFACE, border: `1.5px solid ${ORANGE}40`, borderRadius: 16, padding: 20, marginBottom: 20 }}>
+            <h2 style={{ fontFamily: "'Syne',sans-serif", fontWeight: 700, fontSize: 14, color: TEXT, marginBottom: 12 }}>💬 Angebote von Lieferanten</h2>
+            <div style={{ display: "grid", gap: 10 }}>
+              {offers.map((offer: any) => {
+                const supplierName = offer.suppliers?.profiles?.company_name || offer.suppliers?.profiles?.full_name || "Lieferant";
+                const invItem = items.find(i => i.id === offer.inventory_id);
+                return (
+                  <div key={offer.id} style={{ background: BG, border: `1px solid ${BORDER}`, borderRadius: 12, padding: 14 }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
+                      <div>
+                        <p style={{ fontSize: 13, fontWeight: 700, color: TEXT }}>{supplierName}</p>
+                        {invItem && <p style={{ fontSize: 11, color: TEXT3 }}>für: {invItem.name}</p>}
+                      </div>
+                      <div style={{ textAlign: "right" }}>
+                        {offer.price && <p style={{ fontSize: 14, fontWeight: 800, color: ORANGE }}>€{offer.price}</p>}
+                        {offer.discount_pct && <p style={{ fontSize: 11, color: "#16a34a" }}>−{offer.discount_pct}% Rabatt</p>}
+                        {offer.delivery_estimate && <p style={{ fontSize: 11, color: TEXT3 }}>⏰ {offer.delivery_estimate}</p>}
+                      </div>
+                    </div>
+                    {offer.message && <p style={{ fontSize: 12, color: TEXT2, marginBottom: 8, fontStyle: "italic" }}>"{offer.message}"</p>}
+                    <div style={{ display: "flex", gap: 8 }}>
+                      <button onClick={() => respondToOffer(offer.id, true)}
+                        style={{ flex: 1, background: "#16a34a", color: "#fff", border: "none", borderRadius: 8, padding: "8px", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
+                        ✓ Annehmen
+                      </button>
+                      <button onClick={() => respondToOffer(offer.id, false)}
+                        style={{ flex: 1, background: "#fef2f2", color: "#dc2626", border: "1px solid #fca5a5", borderRadius: 8, padding: "8px", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
+                        ✕ Ablehnen
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
         <div style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 16, padding: 24 }}>
           <h2 style={{ fontFamily: "'Syne',sans-serif", fontWeight: 700, fontSize: 14, color: TEXT, marginBottom: 16 }}>Meine Produkte ({items.length})</h2>
 
@@ -336,20 +470,34 @@ export default function KioskPageManage() {
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
               {items.map((item: any) => {
                 const s = STATUS_LABELS[item.stock_status] ?? STATUS_LABELS.in_stock;
+                const daysLeft = predictDaysLeft(item.id, item.quantity ?? 0);
                 return (
-                  <div key={item.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 14px", background: BG, borderRadius: 10, border: `1px solid ${BORDER}` }}>
-                    <div>
-                      <p style={{ fontSize: 13, fontWeight: 600, color: TEXT }}>{item.name}{item.price ? ` · €${item.price}` : ""}</p>
-                      {item.linked_product_id && <p style={{ fontSize: 11, color: TEXT3 }}>🔗 Verknüpft für Nachbestellung</p>}
-                    </div>
-                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                      <select value={item.stock_status} onChange={e => setStatus(item, e.target.value as any)}
-                        style={{ background: s.bg, color: s.color, border: "none", borderRadius: 8, padding: "6px 10px", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
-                        <option value="in_stock">Auf Lager</option>
-                        <option value="low">Wird knapp</option>
-                        <option value="out">Ausverkauft</option>
-                      </select>
-                      <button onClick={() => deleteItem(item.id)} style={{ background: "none", border: "none", color: "#dc2626", cursor: "pointer", fontSize: 13 }}>✕</button>
+                  <div key={item.id} style={{ padding: "12px 14px", background: BG, borderRadius: 10, border: `1px solid ${BORDER}` }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                      <div>
+                        <p style={{ fontSize: 13, fontWeight: 600, color: TEXT }}>{item.name}{item.price ? ` · €${item.price}` : ""}</p>
+                        {item.linked_product_id && <p style={{ fontSize: 11, color: TEXT3 }}>🔗 Verknüpft für Nachbestellung</p>}
+                        {daysLeft !== null && (
+                          <p style={{ fontSize: 11, color: daysLeft < 3 ? "#dc2626" : daysLeft < 7 ? "#d97706" : "#16a34a" }}>
+                            ~{daysLeft} Tag{daysLeft !== 1 ? "e" : ""} Vorrat verbleibend
+                          </p>
+                        )}
+                      </div>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                          <label style={{ fontSize: 11, color: TEXT3 }}>Menge:</label>
+                          <input type="number" min="0" value={item.quantity ?? 0}
+                            onChange={e => updateQuantity(item, Number(e.target.value))}
+                            style={{ width: 60, padding: "4px 8px", borderRadius: 7, border: `1px solid ${BORDER}`, background: SURFACE, color: TEXT, fontSize: 12, fontFamily: "inherit" }} />
+                        </div>
+                        <select value={item.stock_status} onChange={e => setStatus(item, e.target.value as any)}
+                          style={{ background: s.bg, color: s.color, border: "none", borderRadius: 8, padding: "6px 10px", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
+                          <option value="in_stock">Auf Lager</option>
+                          <option value="low">Wird knapp</option>
+                          <option value="out">Ausverkauft</option>
+                        </select>
+                        <button onClick={() => deleteItem(item.id)} style={{ background: "none", border: "none", color: "#dc2626", cursor: "pointer", fontSize: 13 }}>✕</button>
+                      </div>
                     </div>
                   </div>
                 );

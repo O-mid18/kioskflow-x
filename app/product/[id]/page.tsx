@@ -38,6 +38,7 @@ export default function ProductDetailsPage() {
   const [alreadyReviewed, setAlreadyReviewed] = useState(false);
   const [cartCount, setCartCount] = useState(0);
   const [role, setRole] = useState<string | null>(null);
+  const [currentSupplierRating, setCurrentSupplierRating] = useState<number | null>(null);
 
   const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(null), 2500); };
 
@@ -59,12 +60,23 @@ export default function ProductDetailsPage() {
       if (data?.name) {
         const { data: comparable } = await supabase
           .from("products")
-          .select("id, price, shipping_cost, stock, suppliers(id, name)")
+          .select("id, price, shipping_cost, stock, supplier_id, suppliers(id, name, min_order_quantity)")
           .ilike("name", data.name.trim())
           .neq("id", String(params.id))
           .gt("stock", 0)
           .order("price", { ascending: true });
         setPriceComparison(comparable ?? []);
+      }
+
+      if (data?.supplier_id) {
+        const { data: supplierReviews } = await supabase
+          .from("reviews")
+          .select("rating, products!inner(supplier_id)")
+          .eq("products.supplier_id", data.supplier_id);
+        if (supplierReviews && supplierReviews.length > 0) {
+          const avg = supplierReviews.reduce((s: number, r: any) => s + r.rating, 0) / supplierReviews.length;
+          setCurrentSupplierRating(Math.round(avg * 10) / 10);
+        }
       }
 
       // Only verified buyers (a paid order containing this product) may leave a review
@@ -219,9 +231,14 @@ export default function ProductDetailsPage() {
               ← Weiter einkaufen
             </a>
 
-            {priceComparison.length > 0 && (
+            {(priceComparison.length > 0 || currentSupplierRating !== null) && (
               <div style={{ marginTop: 20, background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 14, padding: 18 }}>
                 <p style={{ fontSize: 13, fontWeight: 700, color: TEXT, marginBottom: 12 }}>💶 Preisvergleich – auch erhältlich bei:</p>
+                {currentSupplierRating !== null && (
+                  <div style={{ marginBottom: 10, padding: "8px 12px", background: BG, borderRadius: 8 }}>
+                    <p style={{ fontSize: 12, color: TEXT2 }}>Dieser Lieferant: <Stars rating={currentSupplierRating} size={11} /> <span style={{ fontWeight: 700 }}>{currentSupplierRating}</span></p>
+                  </div>
+                )}
                 {priceComparison.map((p: any) => {
                   const totalHere = product.price + (product.shipping_cost ?? 0);
                   const totalThere = p.price + (p.shipping_cost ?? 0);
@@ -231,6 +248,7 @@ export default function ProductDetailsPage() {
                       <div>
                         <p style={{ fontSize: 13, color: TEXT, fontWeight: 600 }}>{p.suppliers?.name ?? "Lieferant"}</p>
                         {(p.shipping_cost ?? 0) > 0 && <p style={{ fontSize: 11, color: TEXT3 }}>+ €{p.shipping_cost} Versand</p>}
+                        {p.suppliers?.min_order_quantity && <p style={{ fontSize: 11, color: TEXT3 }}>Min. {p.suppliers.min_order_quantity} Stück</p>}
                       </div>
                       <span style={{ fontSize: 15, fontWeight: 800, color: cheaper ? "#16a34a" : TEXT }}>
                         €{totalThere.toFixed(2)}{cheaper && " ✓"}
