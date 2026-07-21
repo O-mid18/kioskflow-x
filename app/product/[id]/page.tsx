@@ -28,6 +28,7 @@ export default function ProductDetailsPage() {
   const params = useParams();
   const [product, setProduct] = useState<any>(null);
   const [reviews, setReviews] = useState<any[]>([]);
+  const [priceComparison, setPriceComparison] = useState<any[]>([]);
   const [comment, setComment] = useState("");
   const [rating, setRating] = useState(5);
   const [loading, setLoading] = useState(true);
@@ -54,6 +55,17 @@ export default function ProductDetailsPage() {
       setProduct(data);
       const { data: rv } = await supabase.from("reviews").select("*").eq("product_id", String(params.id)).order("created_at", { ascending: false });
       setReviews(rv ?? []);
+
+      if (data?.name) {
+        const { data: comparable } = await supabase
+          .from("products")
+          .select("id, price, shipping_cost, stock, suppliers(id, name)")
+          .ilike("name", data.name.trim())
+          .neq("id", String(params.id))
+          .gt("stock", 0)
+          .order("price", { ascending: true });
+        setPriceComparison(comparable ?? []);
+      }
 
       // Only verified buyers (a paid order containing this product) may leave a review
       const { data: { user } } = await supabase.auth.getUser();
@@ -206,6 +218,28 @@ export default function ProductDetailsPage() {
             <a href="/marketplace" style={{ display: "block", textAlign: "center", color: TEXT2, fontSize: 13, textDecoration: "none", padding: "10px", fontWeight: 500 }}>
               ← Weiter einkaufen
             </a>
+
+            {priceComparison.length > 0 && (
+              <div style={{ marginTop: 20, background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 14, padding: 18 }}>
+                <p style={{ fontSize: 13, fontWeight: 700, color: TEXT, marginBottom: 12 }}>💶 Preisvergleich – auch erhältlich bei:</p>
+                {priceComparison.map((p: any) => {
+                  const totalHere = product.price + (product.shipping_cost ?? 0);
+                  const totalThere = p.price + (p.shipping_cost ?? 0);
+                  const cheaper = totalThere < totalHere;
+                  return (
+                    <a key={p.id} href={`/product/${p.id}`} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 0", borderBottom: `1px solid ${BORDER}`, textDecoration: "none" }}>
+                      <div>
+                        <p style={{ fontSize: 13, color: TEXT, fontWeight: 600 }}>{p.suppliers?.name ?? "Lieferant"}</p>
+                        {(p.shipping_cost ?? 0) > 0 && <p style={{ fontSize: 11, color: TEXT3 }}>+ €{p.shipping_cost} Versand</p>}
+                      </div>
+                      <span style={{ fontSize: 15, fontWeight: 800, color: cheaper ? "#16a34a" : TEXT }}>
+                        €{totalThere.toFixed(2)}{cheaper && " ✓"}
+                      </span>
+                    </a>
+                  );
+                })}
+              </div>
+            )}
           </div>
         </div>
 
