@@ -112,8 +112,18 @@ export default function KioskPageManage() {
   }, []);
 
   useEffect(() => {
-    const lowItems = items.filter(i => (i.stock_status === "low" || i.stock_status === "out") && i.linked_product_id);
-    setSuggestions(lowItems);
+    (async () => {
+      const lowItems = items.filter(i => (i.stock_status === "low" || i.stock_status === "out") && i.linked_product_id);
+      if (lowItems.length === 0) { setSuggestions([]); return; }
+
+      const { data: linkedProducts } = await supabase
+        .from("products")
+        .select("id, stock")
+        .in("id", lowItems.map(i => i.linked_product_id));
+      const availableIds = new Set((linkedProducts ?? []).filter((p: any) => (p.stock ?? 0) > 0).map((p: any) => p.id));
+
+      setSuggestions(lowItems.filter(i => availableIds.has(i.linked_product_id)));
+    })();
   }, [items]);
 
   const uploadLogo = async (): Promise<string | null> => {
@@ -241,7 +251,8 @@ export default function KioskPageManage() {
   };
 
   const updateAutoRestockConfig = async (item: any, changes: Partial<{ auto_restock_enabled: boolean; min_stock_threshold: number | null; auto_reorder_quantity: number | null }>) => {
-    await supabase.from("kiosk_inventory").update(changes).eq("id", item.id);
+    const { error } = await supabase.from("kiosk_inventory").update(changes).eq("id", item.id);
+    if (error) { setMsg({ text: "Einstellung konnte nicht gespeichert werden.", ok: false }); return; }
     setItems(p => p.map(i => i.id === item.id ? { ...i, ...changes } : i));
   };
 
@@ -257,8 +268,9 @@ export default function KioskPageManage() {
   };
 
   const respondToOffer = async (offerId: string, accept: boolean) => {
-    const status = accept ? "accepted" : "rejected";
-    await supabase.from("restock_offers").update({ status }).eq("id", offerId);
+    const status = accept ? "accepted" : "declined";
+    const { error } = await supabase.from("restock_offers").update({ status }).eq("id", offerId);
+    if (error) { alert("Aktion konnte nicht gespeichert werden. Bitte erneut versuchen."); return; }
     setOffers(prev => prev.filter(o => o.id !== offerId));
     if (accept) {
       const offer = offers.find(o => o.id === offerId);
