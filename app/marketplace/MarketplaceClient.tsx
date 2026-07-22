@@ -322,13 +322,18 @@ export default function MarketplacePage({ initialProducts = [], initialSuppliers
 
   const addToCart = useCallback(async (product: Product) => {
     const { data: { user } } = await supabase.auth.getUser();
-    if (user) {
-      const { data: existing } = await supabase.from("cart_items").select("id, quantity").eq("user_id", user.id).eq("product_id", product.id).maybeSingle();
-      if (existing) {
-        await supabase.from("cart_items").update({ quantity: existing.quantity + 1 }).eq("id", existing.id);
-      } else {
-        await supabase.from("cart_items").insert({ user_id: user.id, product_id: product.id, quantity: 1 });
-      }
+    if (!user) {
+      showToast("Bitte melde dich an, um etwas in den Warenkorb zu legen.");
+      setTimeout(() => { window.location.href = "/login"; }, 1200);
+      return;
+    }
+    const { data: existing } = await supabase.from("cart_items").select("id, quantity").eq("user_id", user.id).eq("product_id", product.id).maybeSingle();
+    const { error } = existing
+      ? await supabase.from("cart_items").update({ quantity: existing.quantity + 1 }).eq("id", existing.id)
+      : await supabase.from("cart_items").insert({ user_id: user.id, product_id: product.id, quantity: 1 });
+    if (error) {
+      showToast("Konnte nicht zum Warenkorb hinzugefügt werden. Bitte erneut versuchen.");
+      return;
     }
     setCartItems(prev => {
       const existing = prev.find(i => i.id === product.id);
@@ -514,7 +519,7 @@ export default function MarketplacePage({ initialProducts = [], initialSuppliers
 
 
         {/* ── DAILY DEALS ── */}
-        {dailyDeals && (dailyDeals.deals.length > 0 || dailyDeals.freeShipping.length > 0 || dailyDeals.bestsellers.length > 0) && (
+        {!hasActiveFilter && dailyDeals && (dailyDeals.deals.length > 0 || dailyDeals.freeShipping.length > 0 || dailyDeals.bestsellers.length > 0) && (
           <div style={{ marginBottom:28 }}>
             <h2 style={{ fontFamily:"'Syne',sans-serif", fontWeight:800, fontSize:19, color:TEXT, marginBottom:16 }}>🎯 Angebote heute</h2>
 
@@ -571,7 +576,7 @@ export default function MarketplacePage({ initialProducts = [], initialSuppliers
         )}
 
         {/* ── SMART RESTOCK ── */}
-        {restockRecs.length > 0 && (
+        {!hasActiveFilter && restockRecs.length > 0 && (
           <div style={{ marginBottom:28, background:`${ORANGE}0d`, border:`1px solid ${ORANGE}30`, borderRadius:16, padding:"18px 20px" }}>
             <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:14 }}>
               <span style={{ fontSize:18 }}>🔄</span>
@@ -609,7 +614,7 @@ export default function MarketplacePage({ initialProducts = [], initialSuppliers
                 const cat = CATS[p.category||""] || CATS.default;
                 const fIsNew = p.created_at ? (Date.now() - new Date(p.created_at).getTime()) < 7 * 24 * 60 * 60 * 1000 : false;
                 return (
-                  <div key={p.id} onClick={() => setSelectedProduct(p)} style={{ position:"relative", height:200, borderRadius:16, overflow:"hidden", cursor:"pointer" }}>
+                  <div key={p.id} onClick={() => { window.location.href = `/product/${p.id}`; }} style={{ position:"relative", height:200, borderRadius:16, overflow:"hidden", cursor:"pointer" }}>
                     <img loading="lazy" decoding="async" src={p.image_url||"https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?w=600&q=80"} alt={p.name} style={{ width:"100%", height:"100%", objectFit:"cover", transition:"transform 0.4s" }}
                       onMouseEnter={e => e.currentTarget.style.transform="scale(1.05)"}
                       onMouseLeave={e => e.currentTarget.style.transform="scale(1)"}
@@ -695,7 +700,7 @@ export default function MarketplacePage({ initialProducts = [], initialSuppliers
 
                 return (
                   <div key={product.id} className="pcard" style={{ animationDelay:`${i*0.03}s`, background:SURFACE, border:`1px solid ${BORDER}`, borderRadius:16, overflow:"hidden", cursor:"pointer", boxShadow:"0 2px 8px rgba(0,0,0,0.04)" }}
-                    onClick={() => setSelectedProduct(product)}>
+                    onClick={() => { window.location.href = `/product/${product.id}`; }}>
                     <div style={{ position:"relative", height:160, overflow:"hidden" }}>
                       <img loading="lazy" decoding="async" src={product.image_url||"https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?w=400&q=80"} alt={product.name}
                         style={{ width:"100%", height:"100%", objectFit:"cover", transition:"transform 0.4s" }}

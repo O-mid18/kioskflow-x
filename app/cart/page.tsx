@@ -19,8 +19,8 @@ export default function CartPage() {
   const [items, setItems] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [confirmingRemoveAll, setConfirmingRemoveAll] = useState(false);
   const [role, setRole] = useState<string | null>(null);
-  const [userId, setUserId] = useState<string | null>(null);
 
   const fetchCart = async () => {
     try {
@@ -28,7 +28,6 @@ export default function CartPage() {
       setError(null);
       const { data: { user }, error: authError } = await supabase.auth.getUser();
       if (authError || !user) { window.location.href = "/login"; return; }
-      setUserId(user.id);
       supabase.from("profiles").select("role").eq("id", user.id).maybeSingle().then(({ data }) => setRole(data?.role ?? null));
       const { data, error } = await supabase.from("cart_items").select(`id, quantity, products (id, name, price, image_url, stock, shipping_cost)`).eq("user_id", user.id);
       if (error) throw error;
@@ -60,9 +59,10 @@ export default function CartPage() {
   };
 
   const removeAllCart = async () => {
-    if (!window.confirm("Warenkorb leeren? Alle Artikel werden entfernt.")) return;
-    if (!userId) return;
-    const { error } = await supabase.from("cart_items").delete().eq("user_id", userId);
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    const { error } = await supabase.from("cart_items").delete().eq("user_id", user.id);
+    setConfirmingRemoveAll(false);
     if (!error) setItems([]);
   };
 
@@ -135,7 +135,15 @@ export default function CartPage() {
             <p style={{ color:TEXT3, fontSize:13 }}>{cartCount} Artikel ausgewählt</p>
           </div>
           {items.length > 0 && (
-            <button onClick={removeAllCart} style={{ background:"none", border:`1.5px solid ${BORDER}`, borderRadius:8, padding:"8px 14px", color:TEXT2, fontSize:13, cursor:"pointer", fontWeight:500 }}>Alles entfernen</button>
+            confirmingRemoveAll ? (
+              <div style={{ display:"flex", alignItems:"center", gap:8 }}>
+                <span style={{ fontSize:12, color:TEXT2 }}>Sicher?</span>
+                <button onClick={removeAllCart} style={{ background:"#dc2626", border:"none", borderRadius:8, padding:"7px 12px", color:"#fff", fontSize:12, fontWeight:700, cursor:"pointer" }}>Ja, leeren</button>
+                <button onClick={() => setConfirmingRemoveAll(false)} style={{ background:"none", border:`1.5px solid ${BORDER}`, borderRadius:8, padding:"7px 12px", color:TEXT2, fontSize:12, cursor:"pointer" }}>Abbrechen</button>
+              </div>
+            ) : (
+              <button onClick={() => setConfirmingRemoveAll(true)} style={{ background:"none", border:`1.5px solid ${BORDER}`, borderRadius:8, padding:"8px 14px", color:TEXT2, fontSize:13, cursor:"pointer", fontWeight:500 }}>Alles entfernen</button>
+            )
           )}
         </div>
 

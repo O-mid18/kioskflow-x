@@ -104,11 +104,10 @@ export default function ProductDetailsPage() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { window.location.href = "/login"; return; }
     const { data: existing } = await supabase.from("cart_items").select("id, quantity").eq("user_id", user.id).eq("product_id", product.id).maybeSingle();
-    if (existing) {
-      await supabase.from("cart_items").update({ quantity: existing.quantity + 1 }).eq("id", existing.id);
-    } else {
-      await supabase.from("cart_items").insert({ user_id: user.id, product_id: product.id, quantity: 1 });
-    }
+    const { error } = existing
+      ? await supabase.from("cart_items").update({ quantity: existing.quantity + 1 }).eq("id", existing.id)
+      : await supabase.from("cart_items").insert({ user_id: user.id, product_id: product.id, quantity: 1 });
+    if (error) { showToast("Konnte nicht zum Warenkorb hinzugefügt werden."); return; }
     await loadCartCount();
     showToast("In den Warenkorb gelegt ✓");
   };
