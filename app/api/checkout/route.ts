@@ -63,13 +63,16 @@ export async function POST(request: Request) {
     const supplierIds = [...new Set((cartItems as any[]).map((i: any) => i.products?.supplier_id).filter(Boolean))];
     const supplierId = supplierIds.length === 1 ? supplierIds[0] : null;
 
-    const { data: order, error: orderError } = await db
+    // Uses the buyer's own client (not the admin client) so the "orders:
+    // buyer insert" RLS policy stays the real safety net — it enforces
+    // buyer_id = auth.uid() at the database level, not just in this code.
+    const { data: order, error: orderError } = await supabase
       .from("orders")
       .insert({
         buyer_id: user.id,
         supplier_id: supplierId,
         total_price: productTotalEur,
-        status: "pending",
+        status: "awaiting_quote",
         shipping_name: shippingAddress.firstName && shippingAddress.lastName ? `${shippingAddress.firstName} ${shippingAddress.lastName}`.trim() : null,
         shipping_email: shippingAddress.email || null,
         shipping_street: shippingAddress.street || null,
@@ -85,19 +88,19 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Bestellung konnte nicht erstellt werden. Bitte erneut versuchen." }, { status: 500 });
     }
 
-    const { error: itemsError } = await db.from("order_items").insert(
+    const { error: itemsError } = await supabase.from("order_items").insert(
       (cartItems as any[]).map((item) => ({
         order_id: order.id,
         product_id: item.products.id,
         supplier_id: item.products.supplier_id ?? null,
         quantity: item.quantity,
         price_at_purchase: item.products.price,
-        shipping_cost_at_purchase: 0,
+        shipping_cost_at_purchase: item.products.shipping_cost ?? 0,
         shipping_quoted: false,
       }))
     );
     if (itemsError) {
-      await db.from("orders").delete().eq("id", order.id);
+      await supabase.from("orders").delete().eq("id", order.id);
       console.error("[checkout] order_items error:", itemsError.message, itemsError.code);
       return NextResponse.json({ error: "Bestellpositionen konnten nicht gespeichert werden. Bitte erneut versuchen." }, { status: 500 });
     }
@@ -115,12 +118,11 @@ export async function POST(request: Request) {
           title: "📦 Neue Bestellung – Versandkosten festlegen",
           body: `Bestell-ID: #${order.id.slice(-6).toUpperCase()}`,
           link: "/supplier/dashboard/orders",
-          order_id: order.id,
         });
       }
     }
 
-    await db.from("cart_items").delete().eq("user_id", user.id);
+    await supabase.from("cart_items").delete().eq("user_id", user.id);
 
     return NextResponse.json({ orderId: order.id });
   } catch (error: any) {
