@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState, useCallback, Fragment } from "react";
 import { supabase } from "@/lib/supabase";
@@ -9,7 +9,7 @@ const BORDER = "var(--kf-border)";
 const TEXT = "var(--kf-text)";
 const TEXT2 = "var(--kf-text2)";
 const TEXT3 = "var(--kf-text3)";
-const ORANGE = "#2563EB";
+const ORANGE = "#003ec7";
 
 type Tab = "stats" | "users" | "suppliers" | "orders" | "products" | "settings";
 
@@ -35,9 +35,9 @@ function Pill({ v }: { v: string }) {
   const map: Record<string, { bg: string; fg: string }> = {
     paid: { bg: "#dcfce7", fg: "#16a34a" }, pending: { bg: "#fef9c3", fg: "#ca8a04" },
     preparing: { bg: "#cffafe", fg: "#0891b2" },
-    shipped: { bg: "#dbeafe", fg: "#2563eb" }, delivered: { bg: "#f3e8ff", fg: "#9333ea" },
+    shipped: { bg: "#dbeafe", fg: "#003ec7" }, delivered: { bg: "#f3e8ff", fg: "#9333ea" },
     cancelled: { bg: "#fee2e2", fg: "#dc2626" },
-    buyer: { bg: "#dbeafe", fg: "#2563eb" }, supplier: { bg: "#dcfce7", fg: "#16a34a" },
+    buyer: { bg: "#dbeafe", fg: "#003ec7" }, supplier: { bg: "#dcfce7", fg: "#16a34a" },
     admin: { bg: "#fef9c3", fg: "#ca8a04" },
   };
   const s = map[v] ?? { bg: "#f3f4f6", fg: "#6b7280" };
@@ -56,7 +56,7 @@ function StatCard({ label, value, sub }: { label: string; value: string | number
   return (
     <div style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 16, padding: "20px 22px" }}>
       <p style={{ fontSize: 12, fontWeight: 600, color: TEXT3, marginBottom: 8 }}>{label}</p>
-      <p style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 28, color: ORANGE }}>{value}</p>
+      <p style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: 28, color: ORANGE }}>{value}</p>
       {sub && <p style={{ fontSize: 11, color: TEXT3, marginTop: 4 }}>{sub}</p>}
     </div>
   );
@@ -291,7 +291,7 @@ export default function OwnerDashboard() {
   );
 
   if (loading) return (
-    <main style={{ minHeight: "100vh", background: BG, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'DM Sans',system-ui,sans-serif" }}>
+    <main style={{ minHeight: "100vh", background: BG, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Inter',system-ui,sans-serif" }}>
       <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
       <div style={{ textAlign: "center" }}>
         <div style={{ width: 36, height: 36, border: `3px solid ${BORDER}`, borderTopColor: ORANGE, borderRadius: "50%", animation: "spin 0.8s linear infinite", margin: "0 auto 14px" }} />
@@ -301,12 +301,12 @@ export default function OwnerDashboard() {
   );
 
   return (
-    <main style={{ minHeight: "100vh", background: BG, fontFamily: "'DM Sans','Helvetica Neue',system-ui,sans-serif", color: TEXT }}>
+    <main style={{ minHeight: "100vh", background: BG, fontFamily: "'Inter','Helvetica Neue',system-ui,sans-serif", color: TEXT }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap');
         @keyframes spin{to{transform:rotate(360deg)}}
         ::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-track{background:${BG}}::-webkit-scrollbar-thumb{background:${BORDER};border-radius:99px}
-        input:focus,textarea:focus,select:focus{outline:none;border-color:${ORANGE}!important;box-shadow:0 0 0 3px rgba(37,99,235,0.12)!important}
+        input:focus,textarea:focus,select:focus{outline:none;border-color:${ORANGE}!important;box-shadow:0 0 0 3px rgba(0,62,199,0.12)!important}
         tr:hover td{background:${BG}}
       `}</style>
 
@@ -321,7 +321,7 @@ export default function OwnerDashboard() {
       {editProd && (
         <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.6)", zIndex: 200, display: "flex", alignItems: "center", justifyContent: "center" }}>
           <div style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 18, padding: 28, width: 320, boxShadow: "0 8px 40px rgba(0,0,0,0.4)" }}>
-            <h3 style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 16, color: TEXT, marginBottom: 6 }}>Produkt bearbeiten</h3>
+            <h3 style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: 16, color: TEXT, marginBottom: 6 }}>Produkt bearbeiten</h3>
             <p style={{ fontSize: 13, color: TEXT3, marginBottom: 20 }}>{editProd.name}</p>
             <div style={{ display: "flex", flexDirection: "column", gap: 14, marginBottom: 20 }}>
               <div>
@@ -349,7 +349,7 @@ export default function OwnerDashboard() {
       <header style={{ background: SURFACE, borderBottom: `1px solid ${BORDER}`, padding: "0 24px", height: 60, display: "flex", alignItems: "center", justifyContent: "space-between", position: "sticky", top: 0, zIndex: 100 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <img src="/flowio-icon.png" alt="Flowio" style={{ width: 32, height: 32, borderRadius: 8, objectFit: "cover" }} />
-          <span style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 14, color: TEXT }}>Flowio</span>
+          <span style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: 14, color: TEXT }}>Flowio</span>
           <span style={{ fontSize: 10, fontWeight: 700, background: "#fef3c7", color: "#d97706", padding: "2px 8px", borderRadius: 100 }}>OWNER</span>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
@@ -363,7 +363,7 @@ export default function OwnerDashboard() {
       <div style={{ maxWidth: 1100, margin: "0 auto", padding: "28px 24px" }}>
         <div style={{ marginBottom: 24 }}>
           <p style={{ fontSize: 11, fontWeight: 700, color: TEXT3, letterSpacing: "2.5px", textTransform: "uppercase", marginBottom: 6 }}>Super-Admin</p>
-          <h1 style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 26, color: TEXT, letterSpacing: "-0.5px" }}>Owner-Panel</h1>
+          <h1 style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: 26, color: TEXT, letterSpacing: "-0.5px" }}>Owner-Panel</h1>
         </div>
 
         {/* Tabs */}
@@ -387,7 +387,7 @@ export default function OwnerDashboard() {
               <StatCard label="Gesamtumsatz" value={`€${(stats.revenue ?? 0).toFixed(2)}`} sub="bezahlte Bestellungen" />
             </div>
             <div style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 16, padding: "22px 24px" }}>
-              <p style={{ fontFamily: "'Syne',sans-serif", fontWeight: 700, fontSize: 14, color: TEXT, marginBottom: 20 }}>📈 Monatliche Einnahmen</p>
+              <p style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 700, fontSize: 14, color: TEXT, marginBottom: 20 }}>📈 Monatliche Einnahmen</p>
               <RevenueChart data={revenue} />
             </div>
           </div>
@@ -570,7 +570,7 @@ export default function OwnerDashboard() {
                       <td style={{ padding: "10px 14px", fontSize: 13, borderBottom: `1px solid ${BORDER}`, fontWeight: (p.stock ?? 0) === 0 ? 700 : 400, color: (p.stock ?? 0) === 0 ? "#dc2626" : TEXT2, whiteSpace: "nowrap" }}>{p.stock ?? 0}</td>
                       <TD>{p.category || "—"}</TD>
                       <td style={{ padding: "8px 14px", borderBottom: `1px solid ${BORDER}`, whiteSpace: "nowrap" }}>
-                        <Btn label="✏️ Bearbeiten" fg="#2563eb" bg="#dbeafe" onClick={() => openEdit(p)} />
+                        <Btn label="✏️ Bearbeiten" fg="#003ec7" bg="#dbeafe" onClick={() => openEdit(p)} />
                         <Btn label="Löschen" fg="#dc2626" bg="#fee2e2" onClick={() => deleteProduct(p.id, p.name)} />
                       </td>
                     </tr>
@@ -587,7 +587,7 @@ export default function OwnerDashboard() {
           <div style={{ display: "flex", flexDirection: "column", gap: 20, maxWidth: 520 }}>
             {/* Broadcast */}
             <div style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 16, padding: 28 }}>
-              <h2 style={{ fontFamily: "'Syne',sans-serif", fontWeight: 700, fontSize: 16, color: TEXT, marginBottom: 20 }}>📣 Benachrichtigung an alle senden</h2>
+              <h2 style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 700, fontSize: 16, color: TEXT, marginBottom: 20 }}>📣 Benachrichtigung an alle senden</h2>
               {bResult && <div style={{ background: bResult.ok ? "#dcfce7" : "#fef2f2", border: `1.5px solid ${bResult.ok ? "#86efac" : "#fca5a5"}`, borderRadius: 10, padding: "10px 14px", marginBottom: 16 }}><p style={{ color: bResult.ok ? "#16a34a" : "#dc2626", fontSize: 13 }}>{bResult.text}</p></div>}
               <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                 <div>
@@ -599,7 +599,7 @@ export default function OwnerDashboard() {
                   <textarea value={bMsg} onChange={e => setBMsg(e.target.value)} rows={3} placeholder="Nachricht an alle Nutzer..." style={{ ...inp(), resize: "none" } as any} />
                 </div>
                 <button onClick={broadcast} disabled={bLoading || !bTitle || !bMsg}
-                  style={{ background: bLoading || !bTitle || !bMsg ? "rgba(37,99,235,0.45)" : ORANGE, color: "#fff", border: "none", borderRadius: 10, padding: "12px", fontSize: 14, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+                  style={{ background: bLoading || !bTitle || !bMsg ? "rgba(0,62,199,0.45)" : ORANGE, color: "#fff", border: "none", borderRadius: 10, padding: "12px", fontSize: 14, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
                   {bLoading && <div style={{ width: 14, height: 14, border: "2px solid rgba(255,255,255,0.4)", borderTopColor: "#fff", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />}
                   An alle {users.length} Nutzer senden
                 </button>
@@ -608,7 +608,7 @@ export default function OwnerDashboard() {
 
             {/* Password */}
             <div style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 16, padding: 28 }}>
-              <h2 style={{ fontFamily: "'Syne',sans-serif", fontWeight: 700, fontSize: 16, color: TEXT, marginBottom: 20 }}>🔒 Passwort ändern</h2>
+              <h2 style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 700, fontSize: 16, color: TEXT, marginBottom: 20 }}>🔒 Passwort ändern</h2>
               {pwMsg && <div style={{ background: pwMsg.ok ? "#dcfce7" : "#fef2f2", border: `1.5px solid ${pwMsg.ok ? "#86efac" : "#fca5a5"}`, borderRadius: 10, padding: "10px 14px", marginBottom: 18 }}><p style={{ color: pwMsg.ok ? "#16a34a" : "#dc2626", fontSize: 13 }}>{pwMsg.text}</p></div>}
               <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
                 {[{ label: "Aktuelles Passwort", val: curPw, set: setCurPw }, { label: "Neues Passwort", val: newPw, set: setNewPw }, { label: "Bestätigen", val: confPw, set: setConfPw }].map(({ label, val, set }) => (
@@ -618,7 +618,7 @@ export default function OwnerDashboard() {
                   </div>
                 ))}
                 <button onClick={changePassword} disabled={pwLoading || !curPw || !newPw || !confPw}
-                  style={{ background: pwLoading || !curPw || !newPw || !confPw ? "rgba(37,99,235,0.45)" : ORANGE, color: "#fff", border: "none", borderRadius: 10, padding: "12px", fontSize: 14, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+                  style={{ background: pwLoading || !curPw || !newPw || !confPw ? "rgba(0,62,199,0.45)" : ORANGE, color: "#fff", border: "none", borderRadius: 10, padding: "12px", fontSize: 14, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
                   {pwLoading && <div style={{ width: 14, height: 14, border: "2px solid rgba(255,255,255,0.4)", borderTopColor: "#fff", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />}
                   Passwort speichern
                 </button>

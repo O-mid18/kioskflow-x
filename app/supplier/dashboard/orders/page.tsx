@@ -9,7 +9,7 @@ const BORDER = "var(--kf-border)";
 const TEXT = "var(--kf-text)";
 const TEXT2 = "var(--kf-text2)";
 const TEXT3 = "var(--kf-text3)";
-const ORANGE = "#2563EB";
+const ORANGE = "#003ec7";
 
 type OrderItem = {
   id: string;
@@ -36,7 +36,7 @@ const STATUS_MAP: Record<string, { label:string; color:string; bg:string }> = {
   pending:   { label:"Ausstehend",       color:"#ea580c", bg:"#fff7ed" },
   paid:      { label:"Bezahlt",          color:"#16a34a", bg:"#f0fdf4" },
   preparing: { label:"Wird vorbereitet", color:"#7c3aed", bg:"#f3e8ff" },
-  shipped:   { label:"Versandt",         color:"#2563eb", bg:"#eff6ff" },
+  shipped:   { label:"Versandt",         color:"#003ec7", bg:"#eff6ff" },
   delivered: { label:"Geliefert",        color:"#16a34a", bg:"#f0fdf4" },
   cancelled: { label:"Storniert",        color:"#dc2626", bg:"#fef2f2" },
 };
@@ -174,7 +174,7 @@ export default function SupplierOrdersPage() {
       {/* Header */}
       <div style={{ marginBottom:28 }}>
         <p style={{ fontSize:11, fontWeight:700, color:TEXT3, letterSpacing:"2.5px", textTransform:"uppercase", marginBottom:8 }}>Lieferant-Dashboard</p>
-        <h1 style={{ fontFamily:"'Syne',sans-serif", fontWeight:800, fontSize:26, color:TEXT, letterSpacing:"-0.8px" }}>Bestellungen</h1>
+        <h1 style={{ fontFamily:"'Hanken Grotesk',sans-serif", fontWeight:800, fontSize:26, color:TEXT, letterSpacing:"-0.8px" }}>Bestellungen</h1>
         <p style={{ fontSize:13, color:TEXT2, marginTop:4 }}>{items.length} Bestellpositionen insgesamt</p>
       </div>
 
@@ -232,10 +232,10 @@ export default function SupplierOrdersPage() {
                         </div>
                       </div>
                     </td>
-                    <td style={{ padding:"14px 20px", fontSize:13, fontWeight:600, color:TEXT, fontFamily:"'Syne',sans-serif" }}>
+                    <td style={{ padding:"14px 20px", fontSize:13, fontWeight:600, color:TEXT, fontFamily:"'Hanken Grotesk',sans-serif" }}>
                       <div>#{(item.orders?.id ?? "").slice(-6).toUpperCase()}</div>
                       {item.orders?.shipping_name && (
-                        <div style={{ fontSize:11, color:TEXT3, fontWeight:400, marginTop:2, fontFamily:"'DM Sans',sans-serif" }}>
+                        <div style={{ fontSize:11, color:TEXT3, fontWeight:400, marginTop:2, fontFamily:"'Inter',sans-serif" }}>
                           📍 {item.orders.shipping_name}, {item.orders.shipping_street}, {item.orders.shipping_postal_code} {item.orders.shipping_city}
                         </div>
                       )}
@@ -308,12 +308,12 @@ export default function SupplierOrdersPage() {
           <div style={{ background:SURFACE, border:`1px solid ${BORDER}`, borderRadius:12, padding:"14px 22px", display:"flex", gap:28 }}>
             <div style={{ textAlign:"right" }}>
               <p style={{ fontSize:11, color:TEXT3, marginBottom:3 }}>ARTIKEL</p>
-              <p style={{ fontFamily:"'Syne',sans-serif", fontWeight:800, fontSize:18, color:TEXT }}>{filtered.reduce((s,i)=>s+i.quantity,0)}</p>
+              <p style={{ fontFamily:"'Hanken Grotesk',sans-serif", fontWeight:800, fontSize:18, color:TEXT }}>{filtered.reduce((s,i)=>s+i.quantity,0)}</p>
             </div>
             <div style={{ width:1, background:BORDER }} />
             <div style={{ textAlign:"right" }}>
               <p style={{ fontSize:11, color:TEXT3, marginBottom:3 }}>UMSATZ</p>
-              <p style={{ fontFamily:"'Syne',sans-serif", fontWeight:800, fontSize:18, color:ORANGE }}>€{filtered.reduce((s,i)=>s+i.price_at_purchase*i.quantity,0).toFixed(2)}</p>
+              <p style={{ fontFamily:"'Hanken Grotesk',sans-serif", fontWeight:800, fontSize:18, color:ORANGE }}>€{filtered.reduce((s,i)=>s+i.price_at_purchase*i.quantity,0).toFixed(2)}</p>
             </div>
           </div>
         </div>

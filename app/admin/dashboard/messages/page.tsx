@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
@@ -9,7 +9,7 @@ const BORDER = "var(--kf-border)";
 const TEXT = "var(--kf-text)";
 const TEXT2 = "var(--kf-text2)";
 const TEXT3 = "var(--kf-text3)";
-const ORANGE = "#2563EB";
+const ORANGE = "#003ec7";
 
 type Conv = { id: string; buyer_name: string; supplier_name: string; created_at: string; };
 type Msg  = { id: string; sender_id: string; content: string; created_at: string; };
@@ -55,12 +55,12 @@ export default function AdminMessagesPage() {
   );
 
   return (
-    <div style={{ minHeight: "100%", background: BG, fontFamily: "'DM Sans',system-ui,sans-serif" }}>
+    <div style={{ minHeight: "100%", background: BG, fontFamily: "'Inter',system-ui,sans-serif" }}>
       <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
 
       <div style={{ padding: "28px 24px" }}>
         <p style={{ fontSize: 11, fontWeight: 700, color: TEXT3, letterSpacing: "2px", textTransform: "uppercase", marginBottom: 8 }}>Admin</p>
-        <h1 style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 24, color: TEXT, marginBottom: 24 }}>Alle Gespräche</h1>
+        <h1 style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: 24, color: TEXT, marginBottom: 24 }}>Alle Gespräche</h1>
 
         <div style={{ display: "flex", gap: 20, alignItems: "flex-start" }}>
           {/* Conversation list */}

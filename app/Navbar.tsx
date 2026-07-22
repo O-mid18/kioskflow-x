@@ -1,10 +1,10 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 
-const ORANGE = "#2563EB";
+const ORANGE = "#003ec7";
 
 export default function Navbar() {
   const [userEmail, setUserEmail] = useState<string | null>(null);

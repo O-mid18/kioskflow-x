@@ -10,7 +10,7 @@ const BORDER = "var(--kf-border)";
 const TEXT = "var(--kf-text)";
 const TEXT2 = "var(--kf-text2)";
 const TEXT3 = "var(--kf-text3)";
-const ORANGE = "#2563EB";
+const ORANGE = "#003ec7";
 
 interface Product { id: string; name: string; price: number; image_url: string | null; stock?: number; shipping_cost?: number; }
 interface CartItem { id: string; quantity: number; products: Product; }
@@ -73,7 +73,7 @@ export default function CartPage() {
 
   if (loading) {
     return (
-      <main style={{ minHeight:"100vh", background:BG, display:"flex", alignItems:"center", justifyContent:"center", fontFamily:"'DM Sans',system-ui,sans-serif" }}>
+      <main style={{ minHeight:"100vh", background:BG, display:"flex", alignItems:"center", justifyContent:"center", fontFamily:"'Inter',system-ui,sans-serif" }}>
         <style>{`@keyframes spin { to { transform:rotate(360deg); } }`}</style>
         <div style={{ textAlign:"center" }}>
           <div style={{ width:36, height:36, border:`3px solid ${BORDER}`, borderTopColor:ORANGE, borderRadius:"50%", animation:"spin 0.8s linear infinite", margin:"0 auto 14px" }} />
@@ -85,7 +85,7 @@ export default function CartPage() {
 
   if (error) {
     return (
-      <main style={{ minHeight:"100vh", background:BG, display:"flex", alignItems:"center", justifyContent:"center", fontFamily:"'DM Sans',system-ui,sans-serif" }}>
+      <main style={{ minHeight:"100vh", background:BG, display:"flex", alignItems:"center", justifyContent:"center", fontFamily:"'Inter',system-ui,sans-serif" }}>
         <div style={{ textAlign:"center", padding:"0 20px" }}>
           <p style={{ fontSize:48, marginBottom:16 }}>⚠️</p>
           <p style={{ color:TEXT, fontSize:15, fontWeight:600, marginBottom:8 }}>{error}</p>
@@ -98,14 +98,14 @@ export default function CartPage() {
   }
 
   return (
-    <main style={{ minHeight:"100vh", background:BG, fontFamily:"'DM Sans','Helvetica Neue',system-ui,sans-serif", color:TEXT, paddingBottom:80 }}>
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600;700&display=swap'); @keyframes spin { to { transform:rotate(360deg); } } @media(max-width:640px){.cart-grid{grid-template-columns:1fr !important}.cart-item{flex-wrap:wrap}.cart-item-info{min-width:0;flex:1}.cart-qty{margin-left:auto}}`}</style>
+    <main style={{ minHeight:"100vh", background:BG, fontFamily:"'Inter','Helvetica Neue',system-ui,sans-serif", color:TEXT, paddingBottom:80 }}>
+      <style>{`@import url('https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap'); @keyframes spin { to { transform:rotate(360deg); } } @media(max-width:640px){.cart-grid{grid-template-columns:1fr !important}.cart-item{flex-wrap:wrap}.cart-item-info{min-width:0;flex:1}.cart-qty{margin-left:auto}}`}</style>
 
       {/* Header */}
       <header style={{ background:SURFACE, borderBottom:`1px solid ${BORDER}`, padding:"0 20px", height:60, display:"flex", alignItems:"center", justifyContent:"space-between" }}>
         <div style={{ display:"flex", alignItems:"center", gap:8 }}>
           <img src="/flowio-icon.png" alt="Flowio" style={{ width: 30, height: 30, borderRadius: 7, objectFit: "cover" }} />
-          <span style={{ fontFamily:"'Syne',sans-serif", fontWeight:800, fontSize:15, color:TEXT, letterSpacing:"-0.3px" }}>Flowio</span>
+          <span style={{ fontFamily:"'Hanken Grotesk',sans-serif", fontWeight:800, fontSize:15, color:TEXT, letterSpacing:"-0.3px" }}>Flowio</span>
         </div>
         <div style={{ display:"flex", alignItems:"center", gap:14 }}>
           {role === "admin" && <a href="/owner/dashboard" title="Owner-Panel" style={{ background:`${ORANGE}15`, color:ORANGE, fontWeight:700, fontSize:13, textDecoration:"none", padding:"7px 12px", borderRadius:8 }}>🏛️</a>}
@@ -131,7 +131,7 @@ export default function CartPage() {
       <div style={{ maxWidth:680, margin:"0 auto", padding:"28px 20px" }}>
         <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:24 }}>
           <div>
-            <h1 style={{ fontFamily:"'Syne',sans-serif", fontWeight:800, fontSize:26, color:TEXT, letterSpacing:"-0.5px", marginBottom:4 }}>Warenkorb</h1>
+            <h1 style={{ fontFamily:"'Hanken Grotesk',sans-serif", fontWeight:800, fontSize:26, color:TEXT, letterSpacing:"-0.5px", marginBottom:4 }}>Warenkorb</h1>
             <p style={{ color:TEXT3, fontSize:13 }}>{cartCount} Artikel ausgewählt</p>
           </div>
           {items.length > 0 && (
@@ -150,7 +150,7 @@ export default function CartPage() {
         {items.length === 0 ? (
           <div style={{ textAlign:"center", padding:"80px 0" }}>
             <p style={{ fontSize:64, marginBottom:20 }}>🛒</p>
-            <h2 style={{ fontFamily:"'Syne',sans-serif", color:TEXT, fontSize:22, fontWeight:800, marginBottom:10 }}>Dein Warenkorb ist leer</h2>
+            <h2 style={{ fontFamily:"'Hanken Grotesk',sans-serif", color:TEXT, fontSize:22, fontWeight:800, marginBottom:10 }}>Dein Warenkorb ist leer</h2>
             <p style={{ color:TEXT2, fontSize:14, marginBottom:28 }}>Entdecke unsere Produkte und füge sie hier hinzu.</p>
             <a href="/marketplace" style={{ display:"inline-block", background:ORANGE, color:"#fff", fontWeight:700, padding:"13px 28px", borderRadius:12, textDecoration:"none", fontSize:14 }}>Zum Marktplatz →</a>
           </div>
@@ -199,10 +199,10 @@ export default function CartPage() {
                   </div>
                 </div>
                 <div style={{ borderTop:`1.5px solid ${BORDER}`, paddingTop:14, display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:18 }}>
-                  <span style={{ fontFamily:"'DM Sans',sans-serif", fontWeight:700, fontSize:15, color:TEXT }}>Gesamt</span>
-                  <span style={{ fontFamily:"'DM Sans',sans-serif", fontWeight:800, fontSize:22, color:TEXT, letterSpacing:"-0.5px" }}>€{total.toFixed(2)}</span>
+                  <span style={{ fontFamily:"'Inter',sans-serif", fontWeight:700, fontSize:15, color:TEXT }}>Gesamt</span>
+                  <span style={{ fontFamily:"'Inter',sans-serif", fontWeight:800, fontSize:22, color:TEXT, letterSpacing:"-0.5px" }}>€{total.toFixed(2)}</span>
                 </div>
-                <a href="/checkout" style={{ display:"block", background:ORANGE, color:"#fff", fontWeight:700, padding:"14px", borderRadius:11, textDecoration:"none", fontSize:14, textAlign:"center", boxShadow:`0 4px 14px rgba(37,99,235,0.25)` }}>Zur Kasse →</a>
+                <a href="/checkout" style={{ display:"block", background:ORANGE, color:"#fff", fontWeight:700, padding:"14px", borderRadius:11, textDecoration:"none", fontSize:14, textAlign:"center", boxShadow:`0 4px 14px rgba(0,62,199,0.25)` }}>Zur Kasse →</a>
                 <a href="/marketplace" style={{ display:"block", background:BG, color:TEXT2, fontWeight:600, padding:"12px", borderRadius:11, textDecoration:"none", fontSize:13, textAlign:"center", marginTop:8 }}>Weiter einkaufen</a>
               </div>
             </div>

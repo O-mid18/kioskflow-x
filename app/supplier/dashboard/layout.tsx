@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
@@ -11,7 +11,7 @@ const BORDER = "var(--kf-border)";
 const TEXT = "var(--kf-text)";
 const TEXT2 = "var(--kf-text2)";
 const TEXT3 = "var(--kf-text3)";
-const ORANGE = "#2563EB";
+const ORANGE = "#003ec7";
 
 const NAV = [
   { label: "Übersicht",      href: "/supplier/dashboard",                icon: "◉" },
@@ -51,11 +51,11 @@ export default function SupplierDashboardLayout({ children }: { children: React.
 
   if (isPendingBlocked) {
     return (
-      <div style={{ minHeight: "100vh", background: BG, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'DM Sans','Helvetica Neue',system-ui,sans-serif", padding: 24 }}>
-        <style>{`@import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600;700&display=swap');`}</style>
+      <div style={{ minHeight: "100vh", background: BG, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Inter','Helvetica Neue',system-ui,sans-serif", padding: 24 }}>
+        <style>{`@import url('https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap');`}</style>
         <div style={{ maxWidth: 480, width: "100%", textAlign: "center" }}>
           <div style={{ fontSize: 48, marginBottom: 16 }}>⏳</div>
-          <h1 style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 24, color: TEXT, letterSpacing: "-0.5px", marginBottom: 10 }}>
+          <h1 style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: 24, color: TEXT, letterSpacing: "-0.5px", marginBottom: 10 }}>
             Konto wird geprüft
           </h1>
           <p style={{ color: TEXT2, fontSize: 15, lineHeight: 1.7, marginBottom: 28 }}>
@@ -85,9 +85,9 @@ export default function SupplierDashboardLayout({ children }: { children: React.
   }
 
   return (
-    <div style={{ display: "flex", minHeight: "100vh", background: BG, fontFamily: "'DM Sans','Helvetica Neue',system-ui,sans-serif" }}>
+    <div style={{ display: "flex", minHeight: "100vh", background: BG, fontFamily: "'Inter','Helvetica Neue',system-ui,sans-serif" }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap');
         * { box-sizing: border-box; }
         a { text-decoration: none; }
         .kf-supplier-sidebar { position: sticky; top: 0; height: 100vh; }
@@ -119,7 +119,7 @@ export default function SupplierDashboardLayout({ children }: { children: React.
           <a href="/marketplace" style={{ display:"flex", alignItems:"center", gap:10 }}>
             <img src="/flowio-icon.png" alt="Flowio" style={{ width: 34, height: 34, borderRadius: 9, objectFit: "cover" }} />
             <div>
-              <p style={{ fontFamily:"'Syne',sans-serif", fontWeight:800, fontSize:15, color:TEXT, letterSpacing:"-0.3px", lineHeight:1 }}>Flowio</p>
+              <p style={{ fontFamily:"'Hanken Grotesk',sans-serif", fontWeight:800, fontSize:15, color:TEXT, letterSpacing:"-0.3px", lineHeight:1 }}>Flowio</p>
               <p style={{ fontSize:10, color:TEXT3, marginTop:2 }}>Lieferant-Portal</p>
             </div>
           </a>
@@ -163,7 +163,7 @@ export default function SupplierDashboardLayout({ children }: { children: React.
 
         {/* User info */}
         <div style={{ padding:"16px 20px", borderTop:`1px solid ${BORDER}`, display:"flex", alignItems:"center", gap:10 }}>
-          <div style={{ width:34, height:34, borderRadius:10, background:`${ORANGE}20`, display:"flex", alignItems:"center", justifyContent:"center", fontFamily:"'Syne',sans-serif", fontWeight:800, fontSize:14, color:ORANGE, flexShrink:0 }}>
+          <div style={{ width:34, height:34, borderRadius:10, background:`${ORANGE}20`, display:"flex", alignItems:"center", justifyContent:"center", fontFamily:"'Hanken Grotesk',sans-serif", fontWeight:800, fontSize:14, color:ORANGE, flexShrink:0 }}>
             {initials}
           </div>
           <div style={{ flex:1, minWidth:0 }}>

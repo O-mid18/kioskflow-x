@@ -9,7 +9,7 @@ const BORDER = "var(--kf-border)";
 const TEXT = "var(--kf-text)";
 const TEXT2 = "var(--kf-text2)";
 const TEXT3 = "var(--kf-text3)";
-const ORANGE = "#2563EB";
+const ORANGE = "#003ec7";
 
 function inputStyle(focused?: boolean) {
   return {
@@ -103,12 +103,12 @@ function BuyerProfile({ email, buyerId, userId }: { email: string; buyerId: stri
       {/* Avatar card */}
       <div style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 18, padding: 28, marginBottom: 16 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 20, marginBottom: 24, paddingBottom: 24, borderBottom: `1px solid ${BORDER}` }}>
-          <div style={{ width: 64, height: 64, borderRadius: 16, background: `${ORANGE}20`, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 22, color: ORANGE, flexShrink: 0 }}>
+          <div style={{ width: 64, height: 64, borderRadius: 16, background: `${ORANGE}20`, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: 22, color: ORANGE, flexShrink: 0 }}>
             {initials}
           </div>
           <div>
             <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 3 }}>
-              <p style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 18, color: TEXT }}>{fullName || companyName || "—"}</p>
+              <p style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: 18, color: TEXT }}>{fullName || companyName || "—"}</p>
               {approved && (
                 <span title="Verifizierter Kiosk" style={{ display: "inline-flex", alignItems: "center", gap: 4, background: "#dcfce7", color: "#16a34a", fontSize: 11, fontWeight: 700, padding: "2px 9px", borderRadius: 100 }}>
                   ✓ Verifizierter Kiosk
@@ -120,7 +120,7 @@ function BuyerProfile({ email, buyerId, userId }: { email: string; buyerId: stri
           </div>
         </div>
 
-        <h2 style={{ fontFamily: "'Syne',sans-serif", fontWeight: 700, fontSize: 14, color: TEXT, marginBottom: 18 }}>Persönliche Daten</h2>
+        <h2 style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 700, fontSize: 14, color: TEXT, marginBottom: 18 }}>Persönliche Daten</h2>
         <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
           <Field label="Vollständiger Name" value={fullName} onChange={setFullName} placeholder="Max Mustermann" />
           <Field label="Firmenname" value={companyName} onChange={setCompanyName} placeholder="Mustermann GmbH" />
@@ -133,7 +133,7 @@ function BuyerProfile({ email, buyerId, userId }: { email: string; buyerId: stri
       {/* Verification card */}
       <div style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 18, padding: 28, marginBottom: 16 }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
-          <h2 style={{ fontFamily: "'Syne',sans-serif", fontWeight: 700, fontSize: 14, color: TEXT }}>Kiosk-Verifizierung</h2>
+          <h2 style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 700, fontSize: 14, color: TEXT }}>Kiosk-Verifizierung</h2>
           {approved
             ? <span style={{ background: "#dcfce7", color: "#16a34a", fontSize: 11, fontWeight: 700, padding: "3px 10px", borderRadius: 100 }}>✓ Verifiziert</span>
             : <span style={{ background: "#fef9c3", color: "#ca8a04", fontSize: 11, fontWeight: 700, padding: "3px 10px", borderRadius: 100 }}>⏳ Ausstehend</span>}
@@ -148,7 +148,7 @@ function BuyerProfile({ email, buyerId, userId }: { email: string; buyerId: stri
               <input type="file" accept="image/*,application/pdf" onChange={e => setDocFile(e.target.files?.[0] ?? null)}
                 style={{ fontSize: 13, color: TEXT2 }} />
               <button onClick={uploadDoc} disabled={!docFile || docUploading}
-                style={{ background: (!docFile || docUploading) ? "rgba(37,99,235,0.4)" : ORANGE, color: "#fff", border: "none", borderRadius: 9, padding: "9px 18px", fontSize: 13, fontWeight: 700, cursor: (!docFile || docUploading) ? "not-allowed" : "pointer" }}>
+                style={{ background: (!docFile || docUploading) ? "rgba(0,62,199,0.4)" : ORANGE, color: "#fff", border: "none", borderRadius: 9, padding: "9px 18px", fontSize: 13, fontWeight: 700, cursor: (!docFile || docUploading) ? "not-allowed" : "pointer" }}>
                 {docUploading ? "Wird hochgeladen…" : "Hochladen →"}
               </button>
             </div>
@@ -196,7 +196,7 @@ function BuyerProfile({ email, buyerId, userId }: { email: string; buyerId: stri
           Abmelden ⏏
         </button>
         <button onClick={save} disabled={saving}
-          style={{ background: saving ? `rgba(37,99,235,0.55)` : ORANGE, color: "#fff", border: "none", borderRadius: 10, padding: "12px 28px", fontSize: 14, fontWeight: 700, cursor: saving ? "not-allowed" : "pointer", boxShadow: `0 4px 14px rgba(37,99,235,0.25)` }}>
+          style={{ background: saving ? `rgba(0,62,199,0.55)` : ORANGE, color: "#fff", border: "none", borderRadius: 10, padding: "12px 28px", fontSize: 14, fontWeight: 700, cursor: saving ? "not-allowed" : "pointer", boxShadow: `0 4px 14px rgba(0,62,199,0.25)` }}>
           {saving ? "Wird gespeichert..." : "Speichern →"}
         </button>
       </div>
@@ -237,20 +237,20 @@ function SupplierProfile({ email, supplierId }: { email: string; supplierId: str
       {/* Avatar card */}
       <div style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 18, padding: 28, marginBottom: 16 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 20, marginBottom: 24, paddingBottom: 24, borderBottom: `1px solid ${BORDER}` }}>
-          <div style={{ width: 64, height: 64, borderRadius: 16, overflow: "hidden", flexShrink: 0, background: `${ORANGE}20`, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 22, color: ORANGE }}>
+          <div style={{ width: 64, height: 64, borderRadius: 16, overflow: "hidden", flexShrink: 0, background: `${ORANGE}20`, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: 22, color: ORANGE }}>
             {logoUrl ? (
               <img loading="lazy" decoding="async" src={logoUrl} alt="Logo" style={{ width: "100%", height: "100%", objectFit: "cover" }}
                 onError={e => { e.currentTarget.style.display = "none"; }} />
             ) : initials}
           </div>
           <div>
-            <p style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 18, color: TEXT, marginBottom: 3 }}>{name || "—"}</p>
+            <p style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: 18, color: TEXT, marginBottom: 3 }}>{name || "—"}</p>
             <p style={{ fontSize: 13, color: TEXT2 }}>{email}</p>
             <span style={{ display: "inline-block", marginTop: 6, background: `${ORANGE}15`, color: ORANGE, fontSize: 11, fontWeight: 700, padding: "3px 10px", borderRadius: 100 }}>Lieferant</span>
           </div>
         </div>
 
-        <h2 style={{ fontFamily: "'Syne',sans-serif", fontWeight: 700, fontSize: 14, color: TEXT, marginBottom: 18 }}>Markeninformationen</h2>
+        <h2 style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 700, fontSize: 14, color: TEXT, marginBottom: 18 }}>Markeninformationen</h2>
         <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
           <Field label="Markenname" value={name} onChange={setName} placeholder="z.B. BerlinBrews GmbH" />
           <Field label="Beschreibung" value={description} onChange={setDescription} placeholder="Kurze Beschreibung deiner Marke..." type="textarea" />
@@ -284,7 +284,7 @@ function SupplierProfile({ email, supplierId }: { email: string; supplierId: str
           Abmelden ⏏
         </button>
         <button onClick={save} disabled={saving}
-          style={{ background: saving ? `rgba(37,99,235,0.55)` : ORANGE, color: "#fff", border: "none", borderRadius: 10, padding: "12px 28px", fontSize: 14, fontWeight: 700, cursor: saving ? "not-allowed" : "pointer", boxShadow: `0 4px 14px rgba(37,99,235,0.25)` }}>
+          style={{ background: saving ? `rgba(0,62,199,0.55)` : ORANGE, color: "#fff", border: "none", borderRadius: 10, padding: "12px 28px", fontSize: 14, fontWeight: 700, cursor: saving ? "not-allowed" : "pointer", boxShadow: `0 4px 14px rgba(0,62,199,0.25)` }}>
           {saving ? "Wird gespeichert..." : "Speichern →"}
         </button>
       </div>
@@ -326,14 +326,14 @@ export default function ProfilePage() {
     : [{ icon: "🏪", label: "Marktplatz", href: "/marketplace", active: false }, { icon: "🛒", label: "Warenkorb", href: "/cart", active: false }, { icon: "📦", label: "Bestellungen", href: "/orders", active: false }, { icon: "💬", label: "Nachrichten", href: "/messages", active: false }, { icon: "👤", label: "Profil", href: "/profile", active: true }];
 
   return (
-    <main style={{ minHeight: "100vh", background: BG, fontFamily: "'DM Sans','Helvetica Neue',system-ui,sans-serif", color: TEXT, paddingBottom: 80 }}>
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600;700&display=swap');`}</style>
+    <main style={{ minHeight: "100vh", background: BG, fontFamily: "'Inter','Helvetica Neue',system-ui,sans-serif", color: TEXT, paddingBottom: 80 }}>
+      <style>{`@import url('https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap');`}</style>
 
       {/* Header */}
       <header style={{ background: SURFACE, borderBottom: `1px solid ${BORDER}`, padding: "0 24px", height: 60, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <a href="/marketplace" style={{ display: "flex", alignItems: "center", gap: 8, textDecoration: "none" }}>
           <img src="/flowio-icon.png" alt="Flowio" style={{ width: 30, height: 30, borderRadius: 7, objectFit: "cover" }} />
-          <span style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 15, color: TEXT, letterSpacing: "-0.3px" }}>Flowio</span>
+          <span style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: 15, color: TEXT, letterSpacing: "-0.3px" }}>Flowio</span>
         </a>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           {isAdmin && <a href="/owner/dashboard" title="Owner-Panel" style={{ background:`${ORANGE}15`, color:ORANGE, fontWeight:700, fontSize:13, textDecoration:"none", padding:"6px 12px", borderRadius:8 }}>🏛️</a>}
@@ -347,7 +347,7 @@ export default function ProfilePage() {
           <p style={{ fontSize: 11, fontWeight: 700, color: TEXT3, letterSpacing: "2.5px", textTransform: "uppercase", marginBottom: 8 }}>
             {role === "supplier" ? "Lieferant-Konto" : "Käufer-Konto"}
           </p>
-          <h1 style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 26, color: TEXT, letterSpacing: "-0.8px" }}>Mein Profil</h1>
+          <h1 style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: 26, color: TEXT, letterSpacing: "-0.8px" }}>Mein Profil</h1>
         </div>
 
         {loading ? (

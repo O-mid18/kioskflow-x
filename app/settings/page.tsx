@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
@@ -9,7 +9,7 @@ const BORDER  = "var(--kf-border)";
 const TEXT    = "var(--kf-text)";
 const TEXT2   = "var(--kf-text2)";
 const TEXT3   = "var(--kf-text3)";
-const ORANGE  = "#2563EB";
+const ORANGE  = "#003ec7";
 
 const iStyle: React.CSSProperties = {
   width: "100%", background: BG, border: `1.5px solid ${BORDER}`,
@@ -21,7 +21,7 @@ const iStyle: React.CSSProperties = {
 function Section({ title, subtitle, children }: { title: string; subtitle?: string; children: React.ReactNode }) {
   return (
     <div style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 18, padding: 28, marginBottom: 16 }}>
-      <h2 style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 16, color: TEXT, marginBottom: subtitle ? 4 : 20 }}>{title}</h2>
+      <h2 style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: 16, color: TEXT, marginBottom: subtitle ? 4 : 20 }}>{title}</h2>
       {subtitle && <p style={{ fontSize: 13, color: TEXT2, marginBottom: 20 }}>{subtitle}</p>}
       {children}
     </div>
@@ -105,13 +105,13 @@ export default function SettingsPage() {
   }
 
   return (
-    <main style={{ minHeight: "100vh", background: BG, fontFamily: "'DM Sans','Helvetica Neue',system-ui,sans-serif", color: TEXT, paddingBottom: 60 }}>
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600;700&display=swap'); @keyframes spin { to { transform: rotate(360deg); } } * { box-sizing: border-box; }`}</style>
+    <main style={{ minHeight: "100vh", background: BG, fontFamily: "'Inter','Helvetica Neue',system-ui,sans-serif", color: TEXT, paddingBottom: 60 }}>
+      <style>{`@import url('https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap'); @keyframes spin { to { transform: rotate(360deg); } } * { box-sizing: border-box; }`}</style>
 
       <header style={{ background: SURFACE, borderBottom: `1px solid ${BORDER}`, padding: "0 24px", height: 60, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <a href="/profile" style={{ display: "flex", alignItems: "center", gap: 8, textDecoration: "none" }}>
           <img src="/flowio-icon.png" alt="Flowio" style={{ width: 30, height: 30, borderRadius: 7, objectFit: "cover" }} />
-          <span style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 15, color: TEXT }}>Flowio</span>
+          <span style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: 15, color: TEXT }}>Flowio</span>
         </a>
         <a href="/profile" style={{ fontSize: 13, color: TEXT2, textDecoration: "none", fontWeight: 500 }}>← Zurück zum Profil</a>
       </header>
@@ -119,7 +119,7 @@ export default function SettingsPage() {
       <div style={{ maxWidth: 600, margin: "0 auto", padding: "32px 24px" }}>
         <div style={{ marginBottom: 28 }}>
           <p style={{ fontSize: 11, fontWeight: 700, color: TEXT3, letterSpacing: "2.5px", textTransform: "uppercase", marginBottom: 8 }}>Konto</p>
-          <h1 style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 26, color: TEXT, letterSpacing: "-0.8px" }}>Einstellungen</h1>
+          <h1 style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: 26, color: TEXT, letterSpacing: "-0.8px" }}>Einstellungen</h1>
           <p style={{ fontSize: 13, color: TEXT2, marginTop: 4 }}>{email}</p>
         </div>
 
@@ -157,7 +157,7 @@ export default function SettingsPage() {
           <div style={{ display: "flex", alignItems: "flex-start", gap: 14, marginBottom: 20 }}>
             <span style={{ fontSize: 24, flexShrink: 0 }}>⚠️</span>
             <div>
-              <h2 style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 16, color: "#dc2626", marginBottom: 4 }}>Konto löschen</h2>
+              <h2 style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: 16, color: "#dc2626", marginBottom: 4 }}>Konto löschen</h2>
               <p style={{ fontSize: 13, color: TEXT2, lineHeight: 1.6 }}>Diese Aktion ist <strong>nicht rückgängig</strong> zu machen. Alle deine Daten werden dauerhaft gelöscht.</p>
             </div>
           </div>

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
@@ -10,7 +10,7 @@ const BORDER = "var(--kf-border)";
 const TEXT = "var(--kf-text)";
 const TEXT2 = "var(--kf-text2)";
 const TEXT3 = "var(--kf-text3)";
-const ORANGE = "#2563EB";
+const ORANGE = "#003ec7";
 
 export default function ResetPasswordPage() {
   const router = useRouter();
@@ -50,29 +50,29 @@ export default function ResetPasswordPage() {
   };
 
   return (
-    <main style={{ minHeight: "100vh", background: BG, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'DM Sans','Helvetica Neue',system-ui,sans-serif", padding: "32px 16px" }}>
+    <main style={{ minHeight: "100vh", background: BG, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Inter','Helvetica Neue',system-ui,sans-serif", padding: "32px 16px" }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap');
         input::placeholder { color: ${TEXT3}; }
-        input:focus { outline:none; border-color:${ORANGE} !important; box-shadow:0 0 0 3px rgba(37,99,235,0.1); }
+        input:focus { outline:none; border-color:${ORANGE} !important; box-shadow:0 0 0 3px rgba(0,62,199,0.1); }
       `}</style>
 
       <div style={{ width: "100%", maxWidth: 400 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 32 }}>
           <img src="/flowio-icon.png" alt="Flowio" style={{ width: 30, height: 30, borderRadius: 7, objectFit: "cover" }} />
-          <span style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 15, color: TEXT }}>Flowio</span>
+          <span style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: 15, color: TEXT }}>Flowio</span>
         </div>
 
         {done ? (
           <div style={{ background: SURFACE, border: `1.5px solid ${BORDER}`, borderRadius: 14, padding: 28, textAlign: "center" }}>
             <div style={{ fontSize: 40, marginBottom: 16 }}>✅</div>
-            <h2 style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 22, color: TEXT, letterSpacing: "-0.5px", marginBottom: 10 }}>Passwort aktualisiert</h2>
+            <h2 style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: 22, color: TEXT, letterSpacing: "-0.5px", marginBottom: 10 }}>Passwort aktualisiert</h2>
             <p style={{ color: TEXT2, fontSize: 14 }}>Du wirst weitergeleitet...</p>
           </div>
         ) : linkExpired ? (
           <div style={{ background: SURFACE, border: `1.5px solid ${BORDER}`, borderRadius: 14, padding: 28, textAlign: "center" }}>
             <div style={{ fontSize: 40, marginBottom: 16 }}>⚠️</div>
-            <h2 style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 20, color: TEXT, letterSpacing: "-0.5px", marginBottom: 10 }}>Link abgelaufen</h2>
+            <h2 style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: 20, color: TEXT, letterSpacing: "-0.5px", marginBottom: 10 }}>Link abgelaufen</h2>
             <p style={{ color: TEXT2, fontSize: 14, lineHeight: 1.6, marginBottom: 20 }}>
               Dieser Reset-Link ist ungültig oder abgelaufen. Bitte fordere einen neuen an.
             </p>
@@ -85,7 +85,7 @@ export default function ResetPasswordPage() {
         ) : (
           <>
             <p style={{ fontSize: 11, fontWeight: 700, color: TEXT3, letterSpacing: "2.5px", textTransform: "uppercase", marginBottom: 12 }}>Neues Passwort</p>
-            <h1 style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 26, color: TEXT, letterSpacing: "-0.5px", marginBottom: 8 }}>Passwort festlegen</h1>
+            <h1 style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: 26, color: TEXT, letterSpacing: "-0.5px", marginBottom: 8 }}>Passwort festlegen</h1>
             <p style={{ color: TEXT2, fontSize: 14, marginBottom: 28 }}>Wähle ein neues Passwort für dein Konto.</p>
 
             {errorMsg && (
@@ -119,7 +119,7 @@ export default function ResetPasswordPage() {
               <button
                 onClick={handleReset}
                 disabled={loading}
-                style={{ width: "100%", background: loading ? "rgba(37,99,235,0.55)" : ORANGE, color: "#fff", border: "none", borderRadius: 11, padding: "14px", fontWeight: 700, fontSize: 15, cursor: loading ? "not-allowed" : "pointer", boxShadow: "0 4px 14px rgba(37,99,235,0.25)" }}
+                style={{ width: "100%", background: loading ? "rgba(0,62,199,0.55)" : ORANGE, color: "#fff", border: "none", borderRadius: 11, padding: "14px", fontWeight: 700, fontSize: 15, cursor: loading ? "not-allowed" : "pointer", boxShadow: "0 4px 14px rgba(0,62,199,0.25)" }}
               >
                 {loading ? "Speichern..." : "Passwort speichern →"}
               </button>

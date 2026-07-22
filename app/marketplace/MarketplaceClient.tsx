@@ -21,7 +21,7 @@ const BORDER = "var(--kf-border)";
 const TEXT = "var(--kf-text)";
 const TEXT2 = "var(--kf-text2)";
 const TEXT3 = "var(--kf-text3)";
-const ORANGE = "#2563EB";
+const ORANGE = "#003ec7";
 
 function Toast({ msg, onClose }: { msg: string; onClose: () => void }) {
   useEffect(() => { const t = setTimeout(onClose, 2200); return () => clearTimeout(t); }, [onClose]);
@@ -56,7 +56,7 @@ function CartDrawer({ open, onClose, items, onUpdateQty, onRemove, onClearAll }:
       <div style={{ position:"fixed", top:0, right:0, height:"100%", width:360, background:SURFACE, zIndex:100, display:"flex", flexDirection:"column", transform:open?"translateX(0)":"translateX(100%)", transition:"transform 0.3s cubic-bezier(0.4,0,0.2,1)", borderLeft:`1px solid ${BORDER}`, boxShadow:"-8px 0 40px rgba(0,0,0,0.08)" }}>
         <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"20px 24px", borderBottom:`1px solid ${BORDER}` }}>
           <div>
-            <p style={{ color:TEXT, fontWeight:700, fontSize:16, fontFamily:"'DM Sans',sans-serif" }}>Warenkorb</p>
+            <p style={{ color:TEXT, fontWeight:700, fontSize:16, fontFamily:"'Inter',sans-serif" }}>Warenkorb</p>
             <p style={{ color:TEXT3, fontSize:12, marginTop:2 }}>{items.reduce((s,i)=>s+i.quantity,0)} Artikel</p>
           </div>
           <button onClick={onClose} style={{ width:32, height:32, background:BG, border:`1px solid ${BORDER}`, borderRadius:8, cursor:"pointer", color:TEXT2, fontSize:14 }}>✕</button>
@@ -89,7 +89,7 @@ function CartDrawer({ open, onClose, items, onUpdateQty, onRemove, onClearAll }:
           <div style={{ padding:"16px 24px", borderTop:`1px solid ${BORDER}` }}>
             <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:14 }}>
               <span style={{ color:TEXT2, fontSize:13 }}>Gesamt</span>
-              <span style={{ color:TEXT, fontSize:20, fontWeight:800, fontFamily:"'DM Sans',sans-serif" }}>€{total.toFixed(2)}</span>
+              <span style={{ color:TEXT, fontSize:20, fontWeight:800, fontFamily:"'Inter',sans-serif" }}>€{total.toFixed(2)}</span>
             </div>
             <a href="/checkout" style={{ display:"block", textAlign:"center", background:ORANGE, color:"#fff", fontWeight:700, padding:"14px", borderRadius:12, textDecoration:"none", fontSize:14 }}>Zur Kasse →</a>
             <button onClick={onClearAll} style={{ width:"100%", marginTop:8, background:"none", border:"none", color:TEXT3, fontSize:12, cursor:"pointer", padding:"6px" }}>Warenkorb leeren</button>
@@ -122,8 +122,8 @@ function ProductModal({ product, reviews, onClose, onAddToCart, inWishlist, onTo
         </div>
         <div style={{ padding:"24px 24px 32px" }}>
           <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:8 }}>
-            <h2 style={{ fontFamily:"'DM Sans',sans-serif", color:TEXT, fontWeight:800, fontSize:22, letterSpacing:"-0.5px", flex:1, marginRight:12 }}>{product.name}</h2>
-            <span style={{ fontFamily:"'DM Sans',sans-serif", color:ORANGE, fontSize:24, fontWeight:800, flexShrink:0 }}>€{product.price}</span>
+            <h2 style={{ fontFamily:"'Inter',sans-serif", color:TEXT, fontWeight:800, fontSize:22, letterSpacing:"-0.5px", flex:1, marginRight:12 }}>{product.name}</h2>
+            <span style={{ fontFamily:"'Inter',sans-serif", color:ORANGE, fontSize:24, fontWeight:800, flexShrink:0 }}>€{product.price}</span>
           </div>
           {(product as any).shipping_cost > 0 && (
             <p style={{ fontSize:12, color:TEXT3, marginTop:-4, marginBottom:12 }}>+ €{(product as any).shipping_cost} Versand (einmalig, unabhängig von der Menge)</p>
@@ -143,10 +143,10 @@ function ProductModal({ product, reviews, onClose, onAddToCart, inWishlist, onTo
           )}
           <button onClick={() => { if ((product.stock ?? 0) > 0) { onAddToCart(product); onClose(); } }}
             disabled={(product.stock ?? 0) <= 0}
-            style={{ width:"100%", background:(product.stock ?? 0) <= 0 ? BORDER : ORANGE, color:(product.stock ?? 0) <= 0 ? TEXT3 : "#fff", fontWeight:700, padding:"16px", borderRadius:14, border:"none", cursor:(product.stock ?? 0) <= 0 ? "not-allowed" : "pointer", fontSize:15, fontFamily:"'DM Sans',sans-serif", marginBottom:10 }}>
+            style={{ width:"100%", background:(product.stock ?? 0) <= 0 ? BORDER : ORANGE, color:(product.stock ?? 0) <= 0 ? TEXT3 : "#fff", fontWeight:700, padding:"16px", borderRadius:14, border:"none", cursor:(product.stock ?? 0) <= 0 ? "not-allowed" : "pointer", fontSize:15, fontFamily:"'Inter',sans-serif", marginBottom:10 }}>
             {(product.stock ?? 0) <= 0 ? "Ausverkauft" : "In den Warenkorb"}
           </button>
-          <button onClick={() => { onNegotiate(product); onClose(); }} style={{ width:"100%", background:"transparent", color:ORANGE, fontWeight:700, padding:"14px", borderRadius:14, border:`2px solid ${ORANGE}`, cursor:"pointer", fontSize:14, fontFamily:"'DM Sans',sans-serif", display:"flex", alignItems:"center", justifyContent:"center", gap:8 }}>
+          <button onClick={() => { onNegotiate(product); onClose(); }} style={{ width:"100%", background:"transparent", color:ORANGE, fontWeight:700, padding:"14px", borderRadius:14, border:`2px solid ${ORANGE}`, cursor:"pointer", fontSize:14, fontFamily:"'Inter',sans-serif", display:"flex", alignItems:"center", justifyContent:"center", gap:8 }}>
             🤝 Preis verhandeln
           </button>
         </div>
@@ -194,11 +194,11 @@ function OfferModal({ product, onClose, onSent }: { product: Product; onClose: (
   return (
     <>
       <div onClick={onClose} style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.55)", zIndex:200, backdropFilter:"blur(6px)" }} />
-      <div style={{ position:"fixed", top:"50%", left:"50%", transform:"translate(-50%,-50%)", background:SURFACE, border:`1px solid ${BORDER}`, borderRadius:20, padding:28, width:360, zIndex:201, fontFamily:"'DM Sans',sans-serif" }}>
+      <div style={{ position:"fixed", top:"50%", left:"50%", transform:"translate(-50%,-50%)", background:SURFACE, border:`1px solid ${BORDER}`, borderRadius:20, padding:28, width:360, zIndex:201, fontFamily:"'Inter',sans-serif" }}>
 
         <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:20 }}>
           <div>
-            <p style={{ fontFamily:"'DM Sans',sans-serif", fontWeight:800, fontSize:17, color:TEXT }}>Preis verhandeln</p>
+            <p style={{ fontFamily:"'Inter',sans-serif", fontWeight:800, fontSize:17, color:TEXT }}>Preis verhandeln</p>
             <p style={{ fontSize:12, color:TEXT3, marginTop:2 }}>{product.name}</p>
           </div>
           <button onClick={onClose} style={{ width:30, height:30, background:BG, border:`1px solid ${BORDER}`, borderRadius:8, cursor:"pointer", color:TEXT2, fontSize:14 }}>✕</button>
@@ -206,7 +206,7 @@ function OfferModal({ product, onClose, onSent }: { product: Product; onClose: (
 
         <div style={{ background:`${ORANGE}12`, border:`1px solid ${ORANGE}30`, borderRadius:10, padding:"8px 12px", marginBottom:18, display:"flex", justifyContent:"space-between", alignItems:"center" }}>
           <span style={{ fontSize:12, color:TEXT2 }}>Listenpreis</span>
-          <span style={{ fontFamily:"'DM Sans',sans-serif", fontWeight:800, fontSize:16, color:ORANGE }}>€{product.price}<span style={{ fontSize:11, fontWeight:500, color:TEXT3 }}>/Stück</span></span>
+          <span style={{ fontFamily:"'Inter',sans-serif", fontWeight:800, fontSize:16, color:ORANGE }}>€{product.price}<span style={{ fontSize:11, fontWeight:500, color:TEXT3 }}>/Stück</span></span>
         </div>
         {(product as any).shipping_cost > 0 && (
           <p style={{ fontSize:11, color:TEXT3, marginTop:-12, marginBottom:16 }}>+ €{(product as any).shipping_cost} Versand (einmalig)</p>
@@ -244,7 +244,7 @@ function OfferModal({ product, onClose, onSent }: { product: Product; onClose: (
 
         {err && <p style={{ color:"#ef4444", fontSize:12, marginBottom:12 }}>{err}</p>}
 
-        <button onClick={send} disabled={sending} style={{ width:"100%", background:sending ? TEXT3 : ORANGE, color:"#fff", border:"none", borderRadius:12, padding:"14px", fontWeight:700, fontSize:14, cursor:sending ? "not-allowed" : "pointer", fontFamily:"'DM Sans',sans-serif" }}>
+        <button onClick={send} disabled={sending} style={{ width:"100%", background:sending ? TEXT3 : ORANGE, color:"#fff", border:"none", borderRadius:12, padding:"14px", fontWeight:700, fontSize:14, cursor:sending ? "not-allowed" : "pointer", fontFamily:"'Inter',sans-serif" }}>
           {sending ? "Wird gesendet..." : "🤝 Angebot absenden"}
         </button>
         <p style={{ fontSize:11, color:TEXT3, textAlign:"center", marginTop:10 }}>
@@ -379,9 +379,9 @@ export default function MarketplacePage({ initialProducts = [], initialSuppliers
     .sort((a,b) => sortBy==="price-asc"?a.price-b.price:sortBy==="price-desc"?b.price-a.price:sortBy==="rating"?getAvg(b.id)-getAvg(a.id):0);
 
   return (
-    <main style={{ minHeight:"100vh", background:BG, color:TEXT, fontFamily:"'DM Sans','Helvetica Neue',system-ui,sans-serif", paddingBottom:80 }}>
+    <main style={{ minHeight:"100vh", background:BG, color:TEXT, fontFamily:"'Inter','Helvetica Neue',system-ui,sans-serif", paddingBottom:80 }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap');
         @keyframes fadeUp { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
         .pcard { animation: fadeUp 0.35s ease both; transition: transform 0.2s, box-shadow 0.2s; }
         .pcard:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba(0,0,0,0.1) !important; }
@@ -406,7 +406,7 @@ export default function MarketplacePage({ initialProducts = [], initialSuppliers
         <div style={{ maxWidth:1100, margin:"0 auto", display:"flex", alignItems:"center", justifyContent:"space-between", gap:14 }}>
           <div style={{ display:"flex", alignItems:"center", gap:8 }}>
             <img src="/flowio-icon.png" alt="Flowio" style={{ width: 32, height: 32, borderRadius: 8, objectFit: "cover" }} />
-            <span style={{ fontFamily:"'Syne',sans-serif", fontWeight:800, fontSize:16, color:TEXT, letterSpacing:"-0.3px" }}>Flowio</span>
+            <span style={{ fontFamily:"'Hanken Grotesk',sans-serif", fontWeight:800, fontSize:16, color:TEXT, letterSpacing:"-0.3px" }}>Flowio</span>
           </div>
           <div className="kf-search-bar" style={{ flex:1, maxWidth:380, position:"relative" }}>
             <svg style={{ position:"absolute", left:12, top:"50%", transform:"translateY(-50%)" }} width={14} height={14} fill="none" stroke={TEXT3} strokeWidth="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
@@ -428,7 +428,7 @@ export default function MarketplacePage({ initialProducts = [], initialSuppliers
               ❤️
               {wishlist.length > 0 && <span style={{ background:ORANGE, color:"#fff", fontSize:10, fontWeight:800, padding:"1px 6px", borderRadius:100 }}>{wishlist.length}</span>}
             </a>
-            <button onClick={() => setCartOpen(true)} style={{ position:"relative", display:"flex", alignItems:"center", gap:7, background:ORANGE, border:"none", borderRadius:10, padding:"9px 16px", color:"#fff", fontWeight:700, fontSize:13, cursor:"pointer", fontFamily:"'DM Sans',sans-serif" }}>
+            <button onClick={() => setCartOpen(true)} style={{ position:"relative", display:"flex", alignItems:"center", gap:7, background:ORANGE, border:"none", borderRadius:10, padding:"9px 16px", color:"#fff", fontWeight:700, fontSize:13, cursor:"pointer", fontFamily:"'Inter',sans-serif" }}>
               🛒 <span className="kf-cart-label">Warenkorb</span>
               {cartCount > 0 && <span style={{ background:"rgba(0,0,0,0.2)", fontSize:11, fontWeight:800, padding:"1px 6px", borderRadius:100 }}>{cartCount}</span>}
             </button>
@@ -444,7 +444,7 @@ export default function MarketplacePage({ initialProducts = [], initialSuppliers
           <div style={{ position:"absolute", bottom:-60, right:80, width:150, height:150, background:"rgba(255,255,255,0.05)", borderRadius:"50%" }} />
           <div>
             <p style={{ color:"rgba(255,255,255,0.7)", fontSize:12, fontWeight:600, letterSpacing:"2px", textTransform:"uppercase", marginBottom:10 }}>Frankfurt · B2B Marktplatz</p>
-            <h1 style={{ fontFamily:"'Syne',sans-serif", fontSize:"clamp(24px,3.5vw,40px)", fontWeight:800, color:"#fff", lineHeight:1.1, letterSpacing:"-1px", marginBottom:12 }}>
+            <h1 style={{ fontFamily:"'Hanken Grotesk',sans-serif", fontSize:"clamp(24px,3.5vw,40px)", fontWeight:800, color:"#fff", lineHeight:1.1, letterSpacing:"-1px", marginBottom:12 }}>
               Direkt vom<br/>Hersteller zu dir.
             </h1>
             <p style={{ color:"rgba(255,255,255,0.7)", fontSize:14, marginBottom:20 }}>Keine Mindestmengen. Keine Zwischenhändler.</p>
@@ -453,7 +453,7 @@ export default function MarketplacePage({ initialProducts = [], initialSuppliers
           <div style={{ display:"flex", gap:32, flexShrink:0, position:"relative" }}>
             {[{v:"100%",l:"Direktpreise"},{v:"0€",l:"Mindestbestellung"},{v:"24h",l:"Lieferung"}].map(({ v, l }) => (
               <div key={l} style={{ textAlign:"center" }}>
-                <p style={{ fontFamily:"'Syne',sans-serif", fontSize:26, fontWeight:800, color:"#fff", letterSpacing:"-0.5px" }}>{v}</p>
+                <p style={{ fontFamily:"'Hanken Grotesk',sans-serif", fontSize:26, fontWeight:800, color:"#fff", letterSpacing:"-0.5px" }}>{v}</p>
                 <p style={{ fontSize:11, color:"rgba(255,255,255,0.6)", marginTop:3 }}>{l}</p>
               </div>
             ))}
@@ -465,7 +465,7 @@ export default function MarketplacePage({ initialProducts = [], initialSuppliers
           <div style={{ marginBottom:24 }}>
             <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:14 }}>
               <div>
-                <h2 style={{ fontFamily:"'Syne',sans-serif", fontWeight:800, fontSize:17, color:TEXT }}>Top Lieferanten</h2>
+                <h2 style={{ fontFamily:"'Hanken Grotesk',sans-serif", fontWeight:800, fontSize:17, color:TEXT }}>Top Lieferanten</h2>
                 <p style={{ fontSize:12, color:TEXT3, marginTop:2 }}>Direkt von lokalen Herstellern bestellen</p>
               </div>
             </div>
@@ -475,7 +475,7 @@ export default function MarketplacePage({ initialProducts = [], initialSuppliers
                 return (
                   <a key={supplier.id} href={`/supplier/${supplier.id}`}
                     style={{ flexShrink:0, display:"flex", flexDirection:"column", alignItems:"center", gap:10, background:SURFACE, border:`1.5px solid ${BORDER}`, borderRadius:18, padding:"18px 20px", minWidth:130, textDecoration:"none", transition:"all 0.2s", cursor:"pointer" }}
-                    onMouseEnter={e => { e.currentTarget.style.borderColor = ORANGE; e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = `0 8px 24px rgba(37,99,235,0.12)`; }}
+                    onMouseEnter={e => { e.currentTarget.style.borderColor = ORANGE; e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = `0 8px 24px rgba(0,62,199,0.12)`; }}
                     onMouseLeave={e => { e.currentTarget.style.borderColor = BORDER; e.currentTarget.style.transform = ""; e.currentTarget.style.boxShadow = ""; }}>
                     <div style={{ width:60, height:60, borderRadius:16, overflow:"hidden", background:BG, flexShrink:0, display:"flex", alignItems:"center", justifyContent:"center", border:`1px solid ${BORDER}` }}>
                       {supplier.logo_url ? (
@@ -521,7 +521,7 @@ export default function MarketplacePage({ initialProducts = [], initialSuppliers
         {/* ── DAILY DEALS ── */}
         {!hasActiveFilter && dailyDeals && (dailyDeals.deals.length > 0 || dailyDeals.freeShipping.length > 0 || dailyDeals.bestsellers.length > 0) && (
           <div style={{ marginBottom:28 }}>
-            <h2 style={{ fontFamily:"'Syne',sans-serif", fontWeight:800, fontSize:19, color:TEXT, marginBottom:16 }}>🎯 Angebote heute</h2>
+            <h2 style={{ fontFamily:"'Hanken Grotesk',sans-serif", fontWeight:800, fontSize:19, color:TEXT, marginBottom:16 }}>🎯 Angebote heute</h2>
 
             {dailyDeals.endingSoon.length > 0 && (
               <div style={{ marginBottom:16, background:"#fef2f2", border:"1px solid #fca5a5", borderRadius:14, padding:16 }}>
@@ -580,7 +580,7 @@ export default function MarketplacePage({ initialProducts = [], initialSuppliers
           <div style={{ marginBottom:28, background:`${ORANGE}0d`, border:`1px solid ${ORANGE}30`, borderRadius:16, padding:"18px 20px" }}>
             <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:14 }}>
               <span style={{ fontSize:18 }}>🔄</span>
-              <h2 style={{ fontFamily:"'Syne',sans-serif", fontWeight:800, fontSize:16, color:TEXT }}>Zeit zum Nachbestellen?</h2>
+              <h2 style={{ fontFamily:"'Hanken Grotesk',sans-serif", fontWeight:800, fontSize:16, color:TEXT }}>Zeit zum Nachbestellen?</h2>
               <span style={{ fontSize:11, color:TEXT3 }}>· basierend auf deinen bisherigen Bestellungen</span>
             </div>
             <div style={{ display:"flex", gap:12, overflowX:"auto", paddingBottom:4 }}>
@@ -607,7 +607,7 @@ export default function MarketplacePage({ initialProducts = [], initialSuppliers
         {!loading && products.length > 0 && !hasActiveFilter && (
           <div style={{ marginBottom:28 }}>
             <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:14 }}>
-              <h2 style={{ fontFamily:"'Syne',sans-serif", fontWeight:800, fontSize:17, color:TEXT }}>Featured Products</h2>
+              <h2 style={{ fontFamily:"'Hanken Grotesk',sans-serif", fontWeight:800, fontSize:17, color:TEXT }}>Featured Products</h2>
             </div>
             <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(300px,1fr))", gap:14 }}>
               {products.slice(0,3).map(p => {
@@ -626,7 +626,7 @@ export default function MarketplacePage({ initialProducts = [], initialSuppliers
                         {fIsNew && <span style={{ background:"#16a34a", color:"#fff", fontSize:9, fontWeight:800, padding:"3px 8px", borderRadius:100 }}>✦ NEU</span>}
                       </div>
                       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center" }}>
-                        <h3 style={{ color:"#fff", fontFamily:"'Syne',sans-serif", fontWeight:700, fontSize:16 }}>{p.name}</h3>
+                        <h3 style={{ color:"#fff", fontFamily:"'Hanken Grotesk',sans-serif", fontWeight:700, fontSize:16 }}>{p.name}</h3>
                         <button onClick={e => { e.stopPropagation(); if ((p.stock ?? 0) > 0) addToCart(p); }}
                           disabled={(p.stock ?? 0) <= 0}
                           style={{ background:(p.stock ?? 0) <= 0 ? "rgba(255,255,255,0.2)" : ORANGE, color:"#fff", border:"none", fontSize:11, fontWeight:700, padding:"7px 13px", borderRadius:8, cursor:(p.stock ?? 0) <= 0 ? "not-allowed" : "pointer" }}>
@@ -670,7 +670,7 @@ export default function MarketplacePage({ initialProducts = [], initialSuppliers
         {/* ── ALL PRODUCTS ── */}
         <div>
           <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:16 }}>
-            <h2 style={{ fontFamily:"'Syne',sans-serif", fontWeight:800, fontSize:17, color:TEXT }}>
+            <h2 style={{ fontFamily:"'Hanken Grotesk',sans-serif", fontWeight:800, fontSize:17, color:TEXT }}>
               {category === "Alle" ? "Alle Produkte" : `${(CATS[category]||CATS.default).emoji} ${category}`}
               {hasActiveFilter && <span style={{ fontSize:13, fontWeight:500, color:TEXT3, marginLeft:8 }}>· gefiltert</span>}
             </h2>
@@ -727,7 +727,7 @@ export default function MarketplacePage({ initialProducts = [], initialSuppliers
                         </div>
                       )}
                       <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:8 }}>
-                        <span style={{ fontFamily:"'DM Sans',sans-serif", color:TEXT, fontSize:18, fontWeight:800 }}>€{product.price}</span>
+                        <span style={{ fontFamily:"'Inter',sans-serif", color:TEXT, fontSize:18, fontWeight:800 }}>€{product.price}</span>
                         <button onClick={e => { e.stopPropagation(); if ((product.stock ?? 0) > 0) addToCart(product); }}
                           disabled={(product.stock ?? 0) <= 0}
                           style={{ background:(product.stock ?? 0) <= 0 ? BORDER : ORANGE, color:(product.stock ?? 0) <= 0 ? TEXT3 : "#fff", border:"none", fontSize:11, fontWeight:700, padding:"7px 12px", borderRadius:8, cursor:(product.stock ?? 0) <= 0 ? "not-allowed" : "pointer" }}>
@@ -781,7 +781,7 @@ export default function MarketplacePage({ initialProducts = [], initialSuppliers
         {/* ── BOTTOM CTA ── */}
         {!loading && (
           <div style={{ margin:"40px 0", background:SURFACE, border:`1px solid ${BORDER}`, borderRadius:20, padding:"36px 32px", textAlign:"center" }}>
-            <h3 style={{ fontFamily:"'Syne',sans-serif", color:TEXT, fontSize:22, fontWeight:800, marginBottom:8 }}>Du bist Marke oder Hersteller?</h3>
+            <h3 style={{ fontFamily:"'Hanken Grotesk',sans-serif", color:TEXT, fontSize:22, fontWeight:800, marginBottom:8 }}>Du bist Marke oder Hersteller?</h3>
             <p style={{ color:TEXT2, fontSize:14, marginBottom:22 }}>Liste kostenlos und erreiche hunderte Kioske in Deutschland.</p>
             <a href="/signup/supplier" style={{ display:"inline-block", background:ORANGE, color:"#fff", fontWeight:700, padding:"12px 28px", borderRadius:10, textDecoration:"none", fontSize:14 }}>Jetzt listen →</a>
           </div>

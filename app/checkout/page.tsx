@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { Breadcrumb } from "@/components/ui/step-breadcrumb";
@@ -9,7 +9,7 @@ const BORDER  = "var(--kf-border)";
 const TEXT    = "var(--kf-text)";
 const TEXT2   = "var(--kf-text2)";
 const TEXT3   = "var(--kf-text3)";
-const ORANGE  = "#2563EB";
+const ORANGE  = "#003ec7";
 
 interface Product  { name: string; price: number; shipping_cost?: number; }
 interface CartItem { id: string; quantity: number; products: Product; }
@@ -157,7 +157,7 @@ export default function CheckoutPage() {
   const bl = (e: React.FocusEvent<HTMLInputElement | HTMLSelectElement>) => e.currentTarget.style.borderColor = BORDER;
 
   if (loading) return (
-    <main style={{ minHeight: "100vh", background: BG, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'DM Sans',system-ui,sans-serif" }}>
+    <main style={{ minHeight: "100vh", background: BG, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Inter',system-ui,sans-serif" }}>
       <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
       <div style={{ textAlign: "center" }}>
         <div style={{ width: 36, height: 36, border: `3px solid ${BORDER}`, borderTopColor: ORANGE, borderRadius: "50%", animation: "spin 0.8s linear infinite", margin: "0 auto 14px" }} />
@@ -167,14 +167,14 @@ export default function CheckoutPage() {
   );
 
   return (
-    <main style={{ minHeight: "100vh", background: BG, fontFamily: "'DM Sans','Helvetica Neue',system-ui,sans-serif", color: TEXT, paddingBottom: 60 }}>
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600;700&display=swap'); @keyframes spin{to{transform:rotate(360deg)}} *{box-sizing:border-box}`}</style>
+    <main style={{ minHeight: "100vh", background: BG, fontFamily: "'Inter','Helvetica Neue',system-ui,sans-serif", color: TEXT, paddingBottom: 60 }}>
+      <style>{`@import url('https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap'); @keyframes spin{to{transform:rotate(360deg)}} *{box-sizing:border-box}`}</style>
 
       {/* Nav */}
       <nav style={{ background: SURFACE, borderBottom: `1px solid ${BORDER}`, padding: "0 24px", height: 60, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <img src="/flowio-icon.png" alt="Flowio" style={{ width: 30, height: 30, borderRadius: 7, objectFit: "cover" }} />
-          <span style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 14, color: TEXT, letterSpacing: "-0.3px" }}>Flowio</span>
+          <span style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: 14, color: TEXT, letterSpacing: "-0.3px" }}>Flowio</span>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 6, color: TEXT3, fontSize: 12 }}>
           <span style={{ width: 16, height: 16, background: "#dcfce7", borderRadius: "50%", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: 9, color: "#16a34a" }}>✓</span>
@@ -197,7 +197,7 @@ export default function CheckoutPage() {
       <div style={{ maxWidth: 640, margin: "0 auto", padding: "32px 24px" }}>
         <div style={{ marginBottom: 28 }}>
           <p style={{ fontSize: 11, fontWeight: 700, color: TEXT3, letterSpacing: "2.5px", textTransform: "uppercase", marginBottom: 8 }}>Kasse</p>
-          <h1 style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 26, color: TEXT, letterSpacing: "-0.8px" }}>Bestellung abschließen</h1>
+          <h1 style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: 26, color: TEXT, letterSpacing: "-0.8px" }}>Bestellung abschließen</h1>
         </div>
 
         {error && (
@@ -238,7 +238,7 @@ export default function CheckoutPage() {
               <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20 }}>
                 <div style={{ width: 32, height: 32, borderRadius: 8, background: `${ORANGE}15`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16 }}>📦</div>
                 <div>
-                  <p style={{ fontFamily: "'DM Sans',sans-serif", fontWeight: 700, fontSize: 14, color: TEXT }}>Lieferadresse</p>
+                  <p style={{ fontFamily: "'Inter',sans-serif", fontWeight: 700, fontSize: 14, color: TEXT }}>Lieferadresse</p>
                   <p style={{ fontSize: 12, color: TEXT3, marginTop: 1 }}>Wohin sollen wir liefern?</p>
                 </div>
               </div>
@@ -333,8 +333,8 @@ export default function CheckoutPage() {
                 </div>
               ))}
               <div style={{ borderTop: `1px solid ${BORDER}`, paddingTop: 14, marginTop: 4, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <span style={{ fontFamily: "'DM Sans',sans-serif", fontWeight: 700, fontSize: 15, color: TEXT }}>Zwischensumme (vorläufig)</span>
-                <span style={{ fontFamily: "'DM Sans',sans-serif", fontWeight: 800, fontSize: 24, color: TEXT, letterSpacing: "-0.5px" }}>≈ €{productSubtotal.toFixed(2)}</span>
+                <span style={{ fontFamily: "'Inter',sans-serif", fontWeight: 700, fontSize: 15, color: TEXT }}>Zwischensumme (vorläufig)</span>
+                <span style={{ fontFamily: "'Inter',sans-serif", fontWeight: 800, fontSize: 24, color: TEXT, letterSpacing: "-0.5px" }}>≈ €{productSubtotal.toFixed(2)}</span>
               </div>
               <p style={{ fontSize: 11, color: TEXT3, marginTop: 8, textAlign: "right" }}>Endpreis inkl. Versand nach Lieferantenbestätigung.</p>
             </div>
@@ -351,7 +351,7 @@ export default function CheckoutPage() {
 
             {/* CTA */}
             <button onClick={handlePayment} disabled={paying}
-              style={{ width: "100%", background: paying ? `rgba(37,99,235,0.55)` : ORANGE, color: "#fff", border: "none", borderRadius: 12, padding: "16px", fontFamily: "'DM Sans',sans-serif", fontWeight: 700, fontSize: 15, cursor: paying ? "not-allowed" : "pointer", transition: "opacity 0.2s", marginBottom: 12, boxShadow: `0 4px 16px rgba(37,99,235,0.25)` }}>
+              style={{ width: "100%", background: paying ? `rgba(0,62,199,0.55)` : ORANGE, color: "#fff", border: "none", borderRadius: 12, padding: "16px", fontFamily: "'Inter',sans-serif", fontWeight: 700, fontSize: 15, cursor: paying ? "not-allowed" : "pointer", transition: "opacity 0.2s", marginBottom: 12, boxShadow: `0 4px 16px rgba(0,62,199,0.25)` }}>
               {paying ? "Wird gesendet..." : "Bestellung senden →"}
             </button>
 

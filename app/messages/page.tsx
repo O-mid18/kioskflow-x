@@ -9,7 +9,7 @@ const BORDER = "var(--kf-border)";
 const TEXT = "var(--kf-text)";
 const TEXT2 = "var(--kf-text2)";
 const TEXT3 = "var(--kf-text3)";
-const ORANGE = "#2563EB";
+const ORANGE = "#003ec7";
 
 type Conv = { id: string; supplier_id: string; supplier_name: string; last_message?: string; };
 type Msg  = { id: string; sender_id: string; content: string; created_at: string; };
@@ -108,16 +108,16 @@ export default function BuyerMessagesPage() {
   );
 
   return (
-    <main style={{ height: "100vh", background: BG, fontFamily: "'DM Sans',system-ui,sans-serif", display: "flex", flexDirection: "column", overflow: "hidden" }}>
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600;700&display=swap'); @keyframes spin{to{transform:rotate(360deg)}}`}</style>
+    <main style={{ height: "100vh", background: BG, fontFamily: "'Inter',system-ui,sans-serif", display: "flex", flexDirection: "column", overflow: "hidden" }}>
+      <style>{`@import url('https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap'); @keyframes spin{to{transform:rotate(360deg)}}`}</style>
 
       {/* Nav */}
       <nav style={{ background: SURFACE, borderBottom: `1px solid ${BORDER}`, padding: "0 20px", height: 60, display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0, zIndex: 10 }}>
         <a href="/marketplace" style={{ display: "flex", alignItems: "center", gap: 8, textDecoration: "none" }}>
           <img src="/flowio-icon.png" alt="Flowio" style={{ width: 30, height: 30, borderRadius: 7, objectFit: "cover" }} />
-          <span style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 14, color: TEXT, letterSpacing: "-0.3px" }}>Flowio</span>
+          <span style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: 14, color: TEXT, letterSpacing: "-0.3px" }}>Flowio</span>
         </a>
-        <p style={{ fontFamily: "'Syne',sans-serif", fontWeight: 700, fontSize: 15, color: TEXT }}>Nachrichten</p>
+        <p style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 700, fontSize: 15, color: TEXT }}>Nachrichten</p>
         {isAdmin
           ? <a href="/owner/dashboard" title="Owner-Panel" style={{ background:`${ORANGE}15`, color:ORANGE, fontWeight:700, fontSize:13, textDecoration:"none", padding:"6px 12px", borderRadius:8 }}>🏛️</a>
           : <div style={{ width: 80 }} />}
@@ -142,7 +142,7 @@ export default function BuyerMessagesPage() {
             ) : convs.map(c => (
               <div key={c.id} onClick={() => openConv(c)} style={{ padding: "14px 16px", borderBottom: `1px solid ${BORDER}`, cursor: "pointer", background: active?.id === c.id ? `${ORANGE}10` : "transparent", borderLeft: `3px solid ${active?.id === c.id ? ORANGE : "transparent"}`, transition: "background 0.15s" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                  <div style={{ width: 38, height: 38, background: `${ORANGE}20`, borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 15, color: ORANGE, flexShrink: 0 }}>
+                  <div style={{ width: 38, height: 38, background: `${ORANGE}20`, borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: 15, color: ORANGE, flexShrink: 0 }}>
                     {c.supplier_name[0]?.toUpperCase()}
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
@@ -160,7 +160,7 @@ export default function BuyerMessagesPage() {
           {active ? (
             <>
               <div style={{ padding: "0 20px", height: 56, borderBottom: `1px solid ${BORDER}`, display: "flex", alignItems: "center", gap: 12, flexShrink: 0 }}>
-                <div style={{ width: 36, height: 36, background: `${ORANGE}20`, borderRadius: 9, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 14, color: ORANGE, flexShrink: 0 }}>
+                <div style={{ width: 36, height: 36, background: `${ORANGE}20`, borderRadius: 9, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: 14, color: ORANGE, flexShrink: 0 }}>
                   {active.supplier_name[0]?.toUpperCase()}
                 </div>
                 <div>
@@ -197,7 +197,7 @@ export default function BuyerMessagesPage() {
           ) : (
             <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 12 }}>
               <p style={{ fontSize: 52 }}>💬</p>
-              <p style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 20, color: TEXT }}>Nachrichten</p>
+              <p style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: 20, color: TEXT }}>Nachrichten</p>
               <p style={{ color: TEXT2, fontSize: 14 }}>Wähle ein Gespräch oder starte ein neues.</p>
             </div>
           )}
@@ -209,14 +209,14 @@ export default function BuyerMessagesPage() {
         <>
           <div onClick={() => setShowNew(false)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 50 }} />
           <div style={{ position: "fixed", top: "50%", left: "50%", transform: "translate(-50%,-50%)", background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 16, padding: 24, width: 340, maxHeight: "70vh", overflowY: "auto", zIndex: 51 }}>
-            <p style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 16, color: TEXT, marginBottom: 16 }}>Lieferant auswählen</p>
+            <p style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: 16, color: TEXT, marginBottom: 16 }}>Lieferant auswählen</p>
             {suppliers.length === 0 ? (
               <p style={{ color: TEXT3, fontSize: 13 }}>Keine Lieferanten gefunden</p>
             ) : suppliers.map(s => (
               <div key={s.id} onClick={() => startConv(s.id, s.name)} style={{ padding: "12px 14px", borderRadius: 10, cursor: "pointer", display: "flex", alignItems: "center", gap: 10, marginBottom: 6, background: BG, border: `1px solid ${BORDER}` }}
                 onMouseEnter={e => e.currentTarget.style.borderColor = ORANGE}
                 onMouseLeave={e => e.currentTarget.style.borderColor = BORDER}>
-                <div style={{ width: 36, height: 36, background: `${ORANGE}20`, borderRadius: 9, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 14, color: ORANGE }}>
+                <div style={{ width: 36, height: 36, background: `${ORANGE}20`, borderRadius: 9, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: 14, color: ORANGE }}>
                   {s.name[0]?.toUpperCase()}
                 </div>
                 <p style={{ fontSize: 14, fontWeight: 600, color: TEXT }}>{s.name}</p>

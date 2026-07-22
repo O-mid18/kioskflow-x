@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
@@ -7,7 +7,7 @@ const BG     = "var(--kf-bg)";
 const BORDER = "var(--kf-border)";
 const TEXT   = "var(--kf-text)";
 const TEXT3  = "var(--kf-text3)";
-const ORANGE = "#2563EB";
+const ORANGE = "#003ec7";
 
 const LS_KEY = "kf_pending_signup";
 
@@ -95,7 +95,7 @@ export default function AuthCallbackPage() {
   }, []);
 
   return (
-    <main style={{ minHeight: "100vh", background: BG, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'DM Sans',system-ui,sans-serif" }}>
+    <main style={{ minHeight: "100vh", background: BG, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Inter',system-ui,sans-serif" }}>
       <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       {status === "loading" ? (
         <div style={{ textAlign: "center" }}>

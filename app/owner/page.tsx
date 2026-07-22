@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 
@@ -8,7 +8,7 @@ const BORDER = "var(--kf-border)";
 const TEXT = "var(--kf-text)";
 const TEXT2 = "var(--kf-text2)";
 const TEXT3 = "var(--kf-text3)";
-const ORANGE = "#2563EB";
+const ORANGE = "#003ec7";
 
 export default function OwnerLogin() {
   const [password, setPassword] = useState("");
@@ -35,18 +35,18 @@ export default function OwnerLogin() {
   };
 
   return (
-    <main style={{ minHeight: "100vh", background: BG, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'DM Sans','Helvetica Neue',system-ui,sans-serif" }}>
+    <main style={{ minHeight: "100vh", background: BG, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Inter','Helvetica Neue',system-ui,sans-serif" }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap');
         @keyframes spin { to { transform: rotate(360deg); } }
-        input:focus { outline: none; border-color: ${ORANGE} !important; box-shadow: 0 0 0 3px rgba(37,99,235,0.12) !important; }
+        input:focus { outline: none; border-color: ${ORANGE} !important; box-shadow: 0 0 0 3px rgba(0,62,199,0.12) !important; }
       `}</style>
 
       <div style={{ width: "100%", maxWidth: 400, padding: "0 24px" }}>
         {/* Logo */}
         <div style={{ textAlign: "center", marginBottom: 36 }}>
           <img src="/flowio-icon.png" alt="Flowio" style={{ width: 56, height: 56, borderRadius: 16, objectFit: "cover" }} />
-          <h1 style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 24, color: TEXT, letterSpacing: "-0.5px" }}>Owner-Panel</h1>
+          <h1 style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: 24, color: TEXT, letterSpacing: "-0.5px" }}>Owner-Panel</h1>
           <p style={{ color: TEXT3, fontSize: 13, marginTop: 6 }}>Nur für den Eigentümer · Passwort erforderlich</p>
         </div>
 
@@ -78,7 +78,7 @@ export default function OwnerLogin() {
             </div>
 
             <button type="submit" disabled={loading || !password}
-              style={{ background: loading || !password ? "rgba(37,99,235,0.45)" : ORANGE, color: "#fff", border: "none", borderRadius: 10, padding: "13px", fontSize: 14, fontWeight: 700, cursor: loading || !password ? "not-allowed" : "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, transition: "background 0.2s", boxShadow: "0 4px 14px rgba(37,99,235,0.25)" }}>
+              style={{ background: loading || !password ? "rgba(0,62,199,0.45)" : ORANGE, color: "#fff", border: "none", borderRadius: 10, padding: "13px", fontSize: 14, fontWeight: 700, cursor: loading || !password ? "not-allowed" : "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, transition: "background 0.2s", boxShadow: "0 4px 14px rgba(0,62,199,0.25)" }}>
               {loading && <div style={{ width: 14, height: 14, border: "2px solid rgba(255,255,255,0.4)", borderTopColor: "#fff", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />}
               {loading ? "Wird geprüft..." : "Einloggen →"}
             </button>

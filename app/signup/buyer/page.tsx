@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useRef } from "react";
 import { supabase } from "@/lib/supabase";
@@ -11,7 +11,7 @@ const BORDER = "var(--kf-border)";
 const TEXT = "var(--kf-text)";
 const TEXT2 = "var(--kf-text2)";
 const TEXT3 = "var(--kf-text3)";
-const ORANGE = "#2563EB";
+const ORANGE = "#003ec7";
 
 function inputStyle(extra?: object) {
   return { width: "100%", background: SURFACE, border: `1.5px solid ${BORDER}`, borderRadius: 10, padding: "12px 15px", color: TEXT, fontSize: 14, boxSizing: "border-box" as const, fontFamily: "inherit", ...extra };
@@ -29,7 +29,7 @@ export default function BuyerSignupPage() {
 
   const set = (key: string) => (e: React.ChangeEvent<HTMLInputElement>) => setFields(f => ({ ...f, [key]: e.target.value }));
 
-  const focus = (e: React.FocusEvent<HTMLInputElement>) => { e.currentTarget.style.borderColor = ORANGE; e.currentTarget.style.boxShadow = "0 0 0 3px rgba(37,99,235,0.1)"; };
+  const focus = (e: React.FocusEvent<HTMLInputElement>) => { e.currentTarget.style.borderColor = ORANGE; e.currentTarget.style.boxShadow = "0 0 0 3px rgba(0,62,199,0.1)"; };
   const blur  = (e: React.FocusEvent<HTMLInputElement>) => { e.currentTarget.style.borderColor = BORDER; e.currentTarget.style.boxShadow = "none"; };
 
   const handleSignup = async () => {
@@ -116,12 +116,12 @@ export default function BuyerSignupPage() {
 
   if (otpStep) {
     return (
-      <main style={{ minHeight: "100vh", background: BG, fontFamily: "'DM Sans','Helvetica Neue',system-ui,sans-serif", display: "flex", alignItems: "center", justifyContent: "center", padding: "24px" }}>
-        <style>{`@import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600;700&display=swap');`}</style>
+      <main style={{ minHeight: "100vh", background: BG, fontFamily: "'Inter','Helvetica Neue',system-ui,sans-serif", display: "flex", alignItems: "center", justifyContent: "center", padding: "24px" }}>
+        <style>{`@import url('https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap');`}</style>
         <div style={{ maxWidth: 420, width: "100%" }}>
           <div style={{ textAlign: "center", marginBottom: 32 }}>
             <div style={{ width: 56, height: 56, background: `${ORANGE}15`, borderRadius: 16, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28, margin: "0 auto 16px" }}>✉️</div>
-            <h1 style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 24, color: TEXT, letterSpacing: "-0.6px", marginBottom: 8 }}>Code eingeben</h1>
+            <h1 style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: 24, color: TEXT, letterSpacing: "-0.6px", marginBottom: 8 }}>Code eingeben</h1>
             <p style={{ color: TEXT2, fontSize: 14, lineHeight: 1.6 }}>
               Wir haben einen 6-stelligen Code an<br />
               <strong style={{ color: TEXT }}>{fields.email}</strong> gesendet.
@@ -147,7 +147,7 @@ export default function BuyerSignupPage() {
                 style={{
                   width: 52, height: 60, textAlign: "center", fontSize: 24, fontWeight: 700,
                   background: SURFACE, border: `2px solid ${digit ? ORANGE : BORDER}`,
-                  borderRadius: 12, color: TEXT, fontFamily: "'DM Sans',sans-serif",
+                  borderRadius: 12, color: TEXT, fontFamily: "'Inter',sans-serif",
                   outline: "none", transition: "border-color 0.15s",
                 }}
                 onFocus={e => e.currentTarget.style.borderColor = ORANGE}
@@ -157,7 +157,7 @@ export default function BuyerSignupPage() {
           </div>
 
           <button onClick={handleVerify} disabled={loading}
-            style={{ width: "100%", background: loading ? "rgba(37,99,235,0.55)" : ORANGE, color: "#fff", border: "none", borderRadius: 12, padding: "15px", fontWeight: 700, fontSize: 15, cursor: loading ? "not-allowed" : "pointer", boxShadow: "0 4px 16px rgba(37,99,235,0.25)", fontFamily: "inherit", marginBottom: 16 }}>
+            style={{ width: "100%", background: loading ? "rgba(0,62,199,0.55)" : ORANGE, color: "#fff", border: "none", borderRadius: 12, padding: "15px", fontWeight: 700, fontSize: 15, cursor: loading ? "not-allowed" : "pointer", boxShadow: "0 4px 16px rgba(0,62,199,0.25)", fontFamily: "inherit", marginBottom: 16 }}>
             {loading ? "Wird überprüft..." : "Bestätigen →"}
           </button>
 
@@ -178,14 +178,14 @@ export default function BuyerSignupPage() {
   }
 
   return (
-    <main style={{ minHeight: "100vh", background: BG, fontFamily: "'DM Sans','Helvetica Neue',system-ui,sans-serif", paddingBottom: 60 }}>
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600;700&display=swap'); input::placeholder { color: var(--kf-text3); }`}</style>
+    <main style={{ minHeight: "100vh", background: BG, fontFamily: "'Inter','Helvetica Neue',system-ui,sans-serif", paddingBottom: 60 }}>
+      <style>{`@import url('https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap'); input::placeholder { color: var(--kf-text3); }`}</style>
 
       {/* Header */}
       <nav style={{ background: SURFACE, borderBottom: `1px solid ${BORDER}`, padding: "0 24px", height: 60, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <a href="/marketplace" style={{ display: "flex", alignItems: "center", gap: 8, textDecoration: "none" }}>
           <img src="/flowio-icon.png" alt="Flowio" style={{ width: 30, height: 30, borderRadius: 7, objectFit: "cover" }} />
-          <span style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 14, color: TEXT, letterSpacing: "-0.3px" }}>Flowio</span>
+          <span style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: 14, color: TEXT, letterSpacing: "-0.3px" }}>Flowio</span>
         </a>
         <a href="/signup" style={{ color: TEXT2, fontSize: 13, textDecoration: "none", fontWeight: 500 }}>← Zurück</a>
       </nav>
@@ -193,7 +193,7 @@ export default function BuyerSignupPage() {
       <div style={{ maxWidth: 520, margin: "0 auto", padding: "40px 24px" }}>
         <div style={{ marginBottom: 28 }}>
           <span style={{ display: "inline-block", background: `${ORANGE}15`, color: ORANGE, fontSize: 11, fontWeight: 700, padding: "4px 12px", borderRadius: 100, marginBottom: 14, letterSpacing: "1px", textTransform: "uppercase" }}>🛒 Käufer</span>
-          <h1 style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 26, color: TEXT, letterSpacing: "-0.8px", marginBottom: 6 }}>Käufer-Konto erstellen</h1>
+          <h1 style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: 26, color: TEXT, letterSpacing: "-0.8px", marginBottom: 6 }}>Käufer-Konto erstellen</h1>
           <p style={{ color: TEXT2, fontSize: 14 }}>Bestelle direkt bei lokalen Lieferanten in Frankfurt.</p>
         </div>
 
@@ -210,7 +210,7 @@ export default function BuyerSignupPage() {
         )}
 
         <div style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 16, padding: "24px", display: "flex", flexDirection: "column", gap: 14 }}>
-          <h2 style={{ fontFamily: "'DM Sans',sans-serif", fontWeight: 700, fontSize: 14, color: TEXT, marginBottom: 4 }}>Persönliche Daten</h2>
+          <h2 style={{ fontFamily: "'Inter',sans-serif", fontWeight: 700, fontSize: 14, color: TEXT, marginBottom: 4 }}>Persönliche Daten</h2>
           {[
             { key: "fullName",    label: "Vollständiger Name",  placeholder: "Max Mustermann",   required: true },
             { key: "companyName", label: "Firmenname",          placeholder: "Mustermann GmbH" },
@@ -237,7 +237,7 @@ export default function BuyerSignupPage() {
           </div>
 
           <div style={{ height: 1, background: BORDER, margin: "4px 0" }} />
-          <h2 style={{ fontFamily: "'DM Sans',sans-serif", fontWeight: 700, fontSize: 14, color: TEXT, marginBottom: 4 }}>Zugangsdaten</h2>
+          <h2 style={{ fontFamily: "'Inter',sans-serif", fontWeight: 700, fontSize: 14, color: TEXT, marginBottom: 4 }}>Zugangsdaten</h2>
           {[
             { key: "email",    label: "E-Mail",   type: "email",    placeholder: "name@firma.de",  required: true },
             { key: "password", label: "Passwort", type: "password", placeholder: "Mindestens 6 Zeichen", required: true },
@@ -250,7 +250,7 @@ export default function BuyerSignupPage() {
         </div>
 
         <button onClick={handleSignup} disabled={loading}
-          style={{ width: "100%", marginTop: 14, background: loading ? "rgba(37,99,235,0.55)" : ORANGE, color: "#fff", border: "none", borderRadius: 12, padding: "15px", fontWeight: 700, fontSize: 15, cursor: loading ? "not-allowed" : "pointer", boxShadow: "0 4px 16px rgba(37,99,235,0.25)", fontFamily: "inherit" }}>
+          style={{ width: "100%", marginTop: 14, background: loading ? "rgba(0,62,199,0.55)" : ORANGE, color: "#fff", border: "none", borderRadius: 12, padding: "15px", fontWeight: 700, fontSize: 15, cursor: loading ? "not-allowed" : "pointer", boxShadow: "0 4px 16px rgba(0,62,199,0.25)", fontFamily: "inherit" }}>
           {loading ? "Wird erstellt..." : "Käufer-Konto erstellen →"}
         </button>
 

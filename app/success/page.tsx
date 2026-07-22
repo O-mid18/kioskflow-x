@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
@@ -10,7 +10,7 @@ const BORDER = "var(--kf-border)";
 const TEXT = "var(--kf-text)";
 const TEXT2 = "var(--kf-text2)";
 const TEXT3 = "var(--kf-text3)";
-const ORANGE = "#2563EB";
+const ORANGE = "#003ec7";
 
 export default function SuccessPage() {
   const [cleared,     setCleared]     = useState(false);
@@ -60,8 +60,8 @@ export default function SuccessPage() {
   };
 
   return (
-    <main style={{ minHeight:"100vh", background:BG, fontFamily:"'DM Sans','Helvetica Neue',system-ui,sans-serif" }}>
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600;700&display=swap'); @keyframes pop { 0% { transform:scale(0.7); opacity:0; } 80% { transform:scale(1.08); } 100% { transform:scale(1); opacity:1; } }`}</style>
+    <main style={{ minHeight:"100vh", background:BG, fontFamily:"'Inter','Helvetica Neue',system-ui,sans-serif" }}>
+      <style>{`@import url('https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap'); @keyframes pop { 0% { transform:scale(0.7); opacity:0; } 80% { transform:scale(1.08); } 100% { transform:scale(1); opacity:1; } }`}</style>
 
       {/* Step breadcrumb — all complete */}
       <div style={{ background:SURFACE, borderBottom:`1px solid ${BORDER}`, padding:"10px 24px" }}>
@@ -86,7 +86,7 @@ export default function SuccessPage() {
           </svg>
         </div>
 
-        <h1 style={{ fontFamily:"'Syne',sans-serif", fontWeight:800, fontSize:28, color:TEXT, letterSpacing:"-0.8px", marginBottom:12 }}>
+        <h1 style={{ fontFamily:"'Hanken Grotesk',sans-serif", fontWeight:800, fontSize:28, color:TEXT, letterSpacing:"-0.8px", marginBottom:12 }}>
           Zahlung erfolgreich!
         </h1>
         <p style={{ color:TEXT2, fontSize:14, lineHeight:1.7, marginBottom:10 }}>
@@ -99,10 +99,10 @@ export default function SuccessPage() {
         {/* Order number placeholder */}
         <div style={{ background:BG, border:`1px solid ${BORDER}`, borderRadius:12, padding:"14px 18px", display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:28 }}>
           <span style={{ color:TEXT2, fontSize:13 }}>Bestellnummer</span>
-          <span style={{ fontFamily:"'Syne',sans-serif", fontWeight:700, fontSize:14, color:TEXT }}>{orderNumber ? `#KF-${orderNumber}` : "—"}</span>
+          <span style={{ fontFamily:"'Hanken Grotesk',sans-serif", fontWeight:700, fontSize:14, color:TEXT }}>{orderNumber ? `#KF-${orderNumber}` : "—"}</span>
         </div>
 
-        <a href="/marketplace" style={{ display:"block", background:ORANGE, color:"#fff", fontWeight:700, padding:"14px", borderRadius:12, textDecoration:"none", fontSize:14, marginBottom:12, boxShadow:`0 4px 14px rgba(37,99,235,0.25)` }}>
+        <a href="/marketplace" style={{ display:"block", background:ORANGE, color:"#fff", fontWeight:700, padding:"14px", borderRadius:12, textDecoration:"none", fontSize:14, marginBottom:12, boxShadow:`0 4px 14px rgba(0,62,199,0.25)` }}>
           Weiter einkaufen →
         </a>
         <a href="/orders" style={{ display:"block", background:BG, border:`1px solid ${BORDER}`, color:TEXT2, fontWeight:600, padding:"13px", borderRadius:12, textDecoration:"none", fontSize:14 }}>

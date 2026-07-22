@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState, useRef } from "react";
 import { supabase } from "@/lib/supabase";
@@ -9,7 +9,7 @@ const BORDER = "var(--kf-border)";
 const TEXT = "var(--kf-text)";
 const TEXT2 = "var(--kf-text2)";
 const TEXT3 = "var(--kf-text3)";
-const ORANGE = "#2563EB";
+const ORANGE = "#003ec7";
 
 type Conv = { id: string; buyer_id: string; buyer_name: string; last_message?: string; };
 type Msg  = { id: string; sender_id: string; content: string; created_at: string; };
@@ -79,12 +79,12 @@ export default function SupplierMessagesPage() {
   );
 
   return (
-    <div style={{ height: "100%", display: "flex", flexDirection: "column", fontFamily: "'DM Sans',system-ui,sans-serif" }}>
+    <div style={{ height: "100%", display: "flex", flexDirection: "column", fontFamily: "'Inter',system-ui,sans-serif" }}>
       <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
 
       {/* Header */}
       <div style={{ padding: "0 24px", height: 64, borderBottom: `1px solid ${BORDER}`, display: "flex", alignItems: "center", background: SURFACE, flexShrink: 0 }}>
-        <p style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 18, color: TEXT }}>Nachrichten</p>
+        <p style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: 18, color: TEXT }}>Nachrichten</p>
         {convs.length > 0 && <span style={{ marginLeft: 10, background: `${ORANGE}20`, color: ORANGE, fontSize: 12, fontWeight: 700, padding: "2px 10px", borderRadius: 100 }}>{convs.length}</span>}
       </div>
 
@@ -102,7 +102,7 @@ export default function SupplierMessagesPage() {
           ) : convs.map(c => (
             <div key={c.id} onClick={() => openConv(c)} style={{ padding: "14px 16px", borderBottom: `1px solid ${BORDER}`, cursor: "pointer", background: active?.id === c.id ? `${ORANGE}10` : "transparent", borderLeft: `3px solid ${active?.id === c.id ? ORANGE : "transparent"}`, transition: "background 0.15s" }}>
               <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                <div style={{ width: 38, height: 38, background: `${ORANGE}20`, borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 15, color: ORANGE, flexShrink: 0 }}>
+                <div style={{ width: 38, height: 38, background: `${ORANGE}20`, borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: 15, color: ORANGE, flexShrink: 0 }}>
                   {c.buyer_name[0]?.toUpperCase()}
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
@@ -119,7 +119,7 @@ export default function SupplierMessagesPage() {
           {active ? (
             <>
               <div style={{ padding: "0 20px", height: 56, borderBottom: `1px solid ${BORDER}`, display: "flex", alignItems: "center", gap: 12, flexShrink: 0 }}>
-                <div style={{ width: 36, height: 36, background: `${ORANGE}20`, borderRadius: 9, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 14, color: ORANGE, flexShrink: 0 }}>
+                <div style={{ width: 36, height: 36, background: `${ORANGE}20`, borderRadius: 9, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: 14, color: ORANGE, flexShrink: 0 }}>
                   {active.buyer_name[0]?.toUpperCase()}
                 </div>
                 <div>
@@ -156,7 +156,7 @@ export default function SupplierMessagesPage() {
           ) : (
             <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 12 }}>
               <p style={{ fontSize: 52 }}>💬</p>
-              <p style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 20, color: TEXT }}>Nachrichten</p>
+              <p style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: 20, color: TEXT }}>Nachrichten</p>
               <p style={{ color: TEXT2, fontSize: 14 }}>Wähle ein Gespräch aus der Liste.</p>
             </div>
           )}

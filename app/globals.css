@@ -1,30 +1,38 @@
-@import "tailwindcss";
+﻿@import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
 @custom-variant dark (&:is(.dark *));
 
-/* Flowio theme tokens */
+/* Flowio design tokens — sourced from Google Stitch (Material 3 blue palette) */
 :root {
-  --kf-bg: #E8E4DC;
-  --kf-surface: #F4F1EC;
-  --kf-border: #CEC8BF;
-  --kf-text: #100E0B;
-  --kf-text2: #574F4A;
-  --kf-text3: #8F857E;
-  --kf-toast-bg: #1A1714;
+  /* Surfaces */
+  --kf-bg:      #faf8ff;  /* surface / background */
+  --kf-surface: #ffffff;  /* surface-container-lowest — white cards */
+  --kf-surface-container: #eaedff; /* surface-container — tinted panels */
+  --kf-surface-high: #e2e7ff;      /* surface-container-high */
+  /* Borders */
+  --kf-border:  #c3c5d9;  /* outline-variant */
+  /* Text */
+  --kf-text:    #131b2e;  /* on-surface */
+  --kf-text2:   #434656;  /* on-surface-variant */
+  --kf-text3:   #737688;  /* outline */
+  /* Toasts */
+  --kf-toast-bg: #131b2e;
   --kf-toast-fg: #ffffff;
 }
 
 .dark {
-  --kf-bg: #100D0A;
-  --kf-surface: #1C1915;
-  --kf-border: #2E2A26;
-  --kf-text: #EDE9E3;
-  --kf-text2: #9A9088;
-  --kf-text3: #5C5450;
-  --kf-toast-bg: #EDE9E3;
-  --kf-toast-fg: #1C1915;
+  --kf-bg:      #0d0f1f;  /* dark background — deep navy */
+  --kf-surface: #171929;  /* dark card surface */
+  --kf-surface-container: #1e2035;
+  --kf-surface-high: #252843;
+  --kf-border:  #2e3154;  /* dark outline-variant */
+  --kf-text:    #e2e7ff;  /* inverse-on-surface */
+  --kf-text2:   #9da2c4;  /* muted text */
+  --kf-text3:   #5d607e;  /* subtle text */
+  --kf-toast-bg: #e2e7ff;
+  --kf-toast-fg: #171929;
 }
 
 /* analytics-bento overrides */
@@ -151,12 +159,14 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-family: var(--font-inter), 'Inter', system-ui, sans-serif;
     scroll-behavior: smooth;
   }
   html {
     @apply font-sans;
   }
   h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-hanken), 'Hanken Grotesk', system-ui, sans-serif;
     text-wrap: balance;
   }
   p {
@@ -169,7 +179,7 @@
     top: -100%;
     left: 16px;
     z-index: 9999;
-    background: #2563EB;
+    background: #003ec7;
     color: #fff;
     font-weight: 700;
     font-size: 14px;
@@ -189,7 +199,7 @@
     transition: color 0.15s;
   }
   .kf-footer-link:hover {
-    color: #2563EB !important;
+    color: #003ec7 !important;
   }
 
   /* CTA button press state */
@@ -201,7 +211,7 @@
   /* Visible focus rings for keyboard navigation */
   a:focus-visible,
   button:focus-visible {
-    outline: 2px solid #2563EB;
+    outline: 2px solid #003ec7;
     outline-offset: 3px;
     border-radius: 4px;
   }
@@ -235,37 +245,38 @@ body > main, #__next > main {
   animation: kf-page-in 0.25s ease;
 }
 
-/* ── Sync body background to Flowio warm parchment ── */
+/* ── Sync body background to Stitch design tokens ── */
 :root {
-  --background: #E8E4DC;
-  --foreground: #100E0B;
+  --background: #faf8ff;
+  --foreground: #131b2e;
 }
 .dark {
-  --background: #100D0A;
-  --foreground: #EDE9E3;
+  --background: #0d0f1f;
+  --foreground: #e2e7ff;
 }
 html { color-scheme: light; }
 html.dark { color-scheme: dark; }
 
 /* ── Text selection ── */
 ::selection {
-  background: rgba(232, 82, 26, 0.18);
+  background: rgba(0, 62, 199, 0.15);
   color: var(--kf-text);
 }
 
-/* ── Card elevation — make cards pop off parchment ── */
+/* ── Card elevation — Stitch: 0 4px 12px rgba(0,0,0,0.05) ── */
 .kf-step, .kf-feature-card {
-  box-shadow: 0 1px 3px rgba(16,14,11,0.06), 0 1px 0 rgba(255,255,255,0.55);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
   transition: transform 0.22s ease, box-shadow 0.22s ease !important;
 }
 .kf-step:hover, .kf-feature-card:hover {
-  box-shadow: 0 10px 36px rgba(16,14,11,0.1), 0 1px 0 rgba(255,255,255,0.55) !important;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+  transform: translateY(-2px);
 }
 .dark .kf-step, .dark .kf-feature-card {
-  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
 }
 .dark .kf-step:hover, .dark .kf-feature-card:hover {
-  box-shadow: 0 10px 36px rgba(0,0,0,0.35) !important;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.35) !important;
 }
 /* Theme toggle — sit above the mobile bottom tab bar instead of
    overlapping its last item (previously covered "Profil") */
