@@ -24,6 +24,7 @@ const SERVICE_LABELS: Record<string, string> = {
 };
 
 const DAY_KEYS = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
+const DISPLAY_DAY_ORDER = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
 const DAY_LABELS_FULL: Record<string, string> = { mon: "Montag", tue: "Dienstag", wed: "Mittwoch", thu: "Donnerstag", fri: "Freitag", sat: "Samstag", sun: "Sonntag" };
 
 function computeOpenStatus(hours: Record<string, { open: string; close: string; closed: boolean }> | null) {
@@ -166,12 +167,15 @@ export default function KioskPublicPage() {
 
           {kiosk.opening_hours_structured && (
             <div style={{ marginTop: 14, paddingTop: 14, borderTop: `1px solid ${BORDER}` }}>
-              {Object.entries(kiosk.opening_hours_structured).map(([day, h]: any) => (
-                <div key={day} style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: TEXT3, padding: "2px 0" }}>
-                  <span>{DAY_LABELS_FULL[day]}</span>
-                  <span>{h.closed ? "Geschlossen" : `${h.open} – ${h.close}`}</span>
-                </div>
-              ))}
+              {DISPLAY_DAY_ORDER.filter(day => kiosk.opening_hours_structured[day]).map((day) => {
+                const h = kiosk.opening_hours_structured[day];
+                return (
+                  <div key={day} style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: TEXT3, padding: "2px 0" }}>
+                    <span>{DAY_LABELS_FULL[day]}</span>
+                    <span>{h.closed ? "Geschlossen" : `${h.open} – ${h.close}`}</span>
+                  </div>
+                );
+              })}
             </div>
           )}
 

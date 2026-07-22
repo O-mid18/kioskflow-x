@@ -51,6 +51,7 @@ export default function KioskPageManage() {
   const [items, setItems] = useState<any[]>([]);
   const [myProducts, setMyProducts] = useState<any[]>([]);
   const [historyCache, setHistoryCache] = useState<Record<string, any[]>>({});
+  const [qtyDrafts, setQtyDrafts] = useState<Record<string, string>>({});
   const [offers, setOffers] = useState<any[]>([]);
   const [suggestions, setSuggestions] = useState<any[]>([]);
   const [confirmingOrder, setConfirmingOrder] = useState<string | null>(null);
@@ -180,6 +181,7 @@ export default function KioskPageManage() {
   };
 
   const DAY_LABELS: Record<string, string> = { mon: "Mo", tue: "Di", wed: "Mi", thu: "Do", fri: "Fr", sat: "Sa", sun: "So" };
+  const DAY_ORDER = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
   const SERVICE_OPTIONS = [
     { key: "atm",          label: "🏧 Geldautomat" },
     { key: "parcel_pickup", label: "📮 Paketstation" },
@@ -247,6 +249,12 @@ export default function KioskPageManage() {
         body: `"${item.name}" ist auf ${qty} Stück gesunken (Grenze: ${item.min_stock_threshold}). Eine Bestellung wurde vorbereitet → bitte bestätige sie unten.`,
         link: "/kiosk-page/manage",
       });
+    } else if (item.stock_status !== "in_stock" && qty > 0) {
+      // Restocked — quantity is back above the low/out threshold (or above
+      // zero, for items without a configured threshold). Auto-revert the
+      // status instead of leaving it stuck on "low"/"out" forever.
+      const backInStock = item.min_stock_threshold != null ? qty > item.min_stock_threshold : true;
+      if (backInStock) await setStatus({ ...item, quantity: qty }, "in_stock");
     }
   };
 
@@ -353,7 +361,7 @@ export default function KioskPageManage() {
             <div>
               <label style={{ fontSize: 12, fontWeight: 600, color: TEXT2, display: "block", marginBottom: 8 }}>Öffnungszeiten</label>
               <div style={{ display: "grid", gap: 6 }}>
-                {Object.keys(hours).map((day) => (
+                {DAY_ORDER.map((day) => (
                   <div key={day} style={{ display: "grid", gridTemplateColumns: "36px 1fr 1fr auto", gap: 8, alignItems: "center" }}>
                     <span style={{ fontSize: 12, fontWeight: 700, color: TEXT2 }}>{DAY_LABELS[day]}</span>
                     <input type="time" value={hours[day].open} disabled={hours[day].closed}
@@ -516,8 +524,14 @@ export default function KioskPageManage() {
                       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                         <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
                           <label style={{ fontSize: 11, color: TEXT3 }}>Menge:</label>
-                          <input type="number" min="0" value={item.quantity ?? 0}
-                            onChange={e => updateQuantity(item, Number(e.target.value))}
+                          <input type="number" min="0"
+                            value={qtyDrafts[item.id] ?? String(item.quantity ?? 0)}
+                            onChange={e => setQtyDrafts(prev => ({ ...prev, [item.id]: e.target.value }))}
+                            onBlur={e => {
+                              const val = Number(e.target.value);
+                              setQtyDrafts(prev => { const n = { ...prev }; delete n[item.id]; return n; });
+                              if (!Number.isNaN(val) && val !== (item.quantity ?? 0)) updateQuantity(item, val);
+                            }}
                             style={{ width: 60, padding: "4px 8px", borderRadius: 7, border: `1px solid ${BORDER}`, background: SURFACE, color: TEXT, fontSize: 12, fontFamily: "inherit" }} />
                         </div>
                         <select value={item.stock_status} onChange={e => setStatus(item, e.target.value as any)}

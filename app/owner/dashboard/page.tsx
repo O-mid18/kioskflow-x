@@ -22,7 +22,7 @@ const TABS: { key: Tab; label: string; icon: string }[] = [
   { key: "settings",  label: "Einstellungen", icon: "🔒" },
 ];
 
-const ORDER_STATUSES = ["pending", "paid", "preparing", "shipped", "delivered", "cancelled"];
+const ORDER_STATUSES = ["awaiting_quote", "awaiting_payment", "pending", "paid", "preparing", "shipped", "delivered", "cancelled"];
 
 // ── Small UI helpers ───────────────────────────────────────────────────────────
 function TH({ ch }: { ch: string }) {
@@ -498,7 +498,7 @@ export default function OwnerDashboard() {
                     <Fragment key={o.id}>
                     <tr>
                       <TD mono>{o.id?.slice(0, 8)}…</TD>
-                      <TD>{(o.profiles as any)?.full_name || o.buyer_id?.slice(0, 8) + "…" || "—"}</TD>
+                      <TD>{(o.profiles as any)?.full_name || (o.buyer_id ? o.buyer_id.slice(0, 8) + "…" : "—")}</TD>
                       <TD>€{(o.total_price ?? 0).toFixed(2)}</TD>
                       <TD><Pill v={o.status || "—"} /></TD>
                       <TD>{fmt(o.created_at)}</TD>
