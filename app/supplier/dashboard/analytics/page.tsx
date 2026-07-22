@@ -42,7 +42,7 @@ function StatCard({ icon, label, value, sub, highlight }: { icon: string; label:
   return (
     <div style={{ background: highlight ? ORANGE : SURFACE, border: `1px solid ${highlight ? ORANGE : BORDER}`, borderRadius: 16, padding: "20px 22px" }}>
       <span style={{ fontSize: 22 }}>{icon}</span>
-      <p style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: 24, color: highlight ? "#fff" : TEXT, margin: "10px 0 2px", letterSpacing: "-0.5px" }}>{value}</p>
+      <p style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: 24, color: highlight ? "#fff" : TEXT, margin: "10px 0 2px", letterSpacing: "-0.5px" }}>{value}</p>
       <p style={{ fontSize: 12, fontWeight: 700, color: highlight ? "rgba(255,255,255,0.85)" : TEXT2 }}>{label}</p>
       <p style={{ fontSize: 11, color: highlight ? "rgba(255,255,255,0.6)" : TEXT3, marginTop: 2 }}>{sub}</p>
     </div>
@@ -167,12 +167,12 @@ export default function SupplierAnalyticsPage() {
 
   return (
     <div style={{ padding: "32px 32px 60px", fontFamily: "'Inter','Helvetica Neue',system-ui,sans-serif" }}>
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap');`}</style>
+      <style>{`@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap');`}</style>
 
       {/* Header */}
       <div style={{ marginBottom: 28 }}>
         <p style={{ fontSize: 11, fontWeight: 700, color: TEXT3, letterSpacing: "2.5px", textTransform: "uppercase", marginBottom: 8 }}>Lieferant-Dashboard</p>
-        <h1 style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: 26, color: TEXT, letterSpacing: "-0.8px" }}>Verkaufsanalyse</h1>
+        <h1 style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: 26, color: TEXT, letterSpacing: "-0.8px" }}>Verkaufsanalyse</h1>
         <p style={{ fontSize: 13, color: TEXT2, marginTop: 4 }}>{products.length} Produkte · {items.length} Bestellpositionen insgesamt</p>
       </div>
 
@@ -193,7 +193,7 @@ export default function SupplierAnalyticsPage() {
       <div style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 18, padding: "22px", marginBottom: 20 }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
           <div>
-            <h2 style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: 16, color: TEXT }}>Umsatzverlauf</h2>
+            <h2 style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: 16, color: TEXT }}>Umsatzverlauf</h2>
             <p style={{ fontSize: 12, color: TEXT3, marginTop: 2 }}>{period === "year" ? "Monatsübersicht" : "Letzte 8 Wochen"}</p>
           </div>
           <div style={{ display: "flex", background: BG, borderRadius: 10, padding: 3 }}>
@@ -216,21 +216,21 @@ export default function SupplierAnalyticsPage() {
           <div style={{ display: "flex", gap: 24, marginTop: 16, paddingTop: 16, borderTop: `1px solid ${BORDER}` }}>
             <div>
               <p style={{ fontSize: 11, color: TEXT3, marginBottom: 3 }}>BESTER MONAT</p>
-              <p style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: 16, color: TEXT }}>
+              <p style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: 16, color: TEXT }}>
                 {MONTHS[monthlyRev.indexOf(Math.max(...monthlyRev))]} · €{Math.max(...monthlyRev).toFixed(0)}
               </p>
             </div>
             <div style={{ width: 1, background: BORDER }} />
             <div>
               <p style={{ fontSize: 11, color: TEXT3, marginBottom: 3 }}>Ø MONATLICH</p>
-              <p style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: 16, color: TEXT }}>
+              <p style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: 16, color: TEXT }}>
                 €{(totalRev / 12).toFixed(0)}
               </p>
             </div>
             <div style={{ width: 1, background: BORDER }} />
             <div>
               <p style={{ fontSize: 11, color: TEXT3, marginBottom: 3 }}>DIESEN MONAT</p>
-              <p style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: 16, color: ORANGE }}>
+              <p style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: 16, color: ORANGE }}>
                 €{revThisMonth.toFixed(0)}
               </p>
             </div>
@@ -243,7 +243,7 @@ export default function SupplierAnalyticsPage() {
 
         {/* Top products */}
         <div style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 18, padding: "22px" }}>
-          <h2 style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: 16, color: TEXT, marginBottom: 20 }}>Top Produkte</h2>
+          <h2 style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: 16, color: TEXT, marginBottom: 20 }}>Top Produkte</h2>
           {topProducts.length === 0 ? (
             <p style={{ color: TEXT3, fontSize: 13, textAlign: "center", padding: "32px 0" }}>Noch keine Daten.</p>
           ) : (
@@ -252,7 +252,7 @@ export default function SupplierAnalyticsPage() {
                 <div key={p.name}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                      <span style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: 13, color: i === 0 ? ORANGE : TEXT3, width: 18 }}>#{i + 1}</span>
+                      <span style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: 13, color: i === 0 ? ORANGE : TEXT3, width: 18 }}>#{i + 1}</span>
                       <span style={{ fontSize: 13, fontWeight: 600, color: TEXT, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 150 }}>{p.name}</span>
                     </div>
                     <div style={{ display: "flex", gap: 10, alignItems: "center", flexShrink: 0 }}>
@@ -271,7 +271,7 @@ export default function SupplierAnalyticsPage() {
 
         {/* Category breakdown */}
         <div style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 18, padding: "22px" }}>
-          <h2 style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: 16, color: TEXT, marginBottom: 20 }}>Umsatz nach Kategorie</h2>
+          <h2 style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: 16, color: TEXT, marginBottom: 20 }}>Umsatz nach Kategorie</h2>
           {cats.length === 0 ? (
             <p style={{ color: TEXT3, fontSize: 13, textAlign: "center", padding: "32px 0" }}>Noch keine Daten.</p>
           ) : (
@@ -303,7 +303,7 @@ export default function SupplierAnalyticsPage() {
 
       {/* Order status */}
       <div style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 18, padding: "22px" }}>
-        <h2 style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: 16, color: TEXT, marginBottom: 20 }}>Bestellstatus-Übersicht</h2>
+        <h2 style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: 16, color: TEXT, marginBottom: 20 }}>Bestellstatus-Übersicht</h2>
         {!hasData ? (
           <p style={{ color: TEXT3, fontSize: 13, textAlign: "center", padding: "20px 0" }}>Noch keine Bestellungen.</p>
         ) : (
@@ -313,7 +313,7 @@ export default function SupplierAnalyticsPage() {
               const pct = items.length > 0 ? (count / items.length) * 100 : 0;
               return (
                 <div key={key} style={{ background: s.bg, borderRadius: 14, padding: "16px", textAlign: "center" }}>
-                  <p style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: 28, color: s.color }}>{count}</p>
+                  <p style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: 28, color: s.color }}>{count}</p>
                   <p style={{ fontSize: 12, fontWeight: 700, color: s.color, marginTop: 4 }}>{s.label}</p>
                   <p style={{ fontSize: 11, color: s.color, opacity: 0.7, marginTop: 2 }}>{pct.toFixed(0)}%</p>
                 </div>

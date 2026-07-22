@@ -174,7 +174,7 @@ export default function SupplierOrdersPage() {
       {/* Header */}
       <div style={{ marginBottom:28 }}>
         <p style={{ fontSize:11, fontWeight:700, color:TEXT3, letterSpacing:"2.5px", textTransform:"uppercase", marginBottom:8 }}>Lieferant-Dashboard</p>
-        <h1 style={{ fontFamily:"'Hanken Grotesk',sans-serif", fontWeight:800, fontSize:26, color:TEXT, letterSpacing:"-0.8px" }}>Bestellungen</h1>
+        <h1 style={{ fontFamily:"'Manrope',sans-serif", fontWeight:800, fontSize:26, color:TEXT, letterSpacing:"-0.8px" }}>Bestellungen</h1>
         <p style={{ fontSize:13, color:TEXT2, marginTop:4 }}>{items.length} Bestellpositionen insgesamt</p>
       </div>
 
@@ -232,7 +232,7 @@ export default function SupplierOrdersPage() {
                         </div>
                       </div>
                     </td>
-                    <td style={{ padding:"14px 20px", fontSize:13, fontWeight:600, color:TEXT, fontFamily:"'Hanken Grotesk',sans-serif" }}>
+                    <td style={{ padding:"14px 20px", fontSize:13, fontWeight:600, color:TEXT, fontFamily:"'Manrope',sans-serif" }}>
                       <div>#{(item.orders?.id ?? "").slice(-6).toUpperCase()}</div>
                       {item.orders?.shipping_name && (
                         <div style={{ fontSize:11, color:TEXT3, fontWeight:400, marginTop:2, fontFamily:"'Inter',sans-serif" }}>
@@ -308,12 +308,12 @@ export default function SupplierOrdersPage() {
           <div style={{ background:SURFACE, border:`1px solid ${BORDER}`, borderRadius:12, padding:"14px 22px", display:"flex", gap:28 }}>
             <div style={{ textAlign:"right" }}>
               <p style={{ fontSize:11, color:TEXT3, marginBottom:3 }}>ARTIKEL</p>
-              <p style={{ fontFamily:"'Hanken Grotesk',sans-serif", fontWeight:800, fontSize:18, color:TEXT }}>{filtered.reduce((s,i)=>s+i.quantity,0)}</p>
+              <p style={{ fontFamily:"'Manrope',sans-serif", fontWeight:800, fontSize:18, color:TEXT }}>{filtered.reduce((s,i)=>s+i.quantity,0)}</p>
             </div>
             <div style={{ width:1, background:BORDER }} />
             <div style={{ textAlign:"right" }}>
               <p style={{ fontSize:11, color:TEXT3, marginBottom:3 }}>UMSATZ</p>
-              <p style={{ fontFamily:"'Hanken Grotesk',sans-serif", fontWeight:800, fontSize:18, color:ORANGE }}>€{filtered.reduce((s,i)=>s+i.price_at_purchase*i.quantity,0).toFixed(2)}</p>
+              <p style={{ fontFamily:"'Manrope',sans-serif", fontWeight:800, fontSize:18, color:ORANGE }}>€{filtered.reduce((s,i)=>s+i.price_at_purchase*i.quantity,0).toFixed(2)}</p>
             </div>
           </div>
         </div>

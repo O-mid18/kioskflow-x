@@ -10,7 +10,7 @@ const TEXT3   = "var(--kf-text3)";
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section style={{ marginBottom: 32 }}>
-      <h2 style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: 18, color: TEXT, marginBottom: 10 }}>{title}</h2>
+      <h2 style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: 18, color: TEXT, marginBottom: 10 }}>{title}</h2>
       <div style={{ fontSize: 14, color: TEXT2, lineHeight: 1.8 }}>{children}</div>
     </section>
   );
@@ -23,18 +23,18 @@ const Placeholder = ({ children }: { children: React.ReactNode }) => (
 export default function AGBPage() {
   return (
     <main style={{ minHeight: "100vh", background: BG, fontFamily: "'Inter','Helvetica Neue',system-ui,sans-serif", color: TEXT }}>
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap'); *{box-sizing:border-box}`}</style>
+      <style>{`@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap'); *{box-sizing:border-box}`}</style>
 
       <nav style={{ background: SURFACE, borderBottom: `1px solid ${BORDER}`, padding: "0 24px", height: 58, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <a href="/" style={{ display: "flex", alignItems: "center", gap: 8, textDecoration: "none" }}>
           <img src="/flowio-icon.png" alt="Flowio" style={{ width: 30, height: 30, borderRadius: 7, objectFit: "cover" }} />
-          <span style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: 14, color: TEXT }}>Flowio</span>
+          <span style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: 14, color: TEXT }}>Flowio</span>
         </a>
         <a href="/" style={{ fontSize: 13, color: TEXT2, textDecoration: "none", fontWeight: 500 }}>← Zurück</a>
       </nav>
 
       <div style={{ maxWidth: 720, margin: "0 auto", padding: "56px 24px" }}>
-        <h1 style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: 32, marginBottom: 8 }}>Allgemeine Geschäftsbedingungen</h1>
+        <h1 style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: 32, marginBottom: 8 }}>Allgemeine Geschäftsbedingungen</h1>
         <p style={{ fontSize: 13, color: TEXT3, marginBottom: 40 }}>Stand: Juli 2026</p>
 
         <div style={{ background: "#fffbeb", border: "1px solid #fde68a", borderRadius: 12, padding: "16px 20px", marginBottom: 40, fontSize: 13, color: "#92400e", lineHeight: 1.7 }}>

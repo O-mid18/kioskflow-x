@@ -108,7 +108,7 @@ function VerifyInner() {
   return (
     <main style={{ minHeight: "100vh", background: BG, fontFamily: "'Inter','Helvetica Neue',system-ui,sans-serif", display: "flex", alignItems: "center", justifyContent: "center", padding: "24px" }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap');
         input::placeholder { color: ${TEXT3}; }
         input:focus { outline: none; border-color: ${ORANGE} !important; box-shadow: 0 0 0 3px rgba(0,62,199,0.1); }
       `}</style>
@@ -116,12 +116,12 @@ function VerifyInner() {
       <div style={{ maxWidth: 420, width: "100%" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 32 }}>
           <img src="/flowio-icon.png" alt="Flowio" style={{ width: 30, height: 30, borderRadius: 7, objectFit: "cover" }} />
-          <span style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: 15, color: TEXT }}>Flowio</span>
+          <span style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: 15, color: TEXT }}>Flowio</span>
         </div>
 
         <div style={{ textAlign: "center", marginBottom: 28 }}>
           <div style={{ width: 56, height: 56, background: `${ORANGE}15`, borderRadius: 16, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28, margin: "0 auto 16px" }}>✉️</div>
-          <h1 style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: 24, color: TEXT, letterSpacing: "-0.6px", marginBottom: 8 }}>E-Mail bestätigen</h1>
+          <h1 style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: 24, color: TEXT, letterSpacing: "-0.6px", marginBottom: 8 }}>E-Mail bestätigen</h1>
           <p style={{ color: TEXT2, fontSize: 14, lineHeight: 1.6 }}>
             Gib den 8-stelligen Code ein,<br />den wir dir per E-Mail gesendet haben.
           </p>
@@ -159,7 +159,7 @@ function VerifyInner() {
                 style={{
                   width: 52, height: 60, textAlign: "center", fontSize: 24, fontWeight: 700,
                   background: SURFACE, border: `2px solid ${digit ? ORANGE : BORDER}`,
-                  borderRadius: 12, color: TEXT, fontFamily: "'Hanken Grotesk',sans-serif",
+                  borderRadius: 12, color: TEXT, fontFamily: "'Manrope',sans-serif",
                   outline: "none", transition: "border-color 0.15s",
                 }}
                 onFocus={e => (e.currentTarget.style.borderColor = ORANGE)}

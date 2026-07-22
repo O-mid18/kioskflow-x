@@ -232,13 +232,13 @@ export default function AdminDashboard() {
 
   return (
     <main style={{ minHeight: "100vh", background: BG, fontFamily: "'Inter','Helvetica Neue',system-ui,sans-serif", color: TEXT }}>
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap'); * { box-sizing: border-box; }`}</style>
+      <style>{`@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap'); * { box-sizing: border-box; }`}</style>
 
       {/* Header */}
       <header style={{ background: SURFACE, borderBottom: `1px solid ${BORDER}`, padding: "0 32px", height: 60, display: "flex", alignItems: "center", justifyContent: "space-between", position: "sticky", top: 0, zIndex: 50 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <img src="/flowio-icon.png" alt="Flowio" style={{ width: 32, height: 32, borderRadius: 8, objectFit: "cover" }} />
-          <span style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: 15, color: TEXT }}>Flowio</span>
+          <span style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: 15, color: TEXT }}>Flowio</span>
           <span style={{ fontSize: 12, background: `${ORANGE}15`, color: ORANGE, fontWeight: 700, padding: "2px 8px", borderRadius: 100, marginLeft: 4 }}>Admin</span>
         </div>
         <div style={{ display: "flex", gap: 10 }}>
@@ -254,7 +254,7 @@ export default function AdminDashboard() {
 
         <div style={{ marginBottom: 24 }}>
           <p style={{ fontSize: 11, fontWeight: 700, color: TEXT3, letterSpacing: "2.5px", textTransform: "uppercase", marginBottom: 8 }}>Administration</p>
-          <h1 style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: 28, color: TEXT, letterSpacing: "-0.8px" }}>Admin-Dashboard</h1>
+          <h1 style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: 28, color: TEXT, letterSpacing: "-0.8px" }}>Admin-Dashboard</h1>
         </div>
 
         {msg && (
@@ -300,7 +300,7 @@ export default function AdminDashboard() {
                   onMouseEnter={e => { if (s.clickTab) e.currentTarget.style.opacity = "0.85"; }}
                   onMouseLeave={e => { e.currentTarget.style.opacity = "1"; }}>
                   <span style={{ fontSize: 24 }}>{s.icon}</span>
-                  <p style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: 26, color: s.hi ? "#fff" : TEXT, margin: "10px 0 2px", letterSpacing: "-0.5px" }}>{s.value}</p>
+                  <p style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: 26, color: s.hi ? "#fff" : TEXT, margin: "10px 0 2px", letterSpacing: "-0.5px" }}>{s.value}</p>
                   <p style={{ fontSize: 12, fontWeight: 700, color: s.hi ? "rgba(255,255,255,0.85)" : TEXT2 }}>{s.label}</p>
                   <p style={{ fontSize: 11, color: s.hi ? "rgba(255,255,255,0.6)" : TEXT3, marginTop: 2 }}>{s.sub}{s.clickTab && " →"}</p>
                 </div>
@@ -309,7 +309,7 @@ export default function AdminDashboard() {
 
             <div style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 18, overflow: "hidden", marginBottom: 20 }}>
               <div style={{ padding: "16px 22px", borderBottom: `1px solid ${BORDER}`, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <h2 style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: 16, color: TEXT }}>Letzte Bestellungen</h2>
+                <h2 style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: 16, color: TEXT }}>Letzte Bestellungen</h2>
                 <button onClick={() => setTab("orders")} style={{ fontSize: 12, color: ORANGE, fontWeight: 700, background: "none", border: "none", cursor: "pointer" }}>Alle ansehen →</button>
               </div>
               {orders.slice(0, 5).map((o, i) => (
@@ -319,19 +319,19 @@ export default function AdminDashboard() {
                     <p style={{ fontSize: 11, color: TEXT3 }}>{new Date(o.created_at).toLocaleDateString("de-DE", { day: "2-digit", month: "short", year: "numeric" })}</p>
                   </div>
                   <Badge status={o.status} />
-                  <p style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: 15, color: TEXT }}>€{Number(o.total_price).toFixed(2)}</p>
+                  <p style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: 15, color: TEXT }}>€{Number(o.total_price).toFixed(2)}</p>
                 </div>
               ))}
             </div>
 
             <div style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 18, padding: "22px" }}>
-              <h2 style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: 16, color: TEXT, marginBottom: 16 }}>Bestellstatus-Verteilung</h2>
+              <h2 style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: 16, color: TEXT, marginBottom: 16 }}>Bestellstatus-Verteilung</h2>
               <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 10 }}>
                 {Object.entries(STATUS_CFG).map(([key, cfg]) => {
                   const count = orders.filter(o => o.status === key).length;
                   return (
                     <div key={key} style={{ background: cfg.bg, borderRadius: 12, padding: "14px", textAlign: "center" }}>
-                      <p style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: 24, color: cfg.color }}>{count}</p>
+                      <p style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: 24, color: cfg.color }}>{count}</p>
                       <p style={{ fontSize: 11, fontWeight: 700, color: cfg.color, marginTop: 4 }}>{cfg.label}</p>
                     </div>
                   );
@@ -366,7 +366,7 @@ export default function AdminDashboard() {
                   <div key={s.id} style={{ background: SURFACE, border: `1.5px solid ${s.verified ? "#bbf7d0" : BORDER}`, borderRadius: 18, overflow: "hidden" }}>
                     <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "16px 22px", borderBottom: `1px solid ${BORDER}` }}>
                       <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                        <div style={{ width: 40, height: 40, borderRadius: 10, background: `${ORANGE}15`, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: 16, color: ORANGE }}>
+                        <div style={{ width: 40, height: 40, borderRadius: 10, background: `${ORANGE}15`, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: 16, color: ORANGE }}>
                           {(s.name ?? "?")[0].toUpperCase()}
                         </div>
                         <div>
@@ -538,11 +538,11 @@ export default function AdminDashboard() {
                   onMouseEnter={e => e.currentTarget.style.background = BG}
                   onMouseLeave={e => e.currentTarget.style.background = "transparent"}>
                   <div>
-                    <p style={{ fontSize: 13, fontWeight: 700, color: TEXT, fontFamily: "'Hanken Grotesk',sans-serif" }}>#{o.id.slice(-8).toUpperCase()}</p>
+                    <p style={{ fontSize: 13, fontWeight: 700, color: TEXT, fontFamily: "'Manrope',sans-serif" }}>#{o.id.slice(-8).toUpperCase()}</p>
                     <p style={{ fontSize: 11, color: TEXT3 }}>{o.buyer_id.slice(0, 8)}…</p>
                   </div>
                   <p style={{ fontSize: 12, color: TEXT2 }}>{new Date(o.created_at).toLocaleDateString("de-DE", { day: "2-digit", month: "short", year: "numeric" })}</p>
-                  <p style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: 15, color: TEXT }}>€{Number(o.total_price).toFixed(2)}</p>
+                  <p style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: 15, color: TEXT }}>€{Number(o.total_price).toFixed(2)}</p>
                   <Badge status={o.status} />
                   <select value={o.status} onChange={e => updateOrderStatus(o.id, e.target.value)}
                     style={{ background: SURFACE, border: `1.5px solid ${BORDER}`, borderRadius: 8, padding: "6px 10px", color: TEXT, fontSize: 12, cursor: "pointer", outline: "none", width: "100%" }}>
@@ -604,7 +604,7 @@ export default function AdminDashboard() {
             {/* Left: conversation list */}
             <div style={{ width: 280, borderRight: `1px solid ${BORDER}`, display: "flex", flexDirection: "column", flexShrink: 0 }}>
               <div style={{ padding: "16px 18px", borderBottom: `1px solid ${BORDER}` }}>
-                <p style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: 14, color: TEXT }}>Chats</p>
+                <p style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: 14, color: TEXT }}>Chats</p>
                 <p style={{ fontSize: 11, color: TEXT3, marginTop: 2 }}>
                   {conversations.length} gesamt · {unreadConvs > 0 ? <span style={{ color: ORANGE, fontWeight: 700 }}>{unreadConvs} ungelesen</span> : "alle gelesen"}
                 </p>
@@ -649,7 +649,7 @@ export default function AdminDashboard() {
               {!selectedConvId ? (
                 <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 10 }}>
                   <p style={{ fontSize: 40 }}>💬</p>
-                  <p style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 700, fontSize: 16, color: TEXT }}>Chat auswählen</p>
+                  <p style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 700, fontSize: 16, color: TEXT }}>Chat auswählen</p>
                   <p style={{ fontSize: 13, color: TEXT3 }}>Klick links auf einen Benutzer um den Chat zu öffnen.</p>
                 </div>
               ) : (() => {
@@ -661,7 +661,7 @@ export default function AdminDashboard() {
                   <>
                     {/* Chat header */}
                     <div style={{ padding: "14px 20px", borderBottom: `1px solid ${BORDER}`, display: "flex", alignItems: "center", gap: 12, flexShrink: 0 }}>
-                      <div style={{ width: 36, height: 36, borderRadius: 10, background: `${ORANGE}15`, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: 15, color: ORANGE, flexShrink: 0 }}>
+                      <div style={{ width: 36, height: 36, borderRadius: 10, background: `${ORANGE}15`, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: 15, color: ORANGE, flexShrink: 0 }}>
                         {name[0]?.toUpperCase() ?? "?"}
                       </div>
                       <div>

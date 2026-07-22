@@ -166,7 +166,7 @@
     @apply font-sans;
   }
   h1, h2, h3, h4, h5, h6 {
-    font-family: var(--font-hanken), 'Hanken Grotesk', system-ui, sans-serif;
+    font-family: var(--font-manrope), 'Manrope', system-ui, sans-serif;
     text-wrap: balance;
   }
   p {

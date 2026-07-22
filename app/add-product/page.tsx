@@ -106,7 +106,7 @@ export default function AddProductPage() {
   return (
     <main style={{ minHeight:"100vh", background:BG, fontFamily:"'Inter','Helvetica Neue',system-ui,sans-serif", color:TEXT, paddingBottom:60 }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap');
         input::placeholder,textarea::placeholder { color:${TEXT3}; }
         @keyframes spin { to { transform:rotate(360deg); } }
       `}</style>
@@ -115,7 +115,7 @@ export default function AddProductPage() {
       <nav style={{ background:SURFACE, borderBottom:`1px solid ${BORDER}`, padding:"0 24px", height:60, display:"flex", alignItems:"center", justifyContent:"space-between" }}>
         <div style={{ display:"flex", alignItems:"center", gap:8 }}>
           <img src="/flowio-icon.png" alt="Flowio" style={{ width: 30, height: 30, borderRadius: 7, objectFit: "cover" }} />
-          <span style={{ fontFamily:"'Hanken Grotesk',sans-serif", fontWeight:800, fontSize:14, color:TEXT, letterSpacing:"-0.3px" }}>Flowio</span>
+          <span style={{ fontFamily:"'Manrope',sans-serif", fontWeight:800, fontSize:14, color:TEXT, letterSpacing:"-0.3px" }}>Flowio</span>
         </div>
         <a href="/supplier/dashboard/products" style={{ color:TEXT2, fontSize:13, textDecoration:"none", display:"flex", alignItems:"center", gap:6, fontWeight:500 }}>← Zurück zum Dashboard</a>
       </nav>
@@ -123,7 +123,7 @@ export default function AddProductPage() {
       <div style={{ maxWidth:680, margin:"0 auto", padding:"36px 24px" }}>
         <div style={{ marginBottom:32 }}>
           <p style={{ fontSize:11, fontWeight:700, color:TEXT3, letterSpacing:"2.5px", textTransform:"uppercase", marginBottom:8 }}>Lieferant-Dashboard</p>
-          <h1 style={{ fontFamily:"'Hanken Grotesk',sans-serif", fontWeight:800, fontSize:28, color:TEXT, letterSpacing:"-0.8px", marginBottom:6 }}>Produkt hinzufügen</h1>
+          <h1 style={{ fontFamily:"'Manrope',sans-serif", fontWeight:800, fontSize:28, color:TEXT, letterSpacing:"-0.8px", marginBottom:6 }}>Produkt hinzufügen</h1>
           <p style={{ color:TEXT2, fontSize:14 }}>Neues Produkt im Flowio Marktplatz listen.</p>
         </div>
 
@@ -136,7 +136,7 @@ export default function AddProductPage() {
         <div style={{ display:"flex", flexDirection:"column", gap:14 }}>
           {/* Produktdetails */}
           <div style={{ background:SURFACE, border:`1px solid ${BORDER}`, borderRadius:16, padding:"24px" }}>
-            <h2 style={{ fontFamily:"'Hanken Grotesk',sans-serif", fontWeight:700, fontSize:14, color:TEXT, marginBottom:20 }}>Produktdetails</h2>
+            <h2 style={{ fontFamily:"'Manrope',sans-serif", fontWeight:700, fontSize:14, color:TEXT, marginBottom:20 }}>Produktdetails</h2>
             <div style={{ display:"flex", flexDirection:"column", gap:16 }}>
               <Field label="Name" required>
                 <input type="text" placeholder="z.B. Club Mate 500ml" value={name} onChange={e => setName(e.target.value)} style={inputStyle()} onFocus={focus} onBlur={blur} />
@@ -156,7 +156,7 @@ export default function AddProductPage() {
 
           {/* Produktbild */}
           <div style={{ background:SURFACE, border:`1px solid ${BORDER}`, borderRadius:16, padding:"24px" }}>
-            <h2 style={{ fontFamily:"'Hanken Grotesk',sans-serif", fontWeight:700, fontSize:14, color:TEXT, marginBottom:20 }}>Produktbild</h2>
+            <h2 style={{ fontFamily:"'Manrope',sans-serif", fontWeight:700, fontSize:14, color:TEXT, marginBottom:20 }}>Produktbild</h2>
 
             {imagePreview ? (
               <div style={{ display:"flex", alignItems:"flex-start", gap:16 }}>
@@ -194,7 +194,7 @@ export default function AddProductPage() {
 
           {/* Preis & Lager */}
           <div style={{ background:SURFACE, border:`1px solid ${BORDER}`, borderRadius:16, padding:"24px" }}>
-            <h2 style={{ fontFamily:"'Hanken Grotesk',sans-serif", fontWeight:700, fontSize:14, color:TEXT, marginBottom:20 }}>Preis & Lagerbestand</h2>
+            <h2 style={{ fontFamily:"'Manrope',sans-serif", fontWeight:700, fontSize:14, color:TEXT, marginBottom:20 }}>Preis & Lagerbestand</h2>
             <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:16 }}>
               <Field label="Preis" required>
                 <div style={{ position:"relative" }}>

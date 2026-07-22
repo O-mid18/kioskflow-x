@@ -207,7 +207,7 @@ export default function SupplierDashboardPage() {
       <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", marginBottom:32, flexWrap:"wrap", gap:16 }}>
         <div>
           <p style={{ fontSize:13, color:TEXT3, marginBottom:6 }}>{greeting},</p>
-          <h1 style={{ fontFamily:"'Hanken Grotesk',sans-serif", fontWeight:800, fontSize:28, color:TEXT, letterSpacing:"-0.8px" }}>
+          <h1 style={{ fontFamily:"'Manrope',sans-serif", fontWeight:800, fontSize:28, color:TEXT, letterSpacing:"-0.8px" }}>
             {supplierName || "Lieferant"}
           </h1>
           <p style={{ fontSize:13, color:TEXT2, marginTop:4 }}>Hier ist ein Überblick über dein Geschäft.</p>
@@ -297,7 +297,7 @@ export default function SupplierDashboardPage() {
               {kpi.spark && <Sparkline values={kpi.spark} color={kpi.sparkColor} />}
             </div>
             <p style={{ fontSize:11, fontWeight:600, color:TEXT3, letterSpacing:"1px", textTransform:"uppercase", marginTop:12, marginBottom:4 }}>{kpi.label}</p>
-            <p style={{ fontFamily:"'Hanken Grotesk',sans-serif", fontWeight:800, fontSize:24, color:kpi.label==="Ausstehend"&&pending>0?ORANGE:TEXT, letterSpacing:"-0.5px" }}>{kpi.value}</p>
+            <p style={{ fontFamily:"'Manrope',sans-serif", fontWeight:800, fontSize:24, color:kpi.label==="Ausstehend"&&pending>0?ORANGE:TEXT, letterSpacing:"-0.5px" }}>{kpi.value}</p>
             <p style={{ fontSize:11, color:TEXT3, marginTop:4 }}>{kpi.sub}</p>
           </div>
         ))}
@@ -310,7 +310,7 @@ export default function SupplierDashboardPage() {
         <div style={{ background:SURFACE, border:`1px solid ${BORDER}`, borderRadius:18, overflow:"hidden" }}>
           <div style={{ padding:"20px 22px 14px", display:"flex", alignItems:"center", justifyContent:"space-between", borderBottom:`1px solid ${BORDER}` }}>
             <div>
-              <h2 style={{ fontFamily:"'Hanken Grotesk',sans-serif", fontWeight:800, fontSize:16, color:TEXT }}>Letzte Bestellungen</h2>
+              <h2 style={{ fontFamily:"'Manrope',sans-serif", fontWeight:800, fontSize:16, color:TEXT }}>Letzte Bestellungen</h2>
               <p style={{ fontSize:12, color:TEXT3, marginTop:2 }}>{recentOrders.length} neueste angezeigt</p>
             </div>
             <a href="/supplier/dashboard/orders" style={{ fontSize:13, color:ORANGE, fontWeight:700 }}>Alle →</a>
@@ -334,7 +334,7 @@ export default function SupplierDashboardPage() {
                   <tr key={order.id} style={{ borderBottom:i<recentOrders.length-1?`1px solid ${BORDER}`:"none", transition:"background 0.15s" }}
                     onMouseEnter={e => e.currentTarget.style.background=BG}
                     onMouseLeave={e => e.currentTarget.style.background="transparent"}>
-                    <td style={{ padding:"13px 20px", fontSize:13, fontWeight:600, color:TEXT, fontFamily:"'Hanken Grotesk',sans-serif" }}>
+                    <td style={{ padding:"13px 20px", fontSize:13, fontWeight:600, color:TEXT, fontFamily:"'Manrope',sans-serif" }}>
                       #{order.id.slice(-6).toUpperCase()}
                     </td>
                     <td style={{ padding:"13px 20px", fontSize:12, color:TEXT2 }}>
@@ -354,7 +354,7 @@ export default function SupplierDashboardPage() {
         {/* Monthly revenue bar chart (Shopify-style) */}
         <div style={{ background:SURFACE, border:`1px solid ${BORDER}`, borderRadius:18, padding:"20px 22px" }}>
           <div style={{ marginBottom:16 }}>
-            <h2 style={{ fontFamily:"'Hanken Grotesk',sans-serif", fontWeight:800, fontSize:16, color:TEXT }}>Monatsumsatz</h2>
+            <h2 style={{ fontFamily:"'Manrope',sans-serif", fontWeight:800, fontSize:16, color:TEXT }}>Monatsumsatz</h2>
             <p style={{ fontSize:12, color:TEXT3, marginTop:2 }}>Letzte 6 Monate</p>
           </div>
           <div style={{ display:"flex", alignItems:"flex-end", gap:8, height:120 }}>
@@ -376,13 +376,13 @@ export default function SupplierDashboardPage() {
           <div style={{ marginTop:16, paddingTop:12, borderTop:`1px solid ${BORDER}`, display:"flex", justifyContent:"space-between", alignItems:"center" }}>
             <div>
               <p style={{ fontSize:11, color:TEXT3 }}>Gesamtumsatz (6M)</p>
-              <p style={{ fontFamily:"'Hanken Grotesk',sans-serif", fontWeight:800, fontSize:20, color:TEXT }}>
+              <p style={{ fontFamily:"'Manrope',sans-serif", fontWeight:800, fontSize:20, color:TEXT }}>
                 €{monthlyRevenue.reduce((s,m) => s+m.revenue, 0).toFixed(2)}
               </p>
             </div>
             <div style={{ textAlign:"right" }}>
               <p style={{ fontSize:11, color:TEXT3 }}>Diesen Monat</p>
-              <p style={{ fontFamily:"'Hanken Grotesk',sans-serif", fontWeight:800, fontSize:20, color:ORANGE }}>
+              <p style={{ fontFamily:"'Manrope',sans-serif", fontWeight:800, fontSize:20, color:ORANGE }}>
                 €{(monthlyRevenue[monthlyRevenue.length - 1]?.revenue ?? 0).toFixed(2)}
               </p>
             </div>
@@ -396,7 +396,7 @@ export default function SupplierDashboardPage() {
         {/* Top products */}
         <div style={{ background:SURFACE, border:`1px solid ${BORDER}`, borderRadius:18, overflow:"hidden" }}>
           <div style={{ padding:"20px 22px 14px", borderBottom:`1px solid ${BORDER}`, display:"flex", justifyContent:"space-between", alignItems:"center" }}>
-            <h2 style={{ fontFamily:"'Hanken Grotesk',sans-serif", fontWeight:800, fontSize:16, color:TEXT }}>Top Produkte</h2>
+            <h2 style={{ fontFamily:"'Manrope',sans-serif", fontWeight:800, fontSize:16, color:TEXT }}>Top Produkte</h2>
             <a href="/supplier/dashboard/products" style={{ fontSize:13, color:ORANGE, fontWeight:700 }}>Alle →</a>
           </div>
           {topProducts.length === 0 ? (
@@ -433,7 +433,7 @@ export default function SupplierDashboardPage() {
         {/* Inventory summary */}
         <div style={{ background:SURFACE, border:`1px solid ${BORDER}`, borderRadius:18, overflow:"hidden" }}>
           <div style={{ padding:"20px 22px 14px", borderBottom:`1px solid ${BORDER}`, display:"flex", justifyContent:"space-between", alignItems:"center" }}>
-            <h2 style={{ fontFamily:"'Hanken Grotesk',sans-serif", fontWeight:800, fontSize:16, color:TEXT }}>Lagerbestand</h2>
+            <h2 style={{ fontFamily:"'Manrope',sans-serif", fontWeight:800, fontSize:16, color:TEXT }}>Lagerbestand</h2>
             <a href="/supplier/dashboard/products" style={{ fontSize:13, color:ORANGE, fontWeight:700 }}>Verwalten →</a>
           </div>
 
@@ -454,7 +454,7 @@ export default function SupplierDashboardPage() {
                   { label:"Leer",     count:products.filter(p=>p.stock===0).length, color:"#dc2626", bg:"#fef2f2" },
                 ].map(s => (
                   <div key={s.label} style={{ background:s.bg, borderRadius:12, padding:"14px 14px 12px", textAlign:"center" }}>
-                    <p style={{ fontFamily:"'Hanken Grotesk',sans-serif", fontWeight:800, fontSize:22, color:s.color }}>{s.count}</p>
+                    <p style={{ fontFamily:"'Manrope',sans-serif", fontWeight:800, fontSize:22, color:s.color }}>{s.count}</p>
                     <p style={{ fontSize:11, color:s.color, fontWeight:600 }}>{s.label}</p>
                   </div>
                 ))}
@@ -482,7 +482,7 @@ export default function SupplierDashboardPage() {
       <div style={{ marginTop:24, background:`linear-gradient(135deg, ${ORANGE} 0%, #1D4ED8 100%)`, borderRadius:18, padding:"28px 32px", display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"wrap", gap:20, position:"relative", overflow:"hidden" }}>
         <div style={{ position:"absolute", top:-50, right:-50, width:200, height:200, background:"rgba(255,255,255,0.07)", borderRadius:"50%" }} />
         <div style={{ position:"relative" }}>
-          <p style={{ fontFamily:"'Hanken Grotesk',sans-serif", fontWeight:800, fontSize:20, color:"#fff", marginBottom:6 }}>Bereit für mehr Verkäufe?</p>
+          <p style={{ fontFamily:"'Manrope',sans-serif", fontWeight:800, fontSize:20, color:"#fff", marginBottom:6 }}>Bereit für mehr Verkäufe?</p>
           <p style={{ fontSize:13, color:"rgba(255,255,255,0.7)" }}>Liste neue Produkte und erreiche hunderte Kiosk-Betreiber.</p>
         </div>
         <div style={{ display:"flex", gap:10, position:"relative" }}>

@@ -122,13 +122,13 @@ export default function SupplierProductsPage() {
 
   return (
     <div style={{ padding: "32px 32px 60px", fontFamily: "'Inter','Helvetica Neue',system-ui,sans-serif" }}>
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap'); @keyframes spin { to { transform: rotate(360deg); } }`}</style>
+      <style>{`@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap'); @keyframes spin { to { transform: rotate(360deg); } }`}</style>
 
       {/* Header */}
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 28 }}>
         <div>
           <p style={{ fontSize: 11, fontWeight: 700, color: TEXT3, letterSpacing: "2.5px", textTransform: "uppercase", marginBottom: 8 }}>Lieferant-Dashboard</p>
-          <h1 style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: 26, color: TEXT, letterSpacing: "-0.8px" }}>Meine Produkte</h1>
+          <h1 style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: 26, color: TEXT, letterSpacing: "-0.8px" }}>Meine Produkte</h1>
           <p style={{ fontSize: 13, color: TEXT2, marginTop: 4 }}>{products.length} Produkte · {totalUnits} Einheiten verkauft</p>
         </div>
         <a href="/add-product" style={{ display: "inline-flex", alignItems: "center", gap: 7, background: ORANGE, color: "#fff", fontWeight: 700, padding: "11px 20px", borderRadius: 11, textDecoration: "none", fontSize: 14, flexShrink: 0 }}>
@@ -146,7 +146,7 @@ export default function SupplierProductsPage() {
         ].map((s: any) => (
           <div key={s.label} style={{ background: SURFACE, border: `1.5px solid ${s.warn ? ORANGE : BORDER}`, borderRadius: 14, padding: "18px" }}>
             <span style={{ fontSize: 22 }}>{s.icon}</span>
-            <p style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: 22, color: s.warn ? ORANGE : TEXT, margin: "10px 0 2px", letterSpacing: "-0.5px" }}>{s.value}</p>
+            <p style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: 22, color: s.warn ? ORANGE : TEXT, margin: "10px 0 2px", letterSpacing: "-0.5px" }}>{s.value}</p>
             <p style={{ fontSize: 12, fontWeight: 600, color: TEXT2 }}>{s.label}</p>
             <p style={{ fontSize: 11, color: TEXT3, marginTop: 2 }}>{s.sub}</p>
           </div>
@@ -215,7 +215,7 @@ export default function SupplierProductsPage() {
                 </div>
 
                 {/* Price */}
-                <p style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: 15, color: TEXT }}>€{product.price.toFixed(2)}</p>
+                <p style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: 15, color: TEXT }}>€{product.price.toFixed(2)}</p>
 
                 {/* Stock — inline edit */}
                 <div>

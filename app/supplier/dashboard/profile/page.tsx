@@ -74,7 +74,7 @@ export default function SupplierProfilePage() {
     <div style={{ padding:"32px 32px 60px", maxWidth:720 }}>
       <div style={{ marginBottom:32 }}>
         <p style={{ fontSize:11, fontWeight:700, color:TEXT3, letterSpacing:"2.5px", textTransform:"uppercase", marginBottom:8 }}>Lieferant-Dashboard</p>
-        <h1 style={{ fontFamily:"'Hanken Grotesk',sans-serif", fontWeight:800, fontSize:26, color:TEXT, letterSpacing:"-0.8px" }}>Mein Profil</h1>
+        <h1 style={{ fontFamily:"'Manrope',sans-serif", fontWeight:800, fontSize:26, color:TEXT, letterSpacing:"-0.8px" }}>Mein Profil</h1>
         <p style={{ fontSize:13, color:TEXT2, marginTop:4 }}>Verwalte deine Markeninfo und Kontodaten.</p>
       </div>
 
@@ -94,19 +94,19 @@ export default function SupplierProfilePage() {
                   onError={e => { (e.currentTarget as HTMLImageElement).style.display="none"; }} />
               </div>
             ) : (
-              <div style={{ width:72, height:72, borderRadius:16, background:`${ORANGE}20`, display:"flex", alignItems:"center", justifyContent:"center", fontFamily:"'Hanken Grotesk',sans-serif", fontWeight:800, fontSize:26, color:ORANGE }}>
+              <div style={{ width:72, height:72, borderRadius:16, background:`${ORANGE}20`, display:"flex", alignItems:"center", justifyContent:"center", fontFamily:"'Manrope',sans-serif", fontWeight:800, fontSize:26, color:ORANGE }}>
                 {initials}
               </div>
             )}
           </div>
           <div>
-            <p style={{ fontFamily:"'Hanken Grotesk',sans-serif", fontWeight:800, fontSize:20, color:TEXT, marginBottom:3 }}>{name || "Dein Markenname"}</p>
+            <p style={{ fontFamily:"'Manrope',sans-serif", fontWeight:800, fontSize:20, color:TEXT, marginBottom:3 }}>{name || "Dein Markenname"}</p>
             <p style={{ fontSize:13, color:TEXT2 }}>{email}</p>
             <span style={{ display:"inline-block", marginTop:6, background:`${ORANGE}15`, color:ORANGE, fontSize:11, fontWeight:700, padding:"3px 10px", borderRadius:100 }}>Lieferant</span>
           </div>
         </div>
 
-        <h2 style={{ fontFamily:"'Hanken Grotesk',sans-serif", fontWeight:700, fontSize:14, color:TEXT, marginBottom:18 }}>Markeninformationen</h2>
+        <h2 style={{ fontFamily:"'Manrope',sans-serif", fontWeight:700, fontSize:14, color:TEXT, marginBottom:18 }}>Markeninformationen</h2>
         <div style={{ display:"flex", flexDirection:"column", gap:16 }}>
           <div>
             <label style={{ display:"block", fontSize:12, fontWeight:600, color:TEXT2, marginBottom:7 }}>Markenname</label>
@@ -134,7 +134,7 @@ export default function SupplierProfilePage() {
 
       {/* Account card */}
       <div style={{ background:SURFACE, border:`1px solid ${BORDER}`, borderRadius:18, padding:"22px 28px", marginBottom:16 }}>
-        <h2 style={{ fontFamily:"'Hanken Grotesk',sans-serif", fontWeight:700, fontSize:14, color:TEXT, marginBottom:16 }}>Konto</h2>
+        <h2 style={{ fontFamily:"'Manrope',sans-serif", fontWeight:700, fontSize:14, color:TEXT, marginBottom:16 }}>Konto</h2>
         <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", paddingBottom:14, borderBottom:`1px solid ${BORDER}`, marginBottom:14 }}>
           <div>
             <p style={{ fontSize:13, fontWeight:600, color:TEXT }}>E-Mail-Adresse</p>

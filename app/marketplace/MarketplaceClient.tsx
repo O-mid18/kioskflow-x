@@ -381,7 +381,7 @@ export default function MarketplacePage({ initialProducts = [], initialSuppliers
   return (
     <main style={{ minHeight:"100vh", background:BG, color:TEXT, fontFamily:"'Inter','Helvetica Neue',system-ui,sans-serif", paddingBottom:80 }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap');
         @keyframes fadeUp { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
         .pcard { animation: fadeUp 0.35s ease both; transition: transform 0.2s, box-shadow 0.2s; }
         .pcard:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba(0,0,0,0.1) !important; }
@@ -406,7 +406,7 @@ export default function MarketplacePage({ initialProducts = [], initialSuppliers
         <div style={{ maxWidth:1100, margin:"0 auto", display:"flex", alignItems:"center", justifyContent:"space-between", gap:14 }}>
           <div style={{ display:"flex", alignItems:"center", gap:8 }}>
             <img src="/flowio-icon.png" alt="Flowio" style={{ width: 32, height: 32, borderRadius: 8, objectFit: "cover" }} />
-            <span style={{ fontFamily:"'Hanken Grotesk',sans-serif", fontWeight:800, fontSize:16, color:TEXT, letterSpacing:"-0.3px" }}>Flowio</span>
+            <span style={{ fontFamily:"'Manrope',sans-serif", fontWeight:800, fontSize:16, color:TEXT, letterSpacing:"-0.3px" }}>Flowio</span>
           </div>
           <div className="kf-search-bar" style={{ flex:1, maxWidth:380, position:"relative" }}>
             <svg style={{ position:"absolute", left:12, top:"50%", transform:"translateY(-50%)" }} width={14} height={14} fill="none" stroke={TEXT3} strokeWidth="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
@@ -444,7 +444,7 @@ export default function MarketplacePage({ initialProducts = [], initialSuppliers
           <div style={{ position:"absolute", bottom:-60, right:80, width:150, height:150, background:"rgba(255,255,255,0.05)", borderRadius:"50%" }} />
           <div>
             <p style={{ color:"rgba(255,255,255,0.7)", fontSize:12, fontWeight:600, letterSpacing:"2px", textTransform:"uppercase", marginBottom:10 }}>Frankfurt · B2B Marktplatz</p>
-            <h1 style={{ fontFamily:"'Hanken Grotesk',sans-serif", fontSize:"clamp(24px,3.5vw,40px)", fontWeight:800, color:"#fff", lineHeight:1.1, letterSpacing:"-1px", marginBottom:12 }}>
+            <h1 style={{ fontFamily:"'Manrope',sans-serif", fontSize:"clamp(24px,3.5vw,40px)", fontWeight:800, color:"#fff", lineHeight:1.1, letterSpacing:"-1px", marginBottom:12 }}>
               Direkt vom<br/>Hersteller zu dir.
             </h1>
             <p style={{ color:"rgba(255,255,255,0.7)", fontSize:14, marginBottom:20 }}>Keine Mindestmengen. Keine Zwischenhändler.</p>
@@ -453,7 +453,7 @@ export default function MarketplacePage({ initialProducts = [], initialSuppliers
           <div style={{ display:"flex", gap:32, flexShrink:0, position:"relative" }}>
             {[{v:"100%",l:"Direktpreise"},{v:"0€",l:"Mindestbestellung"},{v:"24h",l:"Lieferung"}].map(({ v, l }) => (
               <div key={l} style={{ textAlign:"center" }}>
-                <p style={{ fontFamily:"'Hanken Grotesk',sans-serif", fontSize:26, fontWeight:800, color:"#fff", letterSpacing:"-0.5px" }}>{v}</p>
+                <p style={{ fontFamily:"'Manrope',sans-serif", fontSize:26, fontWeight:800, color:"#fff", letterSpacing:"-0.5px" }}>{v}</p>
                 <p style={{ fontSize:11, color:"rgba(255,255,255,0.6)", marginTop:3 }}>{l}</p>
               </div>
             ))}
@@ -465,7 +465,7 @@ export default function MarketplacePage({ initialProducts = [], initialSuppliers
           <div style={{ marginBottom:24 }}>
             <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:14 }}>
               <div>
-                <h2 style={{ fontFamily:"'Hanken Grotesk',sans-serif", fontWeight:800, fontSize:17, color:TEXT }}>Top Lieferanten</h2>
+                <h2 style={{ fontFamily:"'Manrope',sans-serif", fontWeight:800, fontSize:17, color:TEXT }}>Top Lieferanten</h2>
                 <p style={{ fontSize:12, color:TEXT3, marginTop:2 }}>Direkt von lokalen Herstellern bestellen</p>
               </div>
             </div>
@@ -521,7 +521,7 @@ export default function MarketplacePage({ initialProducts = [], initialSuppliers
         {/* ── DAILY DEALS ── */}
         {!hasActiveFilter && dailyDeals && (dailyDeals.deals.length > 0 || dailyDeals.freeShipping.length > 0 || dailyDeals.bestsellers.length > 0) && (
           <div style={{ marginBottom:28 }}>
-            <h2 style={{ fontFamily:"'Hanken Grotesk',sans-serif", fontWeight:800, fontSize:19, color:TEXT, marginBottom:16 }}>🎯 Angebote heute</h2>
+            <h2 style={{ fontFamily:"'Manrope',sans-serif", fontWeight:800, fontSize:19, color:TEXT, marginBottom:16 }}>🎯 Angebote heute</h2>
 
             {dailyDeals.endingSoon.length > 0 && (
               <div style={{ marginBottom:16, background:"#fef2f2", border:"1px solid #fca5a5", borderRadius:14, padding:16 }}>
@@ -580,7 +580,7 @@ export default function MarketplacePage({ initialProducts = [], initialSuppliers
           <div style={{ marginBottom:28, background:`${ORANGE}0d`, border:`1px solid ${ORANGE}30`, borderRadius:16, padding:"18px 20px" }}>
             <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:14 }}>
               <span style={{ fontSize:18 }}>🔄</span>
-              <h2 style={{ fontFamily:"'Hanken Grotesk',sans-serif", fontWeight:800, fontSize:16, color:TEXT }}>Zeit zum Nachbestellen?</h2>
+              <h2 style={{ fontFamily:"'Manrope',sans-serif", fontWeight:800, fontSize:16, color:TEXT }}>Zeit zum Nachbestellen?</h2>
               <span style={{ fontSize:11, color:TEXT3 }}>· basierend auf deinen bisherigen Bestellungen</span>
             </div>
             <div style={{ display:"flex", gap:12, overflowX:"auto", paddingBottom:4 }}>
@@ -607,7 +607,7 @@ export default function MarketplacePage({ initialProducts = [], initialSuppliers
         {!loading && products.length > 0 && !hasActiveFilter && (
           <div style={{ marginBottom:28 }}>
             <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:14 }}>
-              <h2 style={{ fontFamily:"'Hanken Grotesk',sans-serif", fontWeight:800, fontSize:17, color:TEXT }}>Featured Products</h2>
+              <h2 style={{ fontFamily:"'Manrope',sans-serif", fontWeight:800, fontSize:17, color:TEXT }}>Featured Products</h2>
             </div>
             <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(300px,1fr))", gap:14 }}>
               {products.slice(0,3).map(p => {
@@ -626,7 +626,7 @@ export default function MarketplacePage({ initialProducts = [], initialSuppliers
                         {fIsNew && <span style={{ background:"#16a34a", color:"#fff", fontSize:9, fontWeight:800, padding:"3px 8px", borderRadius:100 }}>✦ NEU</span>}
                       </div>
                       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center" }}>
-                        <h3 style={{ color:"#fff", fontFamily:"'Hanken Grotesk',sans-serif", fontWeight:700, fontSize:16 }}>{p.name}</h3>
+                        <h3 style={{ color:"#fff", fontFamily:"'Manrope',sans-serif", fontWeight:700, fontSize:16 }}>{p.name}</h3>
                         <button onClick={e => { e.stopPropagation(); if ((p.stock ?? 0) > 0) addToCart(p); }}
                           disabled={(p.stock ?? 0) <= 0}
                           style={{ background:(p.stock ?? 0) <= 0 ? "rgba(255,255,255,0.2)" : ORANGE, color:"#fff", border:"none", fontSize:11, fontWeight:700, padding:"7px 13px", borderRadius:8, cursor:(p.stock ?? 0) <= 0 ? "not-allowed" : "pointer" }}>
@@ -670,7 +670,7 @@ export default function MarketplacePage({ initialProducts = [], initialSuppliers
         {/* ── ALL PRODUCTS ── */}
         <div>
           <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:16 }}>
-            <h2 style={{ fontFamily:"'Hanken Grotesk',sans-serif", fontWeight:800, fontSize:17, color:TEXT }}>
+            <h2 style={{ fontFamily:"'Manrope',sans-serif", fontWeight:800, fontSize:17, color:TEXT }}>
               {category === "Alle" ? "Alle Produkte" : `${(CATS[category]||CATS.default).emoji} ${category}`}
               {hasActiveFilter && <span style={{ fontSize:13, fontWeight:500, color:TEXT3, marginLeft:8 }}>· gefiltert</span>}
             </h2>
@@ -781,7 +781,7 @@ export default function MarketplacePage({ initialProducts = [], initialSuppliers
         {/* ── BOTTOM CTA ── */}
         {!loading && (
           <div style={{ margin:"40px 0", background:SURFACE, border:`1px solid ${BORDER}`, borderRadius:20, padding:"36px 32px", textAlign:"center" }}>
-            <h3 style={{ fontFamily:"'Hanken Grotesk',sans-serif", color:TEXT, fontSize:22, fontWeight:800, marginBottom:8 }}>Du bist Marke oder Hersteller?</h3>
+            <h3 style={{ fontFamily:"'Manrope',sans-serif", color:TEXT, fontSize:22, fontWeight:800, marginBottom:8 }}>Du bist Marke oder Hersteller?</h3>
             <p style={{ color:TEXT2, fontSize:14, marginBottom:22 }}>Liste kostenlos und erreiche hunderte Kioske in Deutschland.</p>
             <a href="/signup/supplier" style={{ display:"inline-block", background:ORANGE, color:"#fff", fontWeight:700, padding:"12px 28px", borderRadius:10, textDecoration:"none", fontSize:14 }}>Jetzt listen →</a>
           </div>

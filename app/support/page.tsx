@@ -134,13 +134,13 @@ export default function SupportPage() {
 
   return (
     <main style={{ minHeight: "100vh", background: BG, fontFamily: "'Inter','Helvetica Neue',system-ui,sans-serif", color: TEXT, display: "flex", flexDirection: "column" }}>
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap'); *{box-sizing:border-box}`}</style>
+      <style>{`@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap'); *{box-sizing:border-box}`}</style>
 
       {/* Navbar */}
       <nav style={{ background: SURFACE, borderBottom: `1px solid ${BORDER}`, padding: "0 24px", height: 58, display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0 }}>
         <a href="/marketplace" style={{ display: "flex", alignItems: "center", gap: 8, textDecoration: "none" }}>
           <img src="/flowio-icon.png" alt="Flowio" style={{ width: 30, height: 30, borderRadius: 7, objectFit: "cover" }} />
-          <span style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: 14, color: TEXT }}>Flowio</span>
+          <span style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: 14, color: TEXT }}>Flowio</span>
         </a>
         <a href="/profile" style={{ fontSize: 13, color: TEXT2, textDecoration: "none", fontWeight: 500 }}>← Zurück</a>
       </nav>
@@ -152,7 +152,7 @@ export default function SupportPage() {
         <div style={{ padding: "20px 0 12px", borderBottom: `1px solid ${BORDER}`, display: "flex", alignItems: "center", gap: 12 }}>
           <div style={{ width: 42, height: 42, borderRadius: 12, background: `${ORANGE}15`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20 }}>💬</div>
           <div>
-            <p style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: 16, color: TEXT }}>Flowio Support</p>
+            <p style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: 16, color: TEXT }}>Flowio Support</p>
             <p style={{ fontSize: 12, color: TEXT3, marginTop: 2 }}>Wir helfen dir so schnell wie möglich.</p>
           </div>
         </div>
@@ -162,7 +162,7 @@ export default function SupportPage() {
           {messages.length === 0 ? (
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", flex: 1, gap: 12, padding: "60px 0" }}>
               <p style={{ fontSize: 48 }}>👋</p>
-              <p style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 700, fontSize: 18, color: TEXT }}>Hallo! Wie können wir helfen?</p>
+              <p style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 700, fontSize: 18, color: TEXT }}>Hallo! Wie können wir helfen?</p>
               <p style={{ fontSize: 14, color: TEXT2, textAlign: "center", maxWidth: 320, lineHeight: 1.6 }}>Schreib uns deine Frage oder dein Problem — wir melden uns so schnell wie möglich.</p>
             </div>
           ) : (

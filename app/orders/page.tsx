@@ -182,7 +182,7 @@ export default function OrdersPage() {
 
   return (
     <main style={{ minHeight: "100vh", background: BG, fontFamily: "'Inter','Helvetica Neue',system-ui,sans-serif", color: TEXT, paddingBottom: 60 }}>
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap'); *{box-sizing:border-box}`}</style>
+      <style>{`@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap'); *{box-sizing:border-box}`}</style>
       {reorderToast && (
         <div style={{ position:"fixed", bottom:90, right:20, zIndex:999, background:"var(--kf-toast-bg,#1a1714)", color:"var(--kf-toast-fg,#fff)", fontSize:13, padding:"12px 18px", borderRadius:12, display:"flex", alignItems:"center", gap:8, boxShadow:"0 4px 24px rgba(0,0,0,0.15)" }}>
           <span style={{ width:18, height:18, background:"#22c55e", borderRadius:"50%", display:"flex", alignItems:"center", justifyContent:"center", fontSize:9, fontWeight:900 }}>✓</span>
@@ -195,7 +195,7 @@ export default function OrdersPage() {
       <nav style={{ background: SURFACE, borderBottom: `1px solid ${BORDER}`, padding: "0 28px", height: 60, display: "flex", alignItems: "center", justifyContent: "space-between", position: "sticky", top: 0, zIndex: 40 }}>
         <a href="/marketplace" style={{ display: "flex", alignItems: "center", gap: 8, textDecoration: "none" }}>
           <img src="/flowio-icon.png" alt="Flowio" style={{ width: 30, height: 30, borderRadius: 7, objectFit: "cover" }} />
-          <span style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: 14, color: TEXT }}>Flowio</span>
+          <span style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: 14, color: TEXT }}>Flowio</span>
         </a>
         <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
           {role === "admin" && <a href="/owner/dashboard" title="Owner-Panel" style={{ background:`${ORANGE}15`, color:ORANGE, fontWeight:700, fontSize:13, textDecoration:"none", padding:"6px 12px", borderRadius:8 }}>🏛️</a>}
@@ -216,7 +216,7 @@ export default function OrdersPage() {
         {/* Header */}
         <div style={{ marginBottom: 28 }}>
           <p style={{ fontSize: 11, fontWeight: 700, color: TEXT3, letterSpacing: "2.5px", textTransform: "uppercase", marginBottom: 8 }}>Mein Konto</p>
-          <h1 style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: 28, color: TEXT, letterSpacing: "-0.8px" }}>Meine Bestellungen</h1>
+          <h1 style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: 28, color: TEXT, letterSpacing: "-0.8px" }}>Meine Bestellungen</h1>
         </div>
 
         {/* KPI row */}
@@ -228,7 +228,7 @@ export default function OrdersPage() {
           ].map(s => (
             <div key={s.label} style={{ background: s.hi ? ORANGE : SURFACE, border: `1px solid ${s.hi ? ORANGE : BORDER}`, borderRadius: 14, padding: "18px 20px" }}>
               <span style={{ fontSize: 20 }}>{s.icon}</span>
-              <p style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: 22, color: s.hi ? "#fff" : TEXT, margin: "8px 0 2px" }}>{s.value}</p>
+              <p style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: 22, color: s.hi ? "#fff" : TEXT, margin: "8px 0 2px" }}>{s.value}</p>
               <p style={{ fontSize: 12, fontWeight: 600, color: s.hi ? "rgba(255,255,255,0.8)" : TEXT2 }}>{s.label}</p>
             </div>
           ))}
@@ -273,7 +273,7 @@ export default function OrdersPage() {
                         {s.icon}
                       </div>
                       <div>
-                        <p style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: 15, color: TEXT }}>
+                        <p style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: 15, color: TEXT }}>
                           #{order.id.slice(-8).toUpperCase()}
                         </p>
                         <p style={{ fontSize: 12, color: TEXT3, marginTop: 2 }}>
@@ -283,7 +283,7 @@ export default function OrdersPage() {
                     </div>
                     <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
                       <StatusBadge status={order.status} />
-                      <p style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: 18, color: TEXT }}>
+                      <p style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: 18, color: TEXT }}>
                         €{Number(order.total_price).toFixed(2)}
                       </p>
                       {order.status === "awaiting_payment" && (
@@ -333,7 +333,7 @@ export default function OrdersPage() {
                                   <p style={{ fontSize: 13, fontWeight: 600, color: TEXT }}>{(item.products as any)?.name ?? `Produkt #${item.product_id.slice(-6)}`}</p>
                                   <p style={{ fontSize: 12, color: TEXT3 }}>Menge: {item.quantity}</p>
                                 </div>
-                                <p style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: 14, color: TEXT }}>
+                                <p style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: 14, color: TEXT }}>
                                   €{(item.price_at_purchase * item.quantity).toFixed(2)}
                                 </p>
                               </div>
@@ -343,7 +343,7 @@ export default function OrdersPage() {
                           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 14px 0", borderTop: `1px solid ${BORDER}`, marginTop: 8 }}>
                             <div>
                               <p style={{ fontSize: 13, fontWeight: 700, color: TEXT2 }}>Gesamtbetrag</p>
-                              <p style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: 16, color: ORANGE }}>€{Number(order.total_price).toFixed(2)}</p>
+                              <p style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: 16, color: ORANGE }}>€{Number(order.total_price).toFixed(2)}</p>
                             </div>
                             <button
                               onClick={() => reorderItems(order.id, order.order_items ?? [])}

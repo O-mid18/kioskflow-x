@@ -15,7 +15,7 @@ export default function HomePage() {
       <a href="#main-content" className="kf-skip-link">Zum Inhalt springen</a>
 
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@600;700;800&family=Inter:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Inter:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap');
         * { box-sizing: border-box; }
         .kf-nav-link:hover { color: #003ec7 !important; }
         .kf-step { transition: transform 0.2s, box-shadow 0.2s; }
@@ -46,7 +46,7 @@ export default function HomePage() {
       <nav role="navigation" aria-label="Hauptnavigation" style={{ position: "sticky", top: 0, zIndex: 50, background: "var(--kf-surface)", borderBottom: "1px solid var(--kf-border)", padding: "0 32px", height: 60, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <a href="/" aria-label="Flowio — Startseite" style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none" }}>
           <img src="/flowio-icon.png" alt="" aria-hidden="true" style={{ width: 32, height: 32, borderRadius: 8, objectFit: "cover" }} />
-          <span style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: 16, color: "var(--kf-text)", letterSpacing: "-0.3px" }}>Flowio</span>
+          <span style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: 16, color: "var(--kf-text)", letterSpacing: "-0.3px" }}>Flowio</span>
         </a>
         <div className="kf-nav-links" style={{ display: "flex", alignItems: "center", gap: 28 }}>
           <a href="/marketplace" className="kf-nav-link" style={{ fontSize: 14, fontWeight: 500, color: "var(--kf-text2)", textDecoration: "none" }}>Marktplatz</a>
@@ -66,7 +66,7 @@ export default function HomePage() {
             <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#22c55e" }} aria-hidden="true" />
             <span style={{ fontSize: 12, fontWeight: 600, color: "var(--kf-text2)" }}>Frankfurt · B2B Marktplatz</span>
           </div>
-          <h1 style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: "clamp(2.4rem,5vw,3.6rem)", lineHeight: 1.05, letterSpacing: "-1.5px", color: "var(--kf-text)", marginBottom: 24 }}>
+          <h1 style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: "clamp(2.4rem,5vw,3.6rem)", lineHeight: 1.05, letterSpacing: "-1.5px", color: "var(--kf-text)", marginBottom: 24 }}>
             Direkt vom<br /><span style={{ color: ORANGE }}>Hersteller</span><br />zu dir.
           </h1>
           <p style={{ fontSize: 17, lineHeight: 1.75, color: "var(--kf-text2)", maxWidth: 440, marginBottom: 36 }}>
@@ -129,7 +129,7 @@ export default function HomePage() {
             { value: "0 €",  label: "Mindestbestellung" },
           ].map(({ value, label }, i) => (
             <div key={label} className="kf-trust-item" style={{ textAlign: "center", padding: "12px 16px", borderRight: i < 3 ? "1px solid var(--kf-border)" : "none" }}>
-              <p style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: 26, color: ORANGE, letterSpacing: "-0.8px", fontVariantNumeric: "tabular-nums" }}>{value}</p>
+              <p style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: 26, color: ORANGE, letterSpacing: "-0.8px", fontVariantNumeric: "tabular-nums" }}>{value}</p>
               <p style={{ fontSize: 12, color: "var(--kf-text3)", marginTop: 3, fontWeight: 500 }}>{label}</p>
             </div>
           ))}
@@ -140,7 +140,7 @@ export default function HomePage() {
       <section style={{ maxWidth: 1200, margin: "0 auto", padding: "80px 32px" }}>
         <div style={{ textAlign: "center", marginBottom: 52 }} className="kf-reveal">
           <p style={{ fontSize: 12, fontWeight: 700, color: ORANGE, letterSpacing: "2.5px", textTransform: "uppercase", marginBottom: 12 }}>So einfach geht&apos;s</p>
-          <h2 style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: "clamp(1.8rem,3.5vw,2.6rem)", color: "var(--kf-text)", letterSpacing: "-0.8px" }}>In drei Schritten bestellen</h2>
+          <h2 style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: "clamp(1.8rem,3.5vw,2.6rem)", color: "var(--kf-text)", letterSpacing: "-0.8px" }}>In drei Schritten bestellen</h2>
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20 }} className="kf-steps-grid">
           {([
@@ -156,7 +156,7 @@ export default function HomePage() {
                 <span style={{ fontFamily: "'Inter',sans-serif", fontWeight: 800, fontSize: 12, color: "var(--kf-text3)", letterSpacing: "1px" }} aria-hidden="true">{num}</span>
                 <div style={{ width: 36, height: 36, background: `${ORANGE}12`, borderRadius: 9, display: "flex", alignItems: "center", justifyContent: "center" }}>{svg}</div>
               </div>
-              <h3 style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 700, fontSize: 18, color: "var(--kf-text)", marginBottom: 10 }}>{title}</h3>
+              <h3 style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 700, fontSize: 18, color: "var(--kf-text)", marginBottom: 10 }}>{title}</h3>
               <p style={{ fontSize: 14, color: "var(--kf-text2)", lineHeight: 1.7 }}>{desc}</p>
             </div>
           ))}
@@ -169,7 +169,7 @@ export default function HomePage() {
       <section style={{ maxWidth: 1200, margin: "0 auto", padding: "80px 32px" }}>
         <div style={{ textAlign: "center", marginBottom: 52 }} className="kf-reveal">
           <p style={{ fontSize: 12, fontWeight: 700, color: ORANGE, letterSpacing: "2.5px", textTransform: "uppercase", marginBottom: 12 }}>Warum Flowio</p>
-          <h2 style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: "clamp(1.8rem,3.5vw,2.6rem)", color: "var(--kf-text)", letterSpacing: "-0.8px" }}>Gebaut für Späti-Betreiber</h2>
+          <h2 style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: "clamp(1.8rem,3.5vw,2.6rem)", color: "var(--kf-text)", letterSpacing: "-0.8px" }}>Gebaut für Späti-Betreiber</h2>
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16 }} className="kf-features-grid">
           {([
@@ -184,7 +184,7 @@ export default function HomePage() {
           ] as const).map(({ svg, title, desc }, i) => (
             <div key={title} className="kf-feature-card kf-reveal" style={{ background: "var(--kf-surface)", border: "1px solid var(--kf-border)", borderRadius: 18, padding: "28px 24px", animationDelay: `${i * 0.1}s` }}>
               <div style={{ width: 48, height: 48, background: `${ORANGE}12`, borderRadius: 14, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 18 }}>{svg}</div>
-              <h3 style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 700, fontSize: 15, color: "var(--kf-text)", marginBottom: 8 }}>{title}</h3>
+              <h3 style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 700, fontSize: 15, color: "var(--kf-text)", marginBottom: 8 }}>{title}</h3>
               <p style={{ fontSize: 13, color: "var(--kf-text2)", lineHeight: 1.65 }}>{desc}</p>
             </div>
           ))}
@@ -197,7 +197,7 @@ export default function HomePage() {
       <section style={{ maxWidth: 760, margin: "0 auto", padding: "80px 32px" }}>
         <div style={{ textAlign: "center", marginBottom: 52 }} className="kf-reveal">
           <p style={{ fontSize: 12, fontWeight: 700, color: ORANGE, letterSpacing: "2.5px", textTransform: "uppercase", marginBottom: 12 }}>Häufige Fragen</p>
-          <h2 style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: "clamp(1.8rem,3.5vw,2.6rem)", color: "var(--kf-text)", letterSpacing: "-0.8px" }}>Alles, was du wissen musst</h2>
+          <h2 style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: "clamp(1.8rem,3.5vw,2.6rem)", color: "var(--kf-text)", letterSpacing: "-0.8px" }}>Alles, was du wissen musst</h2>
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
           {([
@@ -220,7 +220,7 @@ export default function HomePage() {
         <div style={{ maxWidth: 1200, margin: "0 auto", background: ORANGE, borderRadius: 24, padding: "52px 48px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 32, flexWrap: "wrap" }} className="kf-supplier-cta">
           <div>
             <p style={{ fontSize: 12, fontWeight: 700, color: "rgba(255,255,255,0.65)", letterSpacing: "2px", textTransform: "uppercase", marginBottom: 10 }}>Für Hersteller und Marken</p>
-            <h2 style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: "clamp(1.6rem,3vw,2.4rem)", color: "#fff", letterSpacing: "-0.8px", marginBottom: 12 }}>Dein Produkt.<br />Frankfurter Kioske. Kein Aufwand.</h2>
+            <h2 style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: "clamp(1.6rem,3vw,2.4rem)", color: "#fff", letterSpacing: "-0.8px", marginBottom: 12 }}>Dein Produkt.<br />Frankfurter Kioske. Kein Aufwand.</h2>
             <p style={{ fontSize: 15, color: "rgba(255,255,255,0.78)", lineHeight: 1.6, maxWidth: 400 }}>Erstelle ein Anbieter-Konto in 5 Minuten und liste deine Produkte kostenlos. Keine Provision, direkte Zahlung.</p>
           </div>
           <a href="/signup/supplier" className="kf-cta-btn" style={{ background: "#fff", color: ORANGE, padding: "16px 32px", borderRadius: 14, fontWeight: 800, fontSize: 16, textDecoration: "none", whiteSpace: "nowrap", boxShadow: "0 4px 20px rgba(0,0,0,0.15)", fontFamily: "'Inter',sans-serif" }}>
@@ -235,7 +235,7 @@ export default function HomePage() {
           <div>
             <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
               <img src="/flowio-icon.png" alt="" aria-hidden="true" style={{ width: 28, height: 28, borderRadius: 7, objectFit: "cover" }} />
-              <span style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: 14, color: "var(--kf-text)" }}>Flowio</span>
+              <span style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: 14, color: "var(--kf-text)" }}>Flowio</span>
             </div>
             <p style={{ fontSize: 13, color: "var(--kf-text3)", lineHeight: 1.7, maxWidth: 260 }}>B2B Marktplatz für Kiosk-Betreiber und lokale Marken in Frankfurt, Deutschland.</p>
           </div>

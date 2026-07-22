@@ -44,7 +44,7 @@ export default function LoginPage() {
   return (
     <main style={{ minHeight:"100vh", background:BG, display:"flex", fontFamily:"'Inter','Helvetica Neue',system-ui,sans-serif" }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap');
         input::placeholder { color: ${TEXT3}; }
         input:focus { outline:none; border-color:${ORANGE} !important; box-shadow:0 0 0 3px rgba(0,62,199,0.1); }
       `}</style>
@@ -56,11 +56,11 @@ export default function LoginPage() {
 
         <div style={{ display:"flex", alignItems:"center", gap:10, position:"relative" }}>
           <img src="/flowio-icon.png" alt="Flowio" style={{ width: 36, height: 36, borderRadius: 9, objectFit: "cover" }} />
-          <span style={{ fontFamily:"'Hanken Grotesk',sans-serif", fontWeight:800, fontSize:16, color:"#fff", letterSpacing:"-0.3px" }}>Flowio</span>
+          <span style={{ fontFamily:"'Manrope',sans-serif", fontWeight:800, fontSize:16, color:"#fff", letterSpacing:"-0.3px" }}>Flowio</span>
         </div>
 
         <div style={{ position:"relative" }}>
-          <h1 style={{ fontFamily:"'Hanken Grotesk',sans-serif", fontWeight:800, fontSize:"clamp(30px,3vw,44px)", color:"#fff", lineHeight:1.1, letterSpacing:"-1.5px", marginBottom:18 }}>
+          <h1 style={{ fontFamily:"'Manrope',sans-serif", fontWeight:800, fontSize:"clamp(30px,3vw,44px)", color:"#fff", lineHeight:1.1, letterSpacing:"-1.5px", marginBottom:18 }}>
             Direkt vom<br/>
             Hersteller<br/>
             zum Kiosk.
@@ -73,7 +73,7 @@ export default function LoginPage() {
         <div style={{ display:"flex", gap:36, position:"relative" }}>
           {[{v:"100%",l:"Direktpreise"},{v:"0€",l:"Mindestbestellung"},{v:"24h",l:"Lieferung"}].map(({ v, l }) => (
             <div key={l}>
-              <p style={{ fontFamily:"'Hanken Grotesk',sans-serif", fontSize:24, fontWeight:800, color:"#fff", letterSpacing:"-0.5px" }}>{v}</p>
+              <p style={{ fontFamily:"'Manrope',sans-serif", fontSize:24, fontWeight:800, color:"#fff", letterSpacing:"-0.5px" }}>{v}</p>
               <p style={{ fontSize:12, color:"rgba(255,255,255,0.55)", marginTop:2 }}>{l}</p>
             </div>
           ))}
@@ -84,7 +84,7 @@ export default function LoginPage() {
       <div style={{ flex:1, display:"flex", alignItems:"center", justifyContent:"center", padding:"48px 40px" }}>
         <div style={{ width:"100%", maxWidth:400 }}>
           <p style={{ fontSize:11, fontWeight:700, color:TEXT3, letterSpacing:"2.5px", textTransform:"uppercase", marginBottom:28 }}>Einloggen</p>
-          <h2 style={{ fontFamily:"'Hanken Grotesk',sans-serif", fontWeight:800, fontSize:28, color:TEXT, letterSpacing:"-0.5px", marginBottom:8 }}>Willkommen zurück</h2>
+          <h2 style={{ fontFamily:"'Manrope',sans-serif", fontWeight:800, fontSize:28, color:TEXT, letterSpacing:"-0.5px", marginBottom:8 }}>Willkommen zurück</h2>
           <p style={{ color:TEXT2, fontSize:14, marginBottom:32 }}>Dein Flowio-Dashboard wartet auf dich.</p>
 
           {errorMsg && (

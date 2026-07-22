@@ -37,7 +37,7 @@ export default function OwnerLogin() {
   return (
     <main style={{ minHeight: "100vh", background: BG, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Inter','Helvetica Neue',system-ui,sans-serif" }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap');
         @keyframes spin { to { transform: rotate(360deg); } }
         input:focus { outline: none; border-color: ${ORANGE} !important; box-shadow: 0 0 0 3px rgba(0,62,199,0.12) !important; }
       `}</style>
@@ -46,7 +46,7 @@ export default function OwnerLogin() {
         {/* Logo */}
         <div style={{ textAlign: "center", marginBottom: 36 }}>
           <img src="/flowio-icon.png" alt="Flowio" style={{ width: 56, height: 56, borderRadius: 16, objectFit: "cover" }} />
-          <h1 style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: 24, color: TEXT, letterSpacing: "-0.5px" }}>Owner-Panel</h1>
+          <h1 style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: 24, color: TEXT, letterSpacing: "-0.5px" }}>Owner-Panel</h1>
           <p style={{ color: TEXT3, fontSize: 13, marginTop: 6 }}>Nur für den Eigentümer · Passwort erforderlich</p>
         </div>
 

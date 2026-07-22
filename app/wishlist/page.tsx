@@ -37,13 +37,13 @@ export default function WishlistPage() {
 
   return (
     <main style={{ minHeight: "100vh", background: BG, fontFamily: "'Inter','Helvetica Neue',system-ui,sans-serif", color: TEXT, paddingBottom: 60 }}>
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap');`}</style>
+      <style>{`@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap');`}</style>
 
       {/* Header */}
       <header style={{ background: SURFACE, borderBottom: `1px solid ${BORDER}`, padding: "0 24px", height: 60, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <a href="/marketplace" style={{ display: "flex", alignItems: "center", gap: 8, textDecoration: "none" }}>
           <img src="/flowio-icon.png" alt="Flowio" style={{ width: 30, height: 30, borderRadius: 7, objectFit: "cover" }} />
-          <span style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: 15, color: TEXT, letterSpacing: "-0.3px" }}>Flowio</span>
+          <span style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: 15, color: TEXT, letterSpacing: "-0.3px" }}>Flowio</span>
         </a>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           {role === "admin" && <a href="/owner/dashboard" title="Owner-Panel" style={{ background:`${ORANGE}15`, color:ORANGE, fontWeight:700, fontSize:13, textDecoration:"none", padding:"6px 12px", borderRadius:8 }}>🏛️</a>}
@@ -58,15 +58,15 @@ export default function WishlistPage() {
         <div style={{ background: `linear-gradient(135deg, ${ORANGE} 0%, #1D4ED8 100%)`, borderRadius: 20, padding: "36px 40px", marginBottom: 32, position: "relative", overflow: "hidden" }}>
           <div style={{ position: "absolute", top: -40, right: -40, width: 200, height: 200, borderRadius: "50%", background: "rgba(255,255,255,0.08)" }} />
           <p style={{ fontSize: 11, fontWeight: 700, color: "rgba(255,255,255,0.7)", letterSpacing: "2.5px", textTransform: "uppercase", marginBottom: 10 }}>Gespeicherte Produkte</p>
-          <h1 style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: 32, color: "#fff", letterSpacing: "-1px", marginBottom: 8 }}>Meine Wunschliste</h1>
+          <h1 style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: 32, color: "#fff", letterSpacing: "-1px", marginBottom: 8 }}>Meine Wunschliste</h1>
           <p style={{ color: "rgba(255,255,255,0.7)", fontSize: 14 }}>Produkte, die du dir gemerkt hast.</p>
           <div style={{ display: "flex", gap: 32, marginTop: 20 }}>
             <div>
-              <p style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontSize: 28, fontWeight: 800, color: "#fff" }}>{items.length}</p>
+              <p style={{ fontFamily: "'Manrope',sans-serif", fontSize: 28, fontWeight: 800, color: "#fff" }}>{items.length}</p>
               <p style={{ fontSize: 12, color: "rgba(255,255,255,0.6)" }}>Gespeicherte Artikel</p>
             </div>
             <div>
-              <p style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontSize: 28, fontWeight: 800, color: "#fff" }}>€{items.reduce((s, i) => s + (i.products?.price ?? 0), 0).toFixed(2)}</p>
+              <p style={{ fontFamily: "'Manrope',sans-serif", fontSize: 28, fontWeight: 800, color: "#fff" }}>€{items.reduce((s, i) => s + (i.products?.price ?? 0), 0).toFixed(2)}</p>
               <p style={{ fontSize: 12, color: "rgba(255,255,255,0.6)" }}>Gesamtwert</p>
             </div>
           </div>
@@ -81,7 +81,7 @@ export default function WishlistPage() {
         ) : items.length === 0 ? (
           <div style={{ textAlign: "center", padding: "80px 0" }}>
             <p style={{ fontSize: 56, marginBottom: 16 }}>❤️</p>
-            <h2 style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: 22, color: TEXT, marginBottom: 10 }}>Noch nichts gespeichert</h2>
+            <h2 style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: 22, color: TEXT, marginBottom: 10 }}>Noch nichts gespeichert</h2>
             <p style={{ color: TEXT2, fontSize: 14, marginBottom: 28 }}>Entdecke Produkte und füge sie deiner Wunschliste hinzu.</p>
             <a href="/marketplace" style={{ display: "inline-block", background: ORANGE, color: "#fff", fontWeight: 700, padding: "13px 28px", borderRadius: 12, textDecoration: "none", fontSize: 14, boxShadow: "0 4px 14px rgba(0,62,199,0.25)" }}>Zum Marktplatz →</a>
           </div>
@@ -100,10 +100,10 @@ export default function WishlistPage() {
                   />
                 </div>
                 <div style={{ padding: "14px 16px" }}>
-                  <h2 style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 700, fontSize: 15, color: TEXT, marginBottom: 6, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                  <h2 style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 700, fontSize: 15, color: TEXT, marginBottom: 6, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                     {item.products?.name ?? "—"}
                   </h2>
-                  <p style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: 20, color: TEXT, marginBottom: 8 }}>
+                  <p style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: 20, color: TEXT, marginBottom: 8 }}>
                     €{item.products?.price?.toFixed(2) ?? "—"}
                   </p>
                   {(item.products?.stock ?? 1) <= 0 && (

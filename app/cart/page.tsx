@@ -99,13 +99,13 @@ export default function CartPage() {
 
   return (
     <main style={{ minHeight:"100vh", background:BG, fontFamily:"'Inter','Helvetica Neue',system-ui,sans-serif", color:TEXT, paddingBottom:80 }}>
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap'); @keyframes spin { to { transform:rotate(360deg); } } @media(max-width:640px){.cart-grid{grid-template-columns:1fr !important}.cart-item{flex-wrap:wrap}.cart-item-info{min-width:0;flex:1}.cart-qty{margin-left:auto}}`}</style>
+      <style>{`@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap'); @keyframes spin { to { transform:rotate(360deg); } } @media(max-width:640px){.cart-grid{grid-template-columns:1fr !important}.cart-item{flex-wrap:wrap}.cart-item-info{min-width:0;flex:1}.cart-qty{margin-left:auto}}`}</style>
 
       {/* Header */}
       <header style={{ background:SURFACE, borderBottom:`1px solid ${BORDER}`, padding:"0 20px", height:60, display:"flex", alignItems:"center", justifyContent:"space-between" }}>
         <div style={{ display:"flex", alignItems:"center", gap:8 }}>
           <img src="/flowio-icon.png" alt="Flowio" style={{ width: 30, height: 30, borderRadius: 7, objectFit: "cover" }} />
-          <span style={{ fontFamily:"'Hanken Grotesk',sans-serif", fontWeight:800, fontSize:15, color:TEXT, letterSpacing:"-0.3px" }}>Flowio</span>
+          <span style={{ fontFamily:"'Manrope',sans-serif", fontWeight:800, fontSize:15, color:TEXT, letterSpacing:"-0.3px" }}>Flowio</span>
         </div>
         <div style={{ display:"flex", alignItems:"center", gap:14 }}>
           {role === "admin" && <a href="/owner/dashboard" title="Owner-Panel" style={{ background:`${ORANGE}15`, color:ORANGE, fontWeight:700, fontSize:13, textDecoration:"none", padding:"7px 12px", borderRadius:8 }}>🏛️</a>}
@@ -131,7 +131,7 @@ export default function CartPage() {
       <div style={{ maxWidth:680, margin:"0 auto", padding:"28px 20px" }}>
         <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:24 }}>
           <div>
-            <h1 style={{ fontFamily:"'Hanken Grotesk',sans-serif", fontWeight:800, fontSize:26, color:TEXT, letterSpacing:"-0.5px", marginBottom:4 }}>Warenkorb</h1>
+            <h1 style={{ fontFamily:"'Manrope',sans-serif", fontWeight:800, fontSize:26, color:TEXT, letterSpacing:"-0.5px", marginBottom:4 }}>Warenkorb</h1>
             <p style={{ color:TEXT3, fontSize:13 }}>{cartCount} Artikel ausgewählt</p>
           </div>
           {items.length > 0 && (
@@ -150,7 +150,7 @@ export default function CartPage() {
         {items.length === 0 ? (
           <div style={{ textAlign:"center", padding:"80px 0" }}>
             <p style={{ fontSize:64, marginBottom:20 }}>🛒</p>
-            <h2 style={{ fontFamily:"'Hanken Grotesk',sans-serif", color:TEXT, fontSize:22, fontWeight:800, marginBottom:10 }}>Dein Warenkorb ist leer</h2>
+            <h2 style={{ fontFamily:"'Manrope',sans-serif", color:TEXT, fontSize:22, fontWeight:800, marginBottom:10 }}>Dein Warenkorb ist leer</h2>
             <p style={{ color:TEXT2, fontSize:14, marginBottom:28 }}>Entdecke unsere Produkte und füge sie hier hinzu.</p>
             <a href="/marketplace" style={{ display:"inline-block", background:ORANGE, color:"#fff", fontWeight:700, padding:"13px 28px", borderRadius:12, textDecoration:"none", fontSize:14 }}>Zum Marktplatz →</a>
           </div>

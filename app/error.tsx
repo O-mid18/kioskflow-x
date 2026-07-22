@@ -19,7 +19,7 @@ export default function GlobalError({
     <main style={{ minHeight: "100vh", background: "var(--kf-bg)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Inter',system-ui,sans-serif" }}>
       <div style={{ textAlign: "center", padding: "0 24px" }}>
         <p style={{ fontSize: 52, marginBottom: 16 }}>⚠️</p>
-        <h1 style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: 24, color: "var(--kf-text)", marginBottom: 10 }}>
+        <h1 style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: 24, color: "var(--kf-text)", marginBottom: 10 }}>
           Etwas ist schiefgelaufen
         </h1>
         <p style={{ fontSize: 14, color: "var(--kf-text2)", marginBottom: 28, maxWidth: 340, margin: "0 auto 28px" }}>

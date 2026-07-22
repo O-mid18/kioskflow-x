@@ -313,10 +313,10 @@ export default function KioskPageManage() {
 
   return (
     <div style={{ minHeight: "100vh", background: BG, padding: 32, fontFamily: "'Inter','Helvetica Neue',system-ui,sans-serif" }}>
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap');`}</style>
+      <style>{`@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap');`}</style>
       <div style={{ maxWidth: 800, margin: "0 auto" }}>
         <a href="/profile" style={{ fontSize: 13, color: TEXT2, textDecoration: "none" }}>← Profil</a>
-        <h1 style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: 26, color: TEXT, margin: "8px 0 4px" }}>Meine Kiosk-Seite</h1>
+        <h1 style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: 26, color: TEXT, margin: "8px 0 4px" }}>Meine Kiosk-Seite</h1>
         <p style={{ fontSize: 13, color: TEXT3, marginBottom: 24 }}>Öffentliche Seite für Kunden und Lieferanten mit deinen Produkten, Öffnungszeiten und Adresse.</p>
 
         {msg && (
@@ -328,7 +328,7 @@ export default function KioskPageManage() {
         <div style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 16, padding: 24, marginBottom: 20 }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
             <div>
-              <h2 style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 700, fontSize: 14, color: TEXT }}>Seite veröffentlichen</h2>
+              <h2 style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 700, fontSize: 14, color: TEXT }}>Seite veröffentlichen</h2>
               <p style={{ fontSize: 12, color: TEXT3, marginTop: 4 }}>Wenn aktiv, ist deine Seite unter myflowie.de/kiosk/{userId?.slice(0,8)}… öffentlich sichtbar.</p>
             </div>
             <label style={{ position: "relative", display: "inline-block", width: 44, height: 24, cursor: "pointer", flexShrink: 0 }}>
@@ -397,7 +397,7 @@ export default function KioskPageManage() {
         </div>
 
         <div style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 16, padding: 24, marginBottom: 20 }}>
-          <h2 style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 700, fontSize: 14, color: TEXT, marginBottom: 16 }}>Fotos vom Kiosk</h2>
+          <h2 style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 700, fontSize: 14, color: TEXT, marginBottom: 16 }}>Fotos vom Kiosk</h2>
           <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 16 }}>
             {photos.map((p: any) => (
               <div key={p.id} style={{ position: "relative", width: 90, height: 90 }}>
@@ -417,7 +417,7 @@ export default function KioskPageManage() {
 
         {suggestions.length > 0 && (
           <div style={{ background: "#fefce8", border: "1.5px solid #fcd34d", borderRadius: 16, padding: 20, marginBottom: 20 }}>
-            <h2 style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 700, fontSize: 14, color: "#92400e", marginBottom: 12 }}>📦 Vorbereitete Bestellungen</h2>
+            <h2 style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 700, fontSize: 14, color: "#92400e", marginBottom: 12 }}>📦 Vorbereitete Bestellungen</h2>
             <p style={{ fontSize: 12, color: "#78350f", marginBottom: 12 }}>Diese Artikel sind knapp — Flowio hat passende Bestellungen vorbereitet.</p>
             <div style={{ display: "grid", gap: 8 }}>
               {suggestions.map((item: any) => (
@@ -438,7 +438,7 @@ export default function KioskPageManage() {
 
         {offers.length > 0 && (
           <div style={{ background: SURFACE, border: `1.5px solid ${ORANGE}40`, borderRadius: 16, padding: 20, marginBottom: 20 }}>
-            <h2 style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 700, fontSize: 14, color: TEXT, marginBottom: 12 }}>💬 Angebote von Lieferanten</h2>
+            <h2 style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 700, fontSize: 14, color: TEXT, marginBottom: 12 }}>💬 Angebote von Lieferanten</h2>
             <div style={{ display: "grid", gap: 10 }}>
               {offers.map((offer: any) => {
                 const supplierName = offer.suppliers?.profiles?.company_name || offer.suppliers?.profiles?.full_name || "Lieferant";
@@ -475,7 +475,7 @@ export default function KioskPageManage() {
         )}
 
         <div style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 16, padding: 24 }}>
-          <h2 style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 700, fontSize: 14, color: TEXT, marginBottom: 16 }}>Meine Produkte ({items.length})</h2>
+          <h2 style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 700, fontSize: 14, color: TEXT, marginBottom: 16 }}>Meine Produkte ({items.length})</h2>
 
           <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr 2fr auto", gap: 8, marginBottom: 20, alignItems: "end" }}>
             <div>

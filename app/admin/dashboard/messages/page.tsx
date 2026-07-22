@@ -60,7 +60,7 @@ export default function AdminMessagesPage() {
 
       <div style={{ padding: "28px 24px" }}>
         <p style={{ fontSize: 11, fontWeight: 700, color: TEXT3, letterSpacing: "2px", textTransform: "uppercase", marginBottom: 8 }}>Admin</p>
-        <h1 style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: 24, color: TEXT, marginBottom: 24 }}>Alle Gespräche</h1>
+        <h1 style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: 24, color: TEXT, marginBottom: 24 }}>Alle Gespräche</h1>
 
         <div style={{ display: "flex", gap: 20, alignItems: "flex-start" }}>
           {/* Conversation list */}

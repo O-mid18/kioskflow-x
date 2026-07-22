@@ -114,11 +114,11 @@ export default function SupplierSignupPage() {
   if (otpStep) {
     return (
       <main style={{ minHeight: "100vh", background: BG, fontFamily: "'Inter','Helvetica Neue',system-ui,sans-serif", display: "flex", alignItems: "center", justifyContent: "center", padding: "24px" }}>
-        <style>{`@import url('https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap');`}</style>
+        <style>{`@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap');`}</style>
         <div style={{ maxWidth: 420, width: "100%" }}>
           <div style={{ textAlign: "center", marginBottom: 32 }}>
             <div style={{ width: 56, height: 56, background: `${ORANGE}15`, borderRadius: 16, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28, margin: "0 auto 16px" }}>✉️</div>
-            <h1 style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: 24, color: TEXT, letterSpacing: "-0.6px", marginBottom: 8 }}>Code eingeben</h1>
+            <h1 style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: 24, color: TEXT, letterSpacing: "-0.6px", marginBottom: 8 }}>Code eingeben</h1>
             <p style={{ color: TEXT2, fontSize: 14, lineHeight: 1.6 }}>
               Wir haben einen 6-stelligen Code an<br />
               <strong style={{ color: TEXT }}>{fields.email}</strong> gesendet.
@@ -176,13 +176,13 @@ export default function SupplierSignupPage() {
 
   return (
     <main style={{ minHeight: "100vh", background: BG, fontFamily: "'Inter','Helvetica Neue',system-ui,sans-serif", paddingBottom: 60 }}>
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap'); input::placeholder,select::placeholder { color: var(--kf-text3); }`}</style>
+      <style>{`@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap'); input::placeholder,select::placeholder { color: var(--kf-text3); }`}</style>
 
       {/* Header */}
       <nav style={{ background: SURFACE, borderBottom: `1px solid ${BORDER}`, padding: "0 24px", height: 60, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <a href="/marketplace" style={{ display: "flex", alignItems: "center", gap: 8, textDecoration: "none" }}>
           <img src="/flowio-icon.png" alt="Flowio" style={{ width: 30, height: 30, borderRadius: 7, objectFit: "cover" }} />
-          <span style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: 14, color: TEXT, letterSpacing: "-0.3px" }}>Flowio</span>
+          <span style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: 14, color: TEXT, letterSpacing: "-0.3px" }}>Flowio</span>
         </a>
         <a href="/signup" style={{ color: TEXT2, fontSize: 13, textDecoration: "none", fontWeight: 500 }}>← Zurück</a>
       </nav>
@@ -190,7 +190,7 @@ export default function SupplierSignupPage() {
       <div style={{ maxWidth: 520, margin: "0 auto", padding: "40px 24px" }}>
         <div style={{ marginBottom: 28 }}>
           <span style={{ display: "inline-block", background: `${ORANGE}15`, color: ORANGE, fontSize: 11, fontWeight: 700, padding: "4px 12px", borderRadius: 100, marginBottom: 14, letterSpacing: "1px", textTransform: "uppercase" }}>📦 Lieferant</span>
-          <h1 style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: 26, color: TEXT, letterSpacing: "-0.8px", marginBottom: 6 }}>Lieferant werden</h1>
+          <h1 style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: 26, color: TEXT, letterSpacing: "-0.8px", marginBottom: 6 }}>Lieferant werden</h1>
           <p style={{ color: TEXT2, fontSize: 14 }}>Verkaufe deine Produkte direkt an Kiosk-Betreiber in Frankfurt. Wir prüfen deinen Antrag innerhalb von 24h.</p>
         </div>
 

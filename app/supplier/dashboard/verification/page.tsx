@@ -103,12 +103,12 @@ export default function VerificationPage() {
 
   return (
     <div style={{ padding: "32px 32px 60px", fontFamily: "'Inter','Helvetica Neue',system-ui,sans-serif", color: TEXT }}>
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap'); @keyframes spin{to{transform:rotate(360deg)}} *{box-sizing:border-box}`}</style>
+      <style>{`@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap'); @keyframes spin{to{transform:rotate(360deg)}} *{box-sizing:border-box}`}</style>
 
       {/* Header */}
       <div style={{ marginBottom: 28 }}>
         <p style={{ fontSize: 11, fontWeight: 700, color: TEXT3, letterSpacing: "2.5px", textTransform: "uppercase", marginBottom: 8 }}>Lieferant-Dashboard</p>
-        <h1 style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 800, fontSize: 26, color: TEXT, letterSpacing: "-0.8px" }}>Unternehmensverifizierung</h1>
+        <h1 style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: 26, color: TEXT, letterSpacing: "-0.8px" }}>Unternehmensverifizierung</h1>
         <p style={{ fontSize: 13, color: TEXT2, marginTop: 6 }}>Diese Daten sind nur für den Admin sichtbar — nicht für Käufer.</p>
       </div>
 
@@ -152,7 +152,7 @@ export default function VerificationPage() {
 
         {/* Rechtliche Angaben */}
         <div style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 16, padding: "24px" }}>
-          <h2 style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 700, fontSize: 14, color: TEXT, marginBottom: 20 }}>Rechtliche Angaben</h2>
+          <h2 style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 700, fontSize: 14, color: TEXT, marginBottom: 20 }}>Rechtliche Angaben</h2>
           <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
             <Field label="Offizieller Firmenname" required hint="Wie im Handelsregister eingetragen">
               <input value={legalName} onChange={e => setLegalName(e.target.value)} placeholder="z.B. Mustermann GmbH" style={iStyle} onFocus={fo} onBlur={bl} />
@@ -170,7 +170,7 @@ export default function VerificationPage() {
 
         {/* Adresse */}
         <div style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 16, padding: "24px" }}>
-          <h2 style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 700, fontSize: 14, color: TEXT, marginBottom: 20 }}>Unternehmensadresse</h2>
+          <h2 style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 700, fontSize: 14, color: TEXT, marginBottom: 20 }}>Unternehmensadresse</h2>
           <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
             <Field label="Straße & Hausnummer" required>
               <input value={street} onChange={e => setStreet(e.target.value)} placeholder="Musterstraße 42" style={iStyle} onFocus={fo} onBlur={bl} />
@@ -193,7 +193,7 @@ export default function VerificationPage() {
 
         {/* Kontakt */}
         <div style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 16, padding: "24px" }}>
-          <h2 style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 700, fontSize: 14, color: TEXT, marginBottom: 20 }}>Kontaktdaten</h2>
+          <h2 style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 700, fontSize: 14, color: TEXT, marginBottom: 20 }}>Kontaktdaten</h2>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
             <Field label="Telefon">
               <input value={phone} onChange={e => setPhone(e.target.value)} placeholder="+49 69 123456" style={iStyle} onFocus={fo} onBlur={bl} />
@@ -256,7 +256,7 @@ function StripeConnectCard({ supabase }: { supabase: any }) {
       <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
         <div style={{ width: 36, height: 36, background: "#635BFF15", borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>💳</div>
         <div style={{ flex: 1 }}>
-          <h2 style={{ fontFamily: "'Hanken Grotesk',sans-serif", fontWeight: 700, fontSize: 14, color: "var(--kf-text)" }}>Auszahlungen einrichten</h2>
+          <h2 style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 700, fontSize: 14, color: "var(--kf-text)" }}>Auszahlungen einrichten</h2>
           <p style={{ fontSize: 12, color: "var(--kf-text3)" }}>Verbinde dein Bankkonto um Zahlungen zu empfangen</p>
         </div>
         {status === "connected" && (
