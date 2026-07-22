@@ -289,6 +289,13 @@ export default function MarketplacePage({ initialProducts = [], initialSuppliers
       const user = data.user ?? null;
       setUser(user);
       if (user) {
+        const { data: dbCart } = await supabase
+          .from("cart_items")
+          .select("quantity, products(id, name, price, image_url, stock, category, supplier_id, shipping_cost)")
+          .eq("user_id", user.id);
+        if (dbCart) {
+          setCartItems((dbCart as any[]).filter(i => i.products).map((i: any) => ({ ...i.products, quantity: i.quantity })));
+        }
         const { data: wl } = await supabase.from("wishlist").select("products(id, name, price, image_url, stock, category, supplier_id)").eq("user_id", user.id);
         if (wl) setWishlist((wl as any[]).map(w => w.products).filter(Boolean));
         const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).maybeSingle();
@@ -592,7 +599,7 @@ export default function MarketplacePage({ initialProducts = [], initialSuppliers
         )}
 
         {/* ── FEATURED ── */}
-        {!loading && products.length > 0 && (
+        {!loading && products.length > 0 && !hasActiveFilter && (
           <div style={{ marginBottom:28 }}>
             <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:14 }}>
               <h2 style={{ fontFamily:"'Syne',sans-serif", fontWeight:800, fontSize:17, color:TEXT }}>Featured Products</h2>
@@ -602,7 +609,7 @@ export default function MarketplacePage({ initialProducts = [], initialSuppliers
                 const cat = CATS[p.category||""] || CATS.default;
                 const fIsNew = p.created_at ? (Date.now() - new Date(p.created_at).getTime()) < 7 * 24 * 60 * 60 * 1000 : false;
                 return (
-                  <div key={p.id} onClick={() => { if (p.supplier_id) window.location.href = `/supplier/${p.supplier_id}`; }} style={{ position:"relative", height:200, borderRadius:16, overflow:"hidden", cursor:"pointer" }}>
+                  <div key={p.id} onClick={() => setSelectedProduct(p)} style={{ position:"relative", height:200, borderRadius:16, overflow:"hidden", cursor:"pointer" }}>
                     <img loading="lazy" decoding="async" src={p.image_url||"https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?w=600&q=80"} alt={p.name} style={{ width:"100%", height:"100%", objectFit:"cover", transition:"transform 0.4s" }}
                       onMouseEnter={e => e.currentTarget.style.transform="scale(1.05)"}
                       onMouseLeave={e => e.currentTarget.style.transform="scale(1)"}
@@ -688,7 +695,7 @@ export default function MarketplacePage({ initialProducts = [], initialSuppliers
 
                 return (
                   <div key={product.id} className="pcard" style={{ animationDelay:`${i*0.03}s`, background:SURFACE, border:`1px solid ${BORDER}`, borderRadius:16, overflow:"hidden", cursor:"pointer", boxShadow:"0 2px 8px rgba(0,0,0,0.04)" }}
-                    onClick={() => { if (product.supplier_id) window.location.href = `/supplier/${product.supplier_id}`; }}>
+                    onClick={() => setSelectedProduct(product)}>
                     <div style={{ position:"relative", height:160, overflow:"hidden" }}>
                       <img loading="lazy" decoding="async" src={product.image_url||"https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?w=400&q=80"} alt={product.name}
                         style={{ width:"100%", height:"100%", objectFit:"cover", transition:"transform 0.4s" }}

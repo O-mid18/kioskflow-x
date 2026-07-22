@@ -63,13 +63,13 @@ export async function POST(request: Request) {
     const supplierIds = [...new Set((cartItems as any[]).map((i: any) => i.products?.supplier_id).filter(Boolean))];
     const supplierId = supplierIds.length === 1 ? supplierIds[0] : null;
 
-    const { data: order, error: orderError } = await supabase
+    const { data: order, error: orderError } = await db
       .from("orders")
       .insert({
         buyer_id: user.id,
         supplier_id: supplierId,
         total_price: productTotalEur,
-        status: "awaiting_quote",
+        status: "pending",
         shipping_name: shippingAddress.firstName && shippingAddress.lastName ? `${shippingAddress.firstName} ${shippingAddress.lastName}`.trim() : null,
         shipping_email: shippingAddress.email || null,
         shipping_street: shippingAddress.street || null,
@@ -85,7 +85,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Bestellung konnte nicht erstellt werden. Bitte erneut versuchen." }, { status: 500 });
     }
 
-    const { error: itemsError } = await supabase.from("order_items").insert(
+    const { error: itemsError } = await db.from("order_items").insert(
       (cartItems as any[]).map((item) => ({
         order_id: order.id,
         product_id: item.products.id,
@@ -97,7 +97,7 @@ export async function POST(request: Request) {
       }))
     );
     if (itemsError) {
-      await supabase.from("orders").delete().eq("id", order.id);
+      await db.from("orders").delete().eq("id", order.id);
       console.error("[checkout] order_items error:", itemsError.message, itemsError.code);
       return NextResponse.json({ error: "Bestellpositionen konnten nicht gespeichert werden. Bitte erneut versuchen." }, { status: 500 });
     }
@@ -120,7 +120,7 @@ export async function POST(request: Request) {
       }
     }
 
-    await supabase.from("cart_items").delete().eq("user_id", user.id);
+    await db.from("cart_items").delete().eq("user_id", user.id);
 
     return NextResponse.json({ orderId: order.id });
   } catch (error: any) {

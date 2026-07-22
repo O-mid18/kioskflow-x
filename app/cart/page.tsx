@@ -20,6 +20,7 @@ export default function CartPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [role, setRole] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
 
   const fetchCart = async () => {
     try {
@@ -27,6 +28,7 @@ export default function CartPage() {
       setError(null);
       const { data: { user }, error: authError } = await supabase.auth.getUser();
       if (authError || !user) { window.location.href = "/login"; return; }
+      setUserId(user.id);
       supabase.from("profiles").select("role").eq("id", user.id).maybeSingle().then(({ data }) => setRole(data?.role ?? null));
       const { data, error } = await supabase.from("cart_items").select(`id, quantity, products (id, name, price, image_url, stock, shipping_cost)`).eq("user_id", user.id);
       if (error) throw error;
@@ -59,9 +61,8 @@ export default function CartPage() {
 
   const removeAllCart = async () => {
     if (!window.confirm("Warenkorb leeren? Alle Artikel werden entfernt.")) return;
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
-    const { error } = await supabase.from("cart_items").delete().eq("user_id", user.id);
+    if (!userId) return;
+    const { error } = await supabase.from("cart_items").delete().eq("user_id", userId);
     if (!error) setItems([]);
   };
 
