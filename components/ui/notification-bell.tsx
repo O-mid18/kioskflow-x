@@ -77,7 +77,7 @@ export function NotificationBell() {
 
   return (
     <div ref={ref} style={{ position: "relative" }}>
-      <button onClick={toggle} style={{ background: "none", border: "none", cursor: "pointer", position: "relative", padding: "6px 8px", borderRadius: 8, display: "flex", alignItems: "center" }}>
+      <button onClick={toggle} aria-label="Benachrichtigungen" style={{ background: "none", border: "none", cursor: "pointer", position: "relative", padding: "6px 8px", borderRadius: 8, display: "flex", alignItems: "center" }}>
         <svg width={20} height={20} fill="none" stroke="var(--kf-text2)" strokeWidth="2" viewBox="0 0 24 24">
           <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
           <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
