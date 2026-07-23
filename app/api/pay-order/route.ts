@@ -1,6 +1,6 @@
 import Stripe from "stripe";
 import { NextResponse } from "next/server";
-import { createServerClient } from "@/lib/supabase";
+import { createServerClient, createAdminClient } from "@/lib/supabase";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
@@ -66,10 +66,16 @@ export async function POST(request: Request) {
       metadata: { buyer_id: user.id, order_id: orderId },
     });
 
-    await supabase
+    const db = createAdminClient();
+    const { error: updateErr } = await db
       .from("orders")
       .update({ status: "pending", stripe_session_id: stripeSession.id })
       .eq("id", orderId);
+
+    if (updateErr) {
+      console.error("[pay-order] order update error:", updateErr.message);
+      return NextResponse.json({ error: "Bestellung konnte nicht aktualisiert werden. Bitte erneut versuchen." }, { status: 500 });
+    }
 
     return NextResponse.json({ url: stripeSession.url });
   } catch (error: any) {

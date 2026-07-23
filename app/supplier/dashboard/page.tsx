@@ -28,8 +28,11 @@ function StatusBadge({ status }: { status:string }) {
   }, []);
 
   const map: Record<string, { label:string; lightColor:string; lightBg:string; darkColor:string; darkBg:string }> = {
+    awaiting_quote:   { label:"Versandkosten nötig",  lightColor:"#dc2626", lightBg:"#fef2f2", darkColor:"#f87171", darkBg:"rgba(239,68,68,0.15)" },
+    awaiting_payment: { label:"Wartet auf Zahlung",   lightColor:"#d97706", lightBg:"#fef3c7", darkColor:"#fbbf24", darkBg:"rgba(217,119,6,0.15)" },
     pending:   { label:"Ausstehend", lightColor:"#ea580c", lightBg:"#fff7ed", darkColor:"#fb923c", darkBg:"rgba(249,115,22,0.15)" },
     paid:      { label:"Bezahlt",    lightColor:"#16a34a", lightBg:"#f0fdf4", darkColor:"#4ade80", darkBg:"rgba(34,197,94,0.15)"  },
+    preparing: { label:"Wird vorbereitet", lightColor:"#7c3aed", lightBg:"#f3e8ff", darkColor:"#c4b5fd", darkBg:"rgba(124,58,237,0.15)" },
     shipped:   { label:"Versandt",   lightColor:"#003ec7", lightBg:"#eff6ff", darkColor:"#b7c4ff", darkBg:"rgba(0,82,255,0.2)"   },
     delivered: { label:"Geliefert",  lightColor:"#16a34a", lightBg:"#f0fdf4", darkColor:"#4ade80", darkBg:"rgba(34,197,94,0.15)"  },
     cancelled: { label:"Storniert",  lightColor:"#dc2626", lightBg:"#fef2f2", darkColor:"#f87171", darkBg:"rgba(239,68,68,0.15)"  },
