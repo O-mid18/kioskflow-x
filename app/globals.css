@@ -23,16 +23,16 @@
 }
 
 .dark {
-  --kf-bg:      #0d0f1f;  /* dark background — deep navy */
-  --kf-surface: #171929;  /* dark card surface */
-  --kf-surface-container: #1e2035;
-  --kf-surface-high: #252843;
-  --kf-border:  #2e3154;  /* dark outline-variant */
-  --kf-text:    #e2e7ff;  /* inverse-on-surface */
-  --kf-text2:   #9da2c4;  /* muted text */
-  --kf-text3:   #5d607e;  /* subtle text */
-  --kf-toast-bg: #e2e7ff;
-  --kf-toast-fg: #171929;
+  --kf-bg:      #121416;  /* Deep Black background */
+  --kf-surface: #1a1c1e;  /* surface-container-low — cards */
+  --kf-surface-container: #1e2022;  /* surface-container */
+  --kf-surface-high: #282a2c;       /* surface-container-high */
+  --kf-border:  #434656;  /* outline — more visible on dark bg */
+  --kf-text:    #e2e2e5;  /* on-surface */
+  --kf-text2:   #c3c5d9;  /* on-surface-variant */
+  --kf-text3:   #8a8ca0;  /* subtle / outline */
+  --kf-toast-bg: #e2e2e5;
+  --kf-toast-fg: #121416;
 }
 
 /* analytics-bento overrides */
@@ -251,8 +251,8 @@ body > main, #__next > main {
   --foreground: #131b2e;
 }
 .dark {
-  --background: #0d0f1f;
-  --foreground: #e2e7ff;
+  --background: #121416;
+  --foreground: #e2e2e5;
 }
 html { color-scheme: light; }
 html.dark { color-scheme: dark; }
