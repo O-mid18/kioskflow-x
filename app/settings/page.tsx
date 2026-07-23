@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
@@ -10,17 +10,12 @@ const TEXT    = "var(--kf-text)";
 const TEXT2   = "var(--kf-text2)";
 const TEXT3   = "var(--kf-text3)";
 const ORANGE  = "#003ec7";
+const ACCENT  = "var(--kf-accent)";
+const BTN     = "var(--kf-btn)";
 
-const iStyle: React.CSSProperties = {
-  width: "100%", background: BG, border: `1.5px solid ${BORDER}`,
-  borderRadius: 10, padding: "12px 14px", color: TEXT, fontSize: 14,
-  fontFamily: "inherit", outline: "none", boxSizing: "border-box",
-  transition: "border-color 0.2s, box-shadow 0.2s",
-};
-
-function Section({ title, subtitle, children }: { title: string; subtitle?: string; children: React.ReactNode }) {
+function Section({ title, subtitle, children, isDark }: { title: string; subtitle?: string; children: React.ReactNode; isDark?: boolean }) {
   return (
-    <div style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 18, padding: 28, marginBottom: 16 }}>
+    <div style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: isDark ? 8 : 18, padding: 28, marginBottom: 16 }}>
       <h2 style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: 16, color: TEXT, marginBottom: subtitle ? 4 : 20 }}>{title}</h2>
       {subtitle && <p style={{ fontSize: 13, color: TEXT2, marginBottom: 20 }}>{subtitle}</p>}
       {children}
@@ -31,6 +26,7 @@ function Section({ title, subtitle, children }: { title: string; subtitle?: stri
 export default function SettingsPage() {
   const [email, setEmail]           = useState("");
   const [loading, setLoading]       = useState(true);
+  const [isDark, setIsDark]         = useState(false);
 
   const [newPw, setNewPw]           = useState("");
   const [confirmPw, setConfirmPw]   = useState("");
@@ -50,8 +46,26 @@ export default function SettingsPage() {
     });
   }, []);
 
+  useEffect(() => {
+    const check = () => setIsDark(document.documentElement.classList.contains("dark"));
+    check();
+    const obs = new MutationObserver(check);
+    obs.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+    return () => obs.disconnect();
+  }, []);
+
+  const accentColor = isDark ? ACCENT : ORANGE;
+  const btnColor    = isDark ? BTN    : ORANGE;
+
+  const iStyle: React.CSSProperties = {
+    width: "100%", background: BG, border: `1.5px solid ${BORDER}`,
+    borderRadius: isDark ? 4 : 10, padding: "12px 14px", color: TEXT, fontSize: 14,
+    fontFamily: "inherit", outline: "none", boxSizing: "border-box",
+    transition: "border-color 0.2s, box-shadow 0.2s",
+  };
+
   const fo = (e: React.FocusEvent<HTMLInputElement>) => {
-    e.currentTarget.style.borderColor = ORANGE;
+    e.currentTarget.style.borderColor = accentColor;
     e.currentTarget.style.boxShadow = `0 0 0 3px ${ORANGE}18`;
   };
   const bl = (e: React.FocusEvent<HTMLInputElement>) => {
@@ -99,7 +113,7 @@ export default function SettingsPage() {
     return (
       <main style={{ minHeight: "100vh", background: BG, display: "flex", alignItems: "center", justifyContent: "center" }}>
         <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
-        <div style={{ width: 34, height: 34, border: `3px solid ${BORDER}`, borderTopColor: ORANGE, borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
+        <div style={{ width: 34, height: 34, border: `3px solid ${BORDER}`, borderTopColor: accentColor, borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
       </main>
     );
   }
@@ -124,7 +138,7 @@ export default function SettingsPage() {
         </div>
 
         {/* ── Passwort ändern ── */}
-        <Section title="Passwort ändern" subtitle="Mindestens 6 Zeichen. Du musst danach erneut einloggen.">
+        <Section title="Passwort ändern" subtitle="Mindestens 6 Zeichen. Du musst danach erneut einloggen." isDark={isDark}>
           <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
             <div>
               <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: TEXT2, marginBottom: 6 }}>Neues Passwort</label>
@@ -144,7 +158,7 @@ export default function SettingsPage() {
 
             <div style={{ display: "flex", justifyContent: "flex-end" }}>
               <button onClick={changePassword} disabled={pwSaving}
-                style={{ background: pwSaving ? `${ORANGE}80` : ORANGE, color: "#fff", border: "none", borderRadius: 10, padding: "11px 24px", fontSize: 14, fontWeight: 700, cursor: pwSaving ? "not-allowed" : "pointer", display: "flex", alignItems: "center", gap: 8 }}>
+                style={{ background: pwSaving ? `${ORANGE}80` : btnColor, color: "#fff", border: "none", borderRadius: isDark ? 4 : 10, padding: "11px 24px", fontSize: 14, fontWeight: 700, cursor: pwSaving ? "not-allowed" : "pointer", display: "flex", alignItems: "center", gap: 8 }}>
                 {pwSaving && <div style={{ width: 14, height: 14, border: "2px solid rgba(255,255,255,0.4)", borderTopColor: "#fff", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />}
                 {pwSaving ? "Wird gespeichert..." : "Passwort ändern →"}
               </button>
@@ -153,7 +167,7 @@ export default function SettingsPage() {
         </Section>
 
         {/* ── Konto löschen ── */}
-        <div style={{ background: SURFACE, border: `1.5px solid #fca5a5`, borderRadius: 18, padding: 28 }}>
+        <div style={{ background: SURFACE, border: `1.5px solid #fca5a5`, borderRadius: isDark ? 8 : 18, padding: 28 }}>
           <div style={{ display: "flex", alignItems: "flex-start", gap: 14, marginBottom: 20 }}>
             <span style={{ fontSize: 24, flexShrink: 0 }}>⚠️</span>
             <div>
@@ -164,7 +178,7 @@ export default function SettingsPage() {
 
           {!showDeleteConfirm ? (
             <button onClick={() => setShowDeleteConfirm(true)}
-              style={{ background: "#fef2f2", border: "1.5px solid #fca5a5", color: "#dc2626", borderRadius: 10, padding: "11px 22px", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>
+              style={{ background: "#fef2f2", border: "1.5px solid #fca5a5", color: "#dc2626", borderRadius: isDark ? 4 : 10, padding: "11px 22px", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>
               Konto löschen
             </button>
           ) : (
@@ -184,11 +198,11 @@ export default function SettingsPage() {
 
               <div style={{ display: "flex", gap: 10 }}>
                 <button onClick={() => { setShowDeleteConfirm(false); setDeleteEmail(""); setDeleteMsg(null); }}
-                  style={{ background: "none", border: `1.5px solid ${BORDER}`, color: TEXT2, borderRadius: 10, padding: "11px 20px", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
+                  style={{ background: "none", border: `1.5px solid ${BORDER}`, color: TEXT2, borderRadius: isDark ? 4 : 10, padding: "11px 20px", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
                   Abbrechen
                 </button>
                 <button onClick={deleteAccount} disabled={deleting || deleteEmail !== email}
-                  style={{ background: deleting || deleteEmail !== email ? "#fca5a580" : "#dc2626", color: "#fff", border: "none", borderRadius: 10, padding: "11px 22px", fontSize: 13, fontWeight: 700, cursor: deleting || deleteEmail !== email ? "not-allowed" : "pointer", display: "flex", alignItems: "center", gap: 8 }}>
+                  style={{ background: deleting || deleteEmail !== email ? "#fca5a580" : "#dc2626", color: "#fff", border: "none", borderRadius: isDark ? 4 : 10, padding: "11px 22px", fontSize: 13, fontWeight: 700, cursor: deleting || deleteEmail !== email ? "not-allowed" : "pointer", display: "flex", alignItems: "center", gap: 8 }}>
                   {deleting && <div style={{ width: 14, height: 14, border: "2px solid rgba(255,255,255,0.4)", borderTopColor: "#fff", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />}
                   {deleting ? "Wird gelöscht..." : "Konto endgültig löschen"}
                 </button>

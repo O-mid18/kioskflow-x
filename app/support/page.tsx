@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/lib/supabase";
@@ -10,6 +10,8 @@ const TEXT    = "var(--kf-text)";
 const TEXT2   = "var(--kf-text2)";
 const TEXT3   = "var(--kf-text3)";
 const ORANGE  = "#003ec7";
+const ACCENT  = "var(--kf-accent)";
+const BTN     = "var(--kf-btn)";
 
 type Message = {
   id: string; conversation_id: string; sender_id: string;
@@ -23,6 +25,7 @@ export default function SupportPage() {
   const [input, setInput]             = useState("");
   const [sending, setSending]         = useState(false);
   const [loading, setLoading]         = useState(true);
+  const [isDark, setIsDark]           = useState(false);
   const bottomRef                     = useRef<HTMLDivElement>(null);
   const inputRef                      = useRef<HTMLInputElement>(null);
 
@@ -48,6 +51,17 @@ export default function SupportPage() {
       .subscribe();
     return () => { supabase.removeChannel(ch); };
   }, [convId]);
+
+  useEffect(() => {
+    const check = () => setIsDark(document.documentElement.classList.contains("dark"));
+    check();
+    const obs = new MutationObserver(check);
+    obs.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+    return () => obs.disconnect();
+  }, []);
+
+  const accentColor = isDark ? ACCENT : ORANGE;
+  const btnColor    = isDark ? BTN    : ORANGE;
 
   const init = async () => {
     const { data: { user } } = await supabase.auth.getUser();
@@ -126,7 +140,7 @@ export default function SupportPage() {
   if (loading) return (
     <main style={{ minHeight: "100vh", background: BG, display: "flex", alignItems: "center", justifyContent: "center" }}>
       <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
-      <div style={{ width: 34, height: 34, border: `3px solid ${BORDER}`, borderTopColor: ORANGE, borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
+      <div style={{ width: 34, height: 34, border: `3px solid ${BORDER}`, borderTopColor: accentColor, borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
     </main>
   );
 
@@ -195,7 +209,7 @@ export default function SupportPage() {
                               borderRadius: isMe
                                 ? "18px 18px 4px 18px"
                                 : "18px 18px 18px 4px",
-                              background: isMe ? ORANGE : SURFACE,
+                              background: isMe ? btnColor : SURFACE,
                               border: isMe ? "none" : `1px solid ${BORDER}`,
                             }}>
                               <p style={{ fontSize: 14, color: isMe ? "#fff" : TEXT, lineHeight: 1.55, whiteSpace: "pre-wrap", wordBreak: "break-word" }}>{msg.message}</p>
@@ -221,12 +235,12 @@ export default function SupportPage() {
             onChange={e => setInput(e.target.value)}
             onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } }}
             placeholder="Schreib eine Nachricht..."
-            style={{ flex: 1, background: SURFACE, border: `1.5px solid ${BORDER}`, borderRadius: 14, padding: "12px 16px", color: TEXT, fontSize: 14, fontFamily: "inherit", outline: "none", transition: "border-color 0.2s" }}
-            onFocus={e => e.currentTarget.style.borderColor = ORANGE}
+            style={{ flex: 1, background: SURFACE, border: `1.5px solid ${BORDER}`, borderRadius: isDark ? 4 : 14, padding: "12px 16px", color: TEXT, fontSize: 14, fontFamily: "inherit", outline: "none", transition: "border-color 0.2s" }}
+            onFocus={e => e.currentTarget.style.borderColor = accentColor}
             onBlur={e => e.currentTarget.style.borderColor = BORDER}
           />
           <button onClick={send} disabled={sending || !input.trim()}
-            style={{ width: 46, height: 46, background: sending || !input.trim() ? `${ORANGE}50` : ORANGE, color: "#fff", border: "none", borderRadius: 12, fontSize: 18, cursor: sending || !input.trim() ? "not-allowed" : "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, transition: "background 0.2s" }}>
+            style={{ width: 46, height: 46, background: sending || !input.trim() ? `${ORANGE}50` : btnColor, color: "#fff", border: "none", borderRadius: isDark ? 4 : 12, fontSize: 18, cursor: sending || !input.trim() ? "not-allowed" : "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, transition: "background 0.2s" }}>
             {sending ? "…" : "↑"}
           </button>
         </div>

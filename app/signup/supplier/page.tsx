@@ -1,6 +1,6 @@
-﻿"use client";
+"use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import { translateAuthError } from "@/lib/utils";
 import { useRouter } from "next/navigation";
@@ -12,13 +12,16 @@ const TEXT = "var(--kf-text)";
 const TEXT2 = "var(--kf-text2)";
 const TEXT3 = "var(--kf-text3)";
 const ORANGE = "#003ec7";
+const ACCENT = "var(--kf-accent)";
+const BTN    = "var(--kf-btn)";
 
-function inputStyle(extra?: object) {
-  return { width: "100%", background: SURFACE, border: `1.5px solid ${BORDER}`, borderRadius: 10, padding: "12px 15px", color: TEXT, fontSize: 14, boxSizing: "border-box" as const, fontFamily: "inherit", ...extra };
+function inputStyle(dark = false, extra?: object) {
+  return { width: "100%", background: SURFACE, border: `1.5px solid ${BORDER}`, borderRadius: dark ? 4 : 10, padding: "12px 15px", color: TEXT, fontSize: 14, boxSizing: "border-box" as const, fontFamily: "inherit", ...extra };
 }
 
 export default function SupplierSignupPage() {
   const router = useRouter();
+  const [isDark, setIsDark] = useState(false);
   const [fields, setFields] = useState({ companyName: "", contactPerson: "", warehouseAddress: "", city: "", phone: "", productCategory: "", email: "", password: "" });
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState<{ text: string; ok: boolean } | null>(null);
@@ -26,9 +29,20 @@ export default function SupplierSignupPage() {
   const [otp, setOtp] = useState(["", "", "", "", "", "", "", ""]);
   const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
 
+  useEffect(() => {
+    const check = () => setIsDark(document.documentElement.classList.contains("dark"));
+    check();
+    const obs = new MutationObserver(check);
+    obs.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+    return () => obs.disconnect();
+  }, []);
+
+  const accentColor = isDark ? ACCENT : ORANGE;
+  const btnColor    = isDark ? BTN    : ORANGE;
+
   const set = (key: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => setFields(f => ({ ...f, [key]: e.target.value }));
 
-  const focus = (e: React.FocusEvent<HTMLInputElement | HTMLSelectElement>) => { e.currentTarget.style.borderColor = ORANGE; e.currentTarget.style.boxShadow = "0 0 0 3px rgba(0,62,199,0.1)"; };
+  const focus = (e: React.FocusEvent<HTMLInputElement | HTMLSelectElement>) => { e.currentTarget.style.borderColor = accentColor; e.currentTarget.style.boxShadow = "0 0 0 3px rgba(0,62,199,0.1)"; };
   const blur  = (e: React.FocusEvent<HTMLInputElement | HTMLSelectElement>) => { e.currentTarget.style.borderColor = BORDER; e.currentTarget.style.boxShadow = "none"; };
 
   const handleSignup = async () => {
@@ -126,8 +140,8 @@ export default function SupplierSignupPage() {
           </div>
 
           {msg && (
-            <div style={{ background: msg.ok ? "#f0fdf4" : "#fef2f2", border: `1.5px solid ${msg.ok ? "#bbf7d0" : "#fca5a5"}`, borderRadius: 10, padding: "12px 16px", marginBottom: 20, textAlign: "center" }}>
-              <p style={{ color: msg.ok ? "#16a34a" : "#dc2626", fontSize: 13 }}>{msg.text}</p>
+            <div style={{ background: msg.ok ? (isDark ? "rgba(22,163,74,0.15)" : "#f0fdf4") : (isDark ? "rgba(239,68,68,0.15)" : "#fef2f2"), border: `1.5px solid ${msg.ok ? (isDark ? "rgba(22,163,74,0.3)" : "#bbf7d0") : (isDark ? "rgba(239,68,68,0.3)" : "#fca5a5")}`, borderRadius: 10, padding: "12px 16px", marginBottom: 20, textAlign: "center" }}>
+              <p style={{ color: msg.ok ? (isDark ? "#4ade80" : "#16a34a") : (isDark ? "#f87171" : "#dc2626"), fontSize: 13 }}>{msg.text}</p>
             </div>
           )}
 
@@ -143,24 +157,24 @@ export default function SupplierSignupPage() {
                 inputMode="numeric"
                 style={{
                   width: 52, height: 60, textAlign: "center", fontSize: 24, fontWeight: 700,
-                  background: SURFACE, border: `2px solid ${digit ? ORANGE : BORDER}`,
+                  background: SURFACE, border: `2px solid ${digit ? accentColor : BORDER}`,
                   borderRadius: 12, color: TEXT, fontFamily: "'Inter',sans-serif",
                   outline: "none", transition: "border-color 0.15s",
                 }}
-                onFocus={e => e.currentTarget.style.borderColor = ORANGE}
-                onBlur={e => e.currentTarget.style.borderColor = otp[i] ? ORANGE : BORDER}
+                onFocus={e => e.currentTarget.style.borderColor = accentColor}
+                onBlur={e => e.currentTarget.style.borderColor = otp[i] ? accentColor : BORDER}
               />
             ))}
           </div>
 
           <button onClick={handleVerify} disabled={loading}
-            style={{ width: "100%", background: loading ? "rgba(0,62,199,0.55)" : ORANGE, color: "#fff", border: "none", borderRadius: 12, padding: "15px", fontWeight: 700, fontSize: 15, cursor: loading ? "not-allowed" : "pointer", boxShadow: "0 4px 16px rgba(0,62,199,0.25)", fontFamily: "inherit", marginBottom: 16 }}>
+            style={{ width: "100%", background: loading ? "rgba(0,62,199,0.55)" : btnColor, color: "#fff", border: "none", borderRadius: isDark ? 4 : 12, padding: "15px", fontWeight: 700, fontSize: 15, cursor: loading ? "not-allowed" : "pointer", boxShadow: "0 4px 16px rgba(0,62,199,0.25)", fontFamily: "inherit", marginBottom: 16 }}>
             {loading ? "Wird überprüft..." : "Bestätigen →"}
           </button>
 
           <div style={{ textAlign: "center" }}>
             <button onClick={handleResend} disabled={loading}
-              style={{ background: "none", border: "none", color: ORANGE, fontSize: 13, fontWeight: 600, cursor: "pointer", textDecoration: "underline" }}>
+              style={{ background: "none", border: "none", color: accentColor, fontSize: 13, fontWeight: 600, cursor: "pointer", textDecoration: "underline" }}>
               Code erneut senden
             </button>
             <span style={{ color: TEXT3, fontSize: 13, margin: "0 8px" }}>·</span>
@@ -189,24 +203,24 @@ export default function SupplierSignupPage() {
 
       <div style={{ maxWidth: 520, margin: "0 auto", padding: "40px 24px" }}>
         <div style={{ marginBottom: 28 }}>
-          <span style={{ display: "inline-block", background: `${ORANGE}15`, color: ORANGE, fontSize: 11, fontWeight: 700, padding: "4px 12px", borderRadius: 100, marginBottom: 14, letterSpacing: "1px", textTransform: "uppercase" }}>📦 Lieferant</span>
+          <span style={{ display: "inline-block", background: `${ORANGE}15`, color: accentColor, fontSize: 11, fontWeight: 700, padding: "4px 12px", borderRadius: 100, marginBottom: 14, letterSpacing: "1px", textTransform: "uppercase" }}>📦 Lieferant</span>
           <h1 style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: 26, color: TEXT, letterSpacing: "-0.8px", marginBottom: 6 }}>Lieferant werden</h1>
           <p style={{ color: TEXT2, fontSize: 14 }}>Verkaufe deine Produkte direkt an Kiosk-Betreiber in Frankfurt. Wir prüfen deinen Antrag innerhalb von 24h.</p>
         </div>
 
         {msg && (
-          <div style={{ background: msg.ok ? "#f0fdf4" : "#fef2f2", border: `1.5px solid ${msg.ok ? "#bbf7d0" : "#fca5a5"}`, borderRadius: 10, padding: "12px 16px", marginBottom: 20 }}>
-            <p style={{ color: msg.ok ? "#16a34a" : "#dc2626", fontSize: 13 }}>{msg.text}</p>
+          <div style={{ background: msg.ok ? (isDark ? "rgba(22,163,74,0.15)" : "#f0fdf4") : (isDark ? "rgba(239,68,68,0.15)" : "#fef2f2"), border: `1.5px solid ${msg.ok ? (isDark ? "rgba(22,163,74,0.3)" : "#bbf7d0") : (isDark ? "rgba(239,68,68,0.3)" : "#fca5a5")}`, borderRadius: 10, padding: "12px 16px", marginBottom: 20 }}>
+            <p style={{ color: msg.ok ? (isDark ? "#4ade80" : "#16a34a") : (isDark ? "#f87171" : "#dc2626"), fontSize: 13 }}>{msg.text}</p>
             {!msg.ok && fields.email && (
-              <p style={{ color: "#dc2626", fontSize: 12, marginTop: 6 }}>
+              <p style={{ color: isDark ? "#f87171" : "#dc2626", fontSize: 12, marginTop: 6 }}>
                 Falls du bereits eine Bestätigungs-E-Mail erhalten hast,{" "}
-                <a href={`/auth/verify?email=${encodeURIComponent(fields.email)}`} style={{ color: "#dc2626", fontWeight: 700 }}>Code hier eingeben →</a>
+                <a href={`/auth/verify?email=${encodeURIComponent(fields.email)}`} style={{ color: isDark ? "#f87171" : "#dc2626", fontWeight: 700 }}>Code hier eingeben →</a>
               </p>
             )}
           </div>
         )}
 
-        <div style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 16, padding: "24px", display: "flex", flexDirection: "column", gap: 14 }}>
+        <div style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: isDark ? 8 : 16, padding: "24px", display: "flex", flexDirection: "column", gap: 14 }}>
           <h2 style={{ fontFamily: "'Inter',sans-serif", fontWeight: 700, fontSize: 14, color: TEXT, marginBottom: 4 }}>Unternehmensdaten</h2>
           {[
             { key: "companyName",      label: "Firmenname",           placeholder: "BerlinBrews GmbH", required: true },
@@ -216,14 +230,14 @@ export default function SupplierSignupPage() {
             { key: "phone",            label: "Telefon",              placeholder: "+49 69 123456" },
           ].map(f => (
             <div key={f.key}>
-              <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: TEXT2, marginBottom: 6 }}>{f.label}{f.required && <span style={{ color: ORANGE, marginLeft: 3 }}>*</span>}</label>
-              <input placeholder={f.placeholder} value={(fields as any)[f.key]} onChange={set(f.key)} style={inputStyle()} onFocus={focus} onBlur={blur} />
+              <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: TEXT2, marginBottom: 6 }}>{f.label}{f.required && <span style={{ color: accentColor, marginLeft: 3 }}>*</span>}</label>
+              <input placeholder={f.placeholder} value={(fields as any)[f.key]} onChange={set(f.key)} style={inputStyle(isDark)} onFocus={focus} onBlur={blur} />
             </div>
           ))}
           <div>
             <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: TEXT2, marginBottom: 6 }}>Produktkategorie</label>
             <select value={fields.productCategory} onChange={set("productCategory")}
-              style={{ ...inputStyle(), cursor: "pointer", color: fields.productCategory ? TEXT : TEXT3 }} onFocus={focus} onBlur={blur}>
+              style={{ ...inputStyle(isDark), cursor: "pointer", color: fields.productCategory ? TEXT : TEXT3 }} onFocus={focus} onBlur={blur}>
               <option value="">Kategorie wählen</option>
               {["Energy", "Cola", "Bio", "Snacks", "Limo", "Getränke", "Andere"].map(c => <option key={c} value={c}>{c}</option>)}
             </select>
@@ -236,8 +250,8 @@ export default function SupplierSignupPage() {
             { key: "password", label: "Passwort", type: "password", placeholder: "Mindestens 6 Zeichen", required: true },
           ].map(f => (
             <div key={f.key}>
-              <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: TEXT2, marginBottom: 6 }}>{f.label}<span style={{ color: ORANGE, marginLeft: 3 }}>*</span></label>
-              <input type={f.type} placeholder={f.placeholder} value={(fields as any)[f.key]} onChange={set(f.key)} style={inputStyle()} onFocus={focus} onBlur={blur} />
+              <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: TEXT2, marginBottom: 6 }}>{f.label}<span style={{ color: accentColor, marginLeft: 3 }}>*</span></label>
+              <input type={f.type} placeholder={f.placeholder} value={(fields as any)[f.key]} onChange={set(f.key)} style={inputStyle(isDark)} onFocus={focus} onBlur={blur} />
             </div>
           ))}
         </div>
@@ -248,13 +262,13 @@ export default function SupplierSignupPage() {
         </div>
 
         <button onClick={handleSignup} disabled={loading}
-          style={{ width: "100%", marginTop: 14, background: loading ? "rgba(0,62,199,0.55)" : ORANGE, color: "#fff", border: "none", borderRadius: 12, padding: "15px", fontWeight: 700, fontSize: 15, cursor: loading ? "not-allowed" : "pointer", boxShadow: "0 4px 16px rgba(0,62,199,0.25)", fontFamily: "inherit" }}>
+          style={{ width: "100%", marginTop: 14, background: loading ? "rgba(0,62,199,0.55)" : btnColor, color: "#fff", border: "none", borderRadius: isDark ? 4 : 12, padding: "15px", fontWeight: 700, fontSize: 15, cursor: loading ? "not-allowed" : "pointer", boxShadow: "0 4px 16px rgba(0,62,199,0.25)", fontFamily: "inherit" }}>
           {loading ? "Anfrage wird gesendet..." : "Lieferant-Anfrage senden →"}
         </button>
 
         <p style={{ color: TEXT2, fontSize: 13, textAlign: "center", marginTop: 20 }}>
           Bereits registriert?{" "}
-          <a href="/login" style={{ color: ORANGE, fontWeight: 700, textDecoration: "none" }}>Einloggen</a>
+          <a href="/login" style={{ color: accentColor, fontWeight: 700, textDecoration: "none" }}>Einloggen</a>
         </p>
       </div>
     </main>

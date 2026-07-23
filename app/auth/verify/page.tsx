@@ -1,6 +1,6 @@
-﻿"use client";
+"use client";
 
-import { useState, useRef, Suspense } from "react";
+import { useState, useRef, Suspense, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import { useRouter, useSearchParams } from "next/navigation";
 
@@ -11,6 +11,8 @@ const TEXT    = "var(--kf-text)";
 const TEXT2   = "var(--kf-text2)";
 const TEXT3   = "var(--kf-text3)";
 const ORANGE  = "#003ec7";
+const ACCENT  = "var(--kf-accent)";
+const BTN     = "var(--kf-btn)";
 
 const LS_KEY = "kf_pending_signup";
 
@@ -22,7 +24,19 @@ function VerifyInner() {
   const [loading, setLoading] = useState(false);
   const [resendCooldown, setResendCooldown] = useState(0);
   const [msg, setMsg] = useState<{ text: string; ok: boolean } | null>(null);
+  const [isDark, setIsDark] = useState(false);
   const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
+
+  useEffect(() => {
+    const check = () => setIsDark(document.documentElement.classList.contains("dark"));
+    check();
+    const obs = new MutationObserver(check);
+    obs.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+    return () => obs.disconnect();
+  }, []);
+
+  const accentColor = isDark ? ACCENT : ORANGE;
+  const btnColor    = isDark ? BTN    : ORANGE;
 
   const handleOtpChange = (i: number, val: string) => {
     const digit = val.replace(/\D/g, "").slice(-1);
@@ -110,7 +124,7 @@ function VerifyInner() {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap');
         input::placeholder { color: ${TEXT3}; }
-        input:focus { outline: none; border-color: ${ORANGE} !important; box-shadow: 0 0 0 3px rgba(0,62,199,0.1); }
+        input:focus { outline: none; border-color: ${accentColor} !important; box-shadow: 0 0 0 3px rgba(0,62,199,0.1); }
       `}</style>
 
       <div style={{ maxWidth: 420, width: "100%" }}>
@@ -128,8 +142,8 @@ function VerifyInner() {
         </div>
 
         {msg && (
-          <div style={{ background: msg.ok ? "#f0fdf4" : "#fef2f2", border: `1.5px solid ${msg.ok ? "#bbf7d0" : "#fca5a5"}`, borderRadius: 10, padding: "12px 16px", marginBottom: 20, textAlign: "center" }}>
-            <p style={{ color: msg.ok ? "#16a34a" : "#dc2626", fontSize: 13 }}>{msg.text}</p>
+          <div style={{ background: msg.ok ? (isDark ? "rgba(22,163,74,0.15)" : "#f0fdf4") : (isDark ? "rgba(239,68,68,0.15)" : "#fef2f2"), border: `1.5px solid ${msg.ok ? (isDark ? "rgba(22,163,74,0.3)" : "#bbf7d0") : (isDark ? "rgba(239,68,68,0.3)" : "#fca5a5")}`, borderRadius: 10, padding: "12px 16px", marginBottom: 20, textAlign: "center" }}>
+            <p style={{ color: msg.ok ? (isDark ? "#4ade80" : "#16a34a") : (isDark ? "#f87171" : "#dc2626"), fontSize: 13 }}>{msg.text}</p>
           </div>
         )}
 
@@ -140,7 +154,7 @@ function VerifyInner() {
             placeholder="name@firma.de"
             value={email}
             onChange={e => setEmail(e.target.value)}
-            style={{ width: "100%", background: SURFACE, border: `1.5px solid ${BORDER}`, borderRadius: 11, padding: "12px 15px", color: TEXT, fontSize: 14, boxSizing: "border-box" as const, fontFamily: "inherit" }}
+            style={{ width: "100%", background: SURFACE, border: `1.5px solid ${BORDER}`, borderRadius: isDark ? 4 : 11, padding: "12px 15px", color: TEXT, fontSize: 14, boxSizing: "border-box" as const, fontFamily: "inherit" }}
           />
         </div>
 
@@ -158,19 +172,19 @@ function VerifyInner() {
                 inputMode="numeric"
                 style={{
                   width: 52, height: 60, textAlign: "center", fontSize: 24, fontWeight: 700,
-                  background: SURFACE, border: `2px solid ${digit ? ORANGE : BORDER}`,
+                  background: SURFACE, border: `2px solid ${digit ? accentColor : BORDER}`,
                   borderRadius: 12, color: TEXT, fontFamily: "'Manrope',sans-serif",
                   outline: "none", transition: "border-color 0.15s",
                 }}
-                onFocus={e => (e.currentTarget.style.borderColor = ORANGE)}
-                onBlur={e => (e.currentTarget.style.borderColor = otp[i] ? ORANGE : BORDER)}
+                onFocus={e => (e.currentTarget.style.borderColor = accentColor)}
+                onBlur={e => (e.currentTarget.style.borderColor = otp[i] ? accentColor : BORDER)}
               />
             ))}
           </div>
         </div>
 
         <button onClick={handleVerify} disabled={loading}
-          style={{ width: "100%", background: loading ? "rgba(0,62,199,0.55)" : ORANGE, color: "#fff", border: "none", borderRadius: 12, padding: "15px", fontWeight: 700, fontSize: 15, cursor: loading ? "not-allowed" : "pointer", boxShadow: "0 4px 16px rgba(0,62,199,0.25)", fontFamily: "inherit", marginBottom: 16 }}>
+          style={{ width: "100%", background: loading ? "rgba(0,62,199,0.55)" : btnColor, color: "#fff", border: "none", borderRadius: isDark ? 4 : 12, padding: "15px", fontWeight: 700, fontSize: 15, cursor: loading ? "not-allowed" : "pointer", boxShadow: "0 4px 16px rgba(0,62,199,0.25)", fontFamily: "inherit", marginBottom: 16 }}>
           {loading ? "Wird überprüft..." : "Bestätigen →"}
         </button>
 
@@ -178,12 +192,12 @@ function VerifyInner() {
           <button
             onClick={handleResend}
             disabled={loading || resendCooldown > 0 || !email}
-            style={{ background: "none", border: "none", color: (resendCooldown > 0 || !email) ? TEXT3 : ORANGE, fontSize: 13, fontWeight: 600, cursor: (resendCooldown > 0 || !email) ? "not-allowed" : "pointer", textDecoration: "underline", fontFamily: "inherit" }}>
+            style={{ background: "none", border: "none", color: (resendCooldown > 0 || !email) ? TEXT3 : accentColor, fontSize: 13, fontWeight: 600, cursor: (resendCooldown > 0 || !email) ? "not-allowed" : "pointer", textDecoration: "underline", fontFamily: "inherit" }}>
             {resendCooldown > 0 ? `Neuen Code anfordern (${resendCooldown}s)` : "Neuen Code anfordern"}
           </button>
           <p style={{ color: TEXT3, fontSize: 12, margin: 0 }}>
             Keinen Code erhalten?{" "}
-            <a href="/login" style={{ color: ORANGE, fontWeight: 600, textDecoration: "none" }}>Stattdessen einloggen →</a>
+            <a href="/login" style={{ color: accentColor, fontWeight: 600, textDecoration: "none" }}>Stattdessen einloggen →</a>
           </p>
           <a href="/signup" style={{ color: TEXT3, fontSize: 12, textDecoration: "none" }}>← Zurück zur Registrierung</a>
         </div>

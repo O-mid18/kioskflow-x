@@ -1,6 +1,6 @@
-﻿"use client";
+"use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import { translateAuthError } from "@/lib/utils";
 import { useRouter } from "next/navigation";
@@ -12,6 +12,8 @@ const TEXT = "var(--kf-text)";
 const TEXT2 = "var(--kf-text2)";
 const TEXT3 = "var(--kf-text3)";
 const ORANGE = "#003ec7";
+const ACCENT = "var(--kf-accent)";
+const BTN    = "var(--kf-btn)";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -19,6 +21,18 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+  const [isDark, setIsDark] = useState(false);
+
+  useEffect(() => {
+    const check = () => setIsDark(document.documentElement.classList.contains("dark"));
+    check();
+    const obs = new MutationObserver(check);
+    obs.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+    return () => obs.disconnect();
+  }, []);
+
+  const accentColor = isDark ? ACCENT : ORANGE;
+  const btnColor    = isDark ? BTN    : ORANGE;
 
   const handleLogin = async () => {
     setErrorMsg("");
@@ -46,7 +60,7 @@ export default function LoginPage() {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap');
         input::placeholder { color: ${TEXT3}; }
-        input:focus { outline:none; border-color:${ORANGE} !important; box-shadow:0 0 0 3px rgba(0,62,199,0.1); }
+        input:focus { outline:none; border-color:${accentColor} !important; box-shadow:0 0 0 3px rgba(0,62,199,0.1); }
       `}</style>
 
       {/* Left — brand panel */}
@@ -88,8 +102,8 @@ export default function LoginPage() {
           <p style={{ color:TEXT2, fontSize:14, marginBottom:32 }}>Dein Flowio-Dashboard wartet auf dich.</p>
 
           {errorMsg && (
-            <div style={{ background:"#fef2f2", border:"1.5px solid #fca5a5", borderRadius:10, padding:"12px 16px", marginBottom:24 }}>
-              <p style={{ color:"#dc2626", fontSize:13 }}>{errorMsg}</p>
+            <div style={{ background: isDark ? "rgba(239,68,68,0.15)" : "#fef2f2", border: `1.5px solid ${isDark ? "rgba(239,68,68,0.3)" : "#fca5a5"}`, borderRadius:10, padding:"12px 16px", marginBottom:24 }}>
+              <p style={{ color: isDark ? "#f87171" : "#dc2626", fontSize:13 }}>{errorMsg}</p>
             </div>
           )}
 
@@ -97,20 +111,20 @@ export default function LoginPage() {
             <div>
               <label style={{ display:"block", fontSize:12, fontWeight:600, color:TEXT2, marginBottom:7, letterSpacing:"0.3px" }}>E-Mail</label>
               <input type="email" placeholder="name@firma.de" value={email} onChange={e => setEmail(e.target.value)} onKeyDown={e => e.key==="Enter"&&handleLogin()}
-                style={{ width:"100%", background:SURFACE, border:`1.5px solid ${BORDER}`, borderRadius:11, padding:"12px 15px", color:TEXT, fontSize:14, boxSizing:"border-box", transition:"border-color 0.2s, box-shadow 0.2s" }} />
+                style={{ width:"100%", background:SURFACE, border:`1.5px solid ${BORDER}`, borderRadius: isDark ? 4 : 11, padding:"12px 15px", color:TEXT, fontSize:14, boxSizing:"border-box", transition:"border-color 0.2s, box-shadow 0.2s" }} />
             </div>
 
             <div>
               <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:7 }}>
                 <label style={{ display:"block", fontSize:12, fontWeight:600, color:TEXT2, letterSpacing:"0.3px" }}>Passwort</label>
-                <a href="/auth/forgot-password" style={{ fontSize:12, color:ORANGE, fontWeight:600, textDecoration:"none" }}>Passwort vergessen?</a>
+                <a href="/auth/forgot-password" style={{ fontSize:12, color:accentColor, fontWeight:600, textDecoration:"none" }}>Passwort vergessen?</a>
               </div>
               <input type="password" placeholder="••••••••" value={password} onChange={e => setPassword(e.target.value)} onKeyDown={e => e.key==="Enter"&&handleLogin()}
-                style={{ width:"100%", background:SURFACE, border:`1.5px solid ${BORDER}`, borderRadius:11, padding:"12px 15px", color:TEXT, fontSize:14, boxSizing:"border-box", transition:"border-color 0.2s, box-shadow 0.2s" }} />
+                style={{ width:"100%", background:SURFACE, border:`1.5px solid ${BORDER}`, borderRadius: isDark ? 4 : 11, padding:"12px 15px", color:TEXT, fontSize:14, boxSizing:"border-box", transition:"border-color 0.2s, box-shadow 0.2s" }} />
             </div>
 
             <button onClick={handleLogin} disabled={loading}
-              style={{ width:"100%", background:loading?"rgba(0,62,199,0.55)":ORANGE, color:"#fff", border:"none", borderRadius:11, padding:"14px", fontFamily:"'Inter',sans-serif", fontWeight:700, fontSize:15, cursor:loading?"not-allowed":"pointer", marginTop:4, transition:"opacity 0.2s", boxShadow:`0 4px 14px rgba(0,62,199,0.25)` }}>
+              style={{ width:"100%", background:loading?"rgba(0,62,199,0.55)":btnColor, color:"#fff", border:"none", borderRadius: isDark ? 4 : 11, padding:"14px", fontFamily:"'Inter',sans-serif", fontWeight:700, fontSize:15, cursor:loading?"not-allowed":"pointer", marginTop:4, transition:"opacity 0.2s", boxShadow:`0 4px 14px rgba(0,62,199,0.25)` }}>
               {loading ? "Einen Moment..." : "Einloggen →"}
             </button>
           </div>
@@ -123,7 +137,7 @@ export default function LoginPage() {
 
           <p style={{ color:TEXT2, fontSize:13, textAlign:"center" }}>
             Noch kein Account?{" "}
-            <a href="/signup" style={{ color:ORANGE, fontWeight:700, textDecoration:"none" }}>Kostenlos registrieren</a>
+            <a href="/signup" style={{ color:accentColor, fontWeight:700, textDecoration:"none" }}>Kostenlos registrieren</a>
           </p>
 
           <p style={{ color:TEXT3, fontSize:11, textAlign:"center", marginTop:32 }}>
