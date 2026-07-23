@@ -1,16 +1,18 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { Breadcrumb } from "@/components/ui/step-breadcrumb";
 
-const BG = "var(--kf-bg)";
+const BG     = "var(--kf-bg)";
 const SURFACE = "var(--kf-surface)";
-const BORDER = "var(--kf-border)";
-const TEXT = "var(--kf-text)";
-const TEXT2 = "var(--kf-text2)";
-const TEXT3 = "var(--kf-text3)";
-const ORANGE = "#003ec7";
+const BORDER  = "var(--kf-border)";
+const TEXT    = "var(--kf-text)";
+const TEXT2   = "var(--kf-text2)";
+const TEXT3   = "var(--kf-text3)";
+const ORANGE  = "#003ec7";
+const ACCENT  = "var(--kf-accent)";
+const BTN     = "var(--kf-btn)";
 
 interface Product { id: string; name: string; price: number; image_url: string | null; stock?: number; shipping_cost?: number; }
 interface CartItem { id: string; quantity: number; products: Product; }
@@ -49,6 +51,15 @@ export default function CartPage() {
   const [error, setError] = useState<string | null>(null);
   const [confirmingRemoveAll, setConfirmingRemoveAll] = useState(false);
   const [role, setRole] = useState<string | null>(null);
+  const [isDark, setIsDark] = useState(false);
+
+  useEffect(() => {
+    const check = () => setIsDark(document.documentElement.classList.contains("dark"));
+    check();
+    const obs = new MutationObserver(check);
+    obs.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+    return () => obs.disconnect();
+  }, []);
 
   const fetchCart = async () => {
     try {
@@ -92,7 +103,7 @@ export default function CartPage() {
       <main style={{ minHeight:"100vh", background:BG, display:"flex", alignItems:"center", justifyContent:"center", fontFamily:"'Inter',system-ui,sans-serif" }}>
         <style>{`@keyframes spin { to { transform:rotate(360deg); } }`}</style>
         <div style={{ textAlign:"center" }}>
-          <div style={{ width:36, height:36, border:`3px solid ${BORDER}`, borderTopColor:ORANGE, borderRadius:"50%", animation:"spin 0.8s linear infinite", margin:"0 auto 14px" }} />
+          <div style={{ width:36, height:36, border:`3px solid ${BORDER}`, borderTopColor: isDark ? ACCENT : ORANGE, borderRadius:"50%", animation:"spin 0.8s linear infinite", margin:"0 auto 14px" }} />
           <p style={{ color:TEXT3, fontSize:13 }}>Warenkorb laden...</p>
         </div>
       </main>
@@ -105,7 +116,7 @@ export default function CartPage() {
         <div style={{ textAlign:"center", padding:"0 20px" }}>
           <p style={{ fontSize:48, marginBottom:16 }}>⚠️</p>
           <p style={{ color:TEXT, fontSize:15, fontWeight:600, marginBottom:8 }}>{error}</p>
-          <button onClick={fetchCart} style={{ background:ORANGE, color:"#fff", border:"none", borderRadius:10, padding:"12px 24px", fontWeight:700, fontSize:14, cursor:"pointer", marginTop:8 }}>
+          <button onClick={fetchCart} style={{ background: isDark ? BTN : ORANGE, color:"#fff", border:"none", borderRadius:10, padding:"12px 24px", fontWeight:700, fontSize:14, cursor:"pointer", marginTop:8 }}>
             Erneut versuchen
           </button>
         </div>
@@ -124,8 +135,8 @@ export default function CartPage() {
           <span style={{ fontFamily:"'Manrope',sans-serif", fontWeight:800, fontSize:15, color:TEXT, letterSpacing:"-0.3px" }}>Flowio</span>
         </div>
         <div style={{ display:"flex", alignItems:"center", gap:14 }}>
-          {role === "admin" && <a href="/owner/dashboard" title="Owner-Panel" style={{ background:`${ORANGE}15`, color:ORANGE, fontWeight:700, fontSize:13, textDecoration:"none", padding:"7px 12px", borderRadius:8 }}>🏛️</a>}
-          {role === "supplier" && <a href="/supplier/dashboard" title="Lieferanten-Dashboard" style={{ background:`${ORANGE}15`, color:ORANGE, fontWeight:700, fontSize:13, textDecoration:"none", padding:"7px 12px", borderRadius:8 }}>📦</a>}
+          {role === "admin" && <a href="/owner/dashboard" title="Owner-Panel" style={{ background:`${ORANGE}15`, color: isDark ? ACCENT : ORANGE, fontWeight:700, fontSize:13, textDecoration:"none", padding:"7px 12px", borderRadius:8 }}>🏛️</a>}
+          {role === "supplier" && <a href="/supplier/dashboard" title="Lieferanten-Dashboard" style={{ background:`${ORANGE}15`, color: isDark ? ACCENT : ORANGE, fontWeight:700, fontSize:13, textDecoration:"none", padding:"7px 12px", borderRadius:8 }}>📦</a>}
           <a href="/marketplace" style={{ color:TEXT2, fontSize:13, fontWeight:500, textDecoration:"none", display:"flex", alignItems:"center", gap:5 }}>← Weiter einkaufen</a>
         </div>
       </header>
@@ -168,7 +179,7 @@ export default function CartPage() {
             <p style={{ fontSize:64, marginBottom:20 }}>🛒</p>
             <h2 style={{ fontFamily:"'Manrope',sans-serif", color:TEXT, fontSize:22, fontWeight:800, marginBottom:10 }}>Dein Warenkorb ist leer</h2>
             <p style={{ color:TEXT2, fontSize:14, marginBottom:28 }}>Entdecke unsere Produkte und füge sie hier hinzu.</p>
-            <a href="/marketplace" style={{ display:"inline-block", background:ORANGE, color:"#fff", fontWeight:700, padding:"13px 28px", borderRadius:12, textDecoration:"none", fontSize:14 }}>Zum Marktplatz →</a>
+            <a href="/marketplace" style={{ display:"inline-block", background: isDark ? BTN : ORANGE, color:"#fff", fontWeight:700, padding:"13px 28px", borderRadius:12, textDecoration:"none", fontSize:14 }}>Zum Marktplatz →</a>
           </div>
         ) : (
           <div className="cart-grid" style={{ display:"grid", gridTemplateColumns:"1fr 340px", gap:20, alignItems:"start" }}>
@@ -178,18 +189,18 @@ export default function CartPage() {
               {items.map(item => {
                 const img = item.products.image_url && item.products.image_url.trim() !== "" ? item.products.image_url : "https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?w=300&q=80";
                 return (
-                  <div key={item.id} className="cart-item" style={{ background:SURFACE, border:`1px solid ${BORDER}`, borderRadius:14, padding:"16px", display:"flex", alignItems:"center", gap:14 }}>
+                  <div key={item.id} className="cart-item" style={{ background:SURFACE, border:`1px solid ${BORDER}`, borderRadius: isDark ? 8 : 14, padding:"16px", display:"flex", alignItems:"center", gap:14 }}>
                     <div style={{ width:72, height:72, borderRadius:10, overflow:"hidden", flexShrink:0 }}>
                       <img loading="lazy" decoding="async" src={img} alt={item.products.name} style={{ width:"100%", height:"100%", objectFit:"cover" }} />
                     </div>
                     <div className="cart-item-info" style={{ flex:1, minWidth:0 }}>
                       <p style={{ color:TEXT, fontWeight:600, fontSize:14, marginBottom:4, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{item.products.name}</p>
-                      <p style={{ color:ORANGE, fontWeight:700, fontSize:14 }}>€{item.products.price.toFixed(2)} / Stück</p>
+                      <p style={{ color: isDark ? ACCENT : ORANGE, fontWeight:700, fontSize:14 }}>€{item.products.price.toFixed(2)} / Stück</p>
                     </div>
                     <div className="cart-qty" style={{ display:"flex", alignItems:"center", gap:6, flexShrink:0 }}>
                       <button onClick={() => decreaseQuantity(item.id, item.quantity)} style={{ width:34, height:34, background:BG, border:`1px solid ${BORDER}`, borderRadius:8, color:TEXT, cursor:"pointer", fontSize:16, fontWeight:700, display:"flex", alignItems:"center", justifyContent:"center" }}>−</button>
                       <span style={{ width:30, textAlign:"center", color:TEXT, fontWeight:700, fontSize:14 }}>{item.quantity}</span>
-                      <button onClick={() => increaseQuantity(item.id, item.quantity, item.products.stock)} style={{ width:34, height:34, background:ORANGE, border:"none", borderRadius:8, color:"#fff", cursor:"pointer", fontSize:16, fontWeight:700, display:"flex", alignItems:"center", justifyContent:"center" }}>+</button>
+                      <button onClick={() => increaseQuantity(item.id, item.quantity, item.products.stock)} style={{ width:34, height:34, background: isDark ? BTN : ORANGE, border:"none", borderRadius:8, color:"#fff", cursor:"pointer", fontSize:16, fontWeight:700, display:"flex", alignItems:"center", justifyContent:"center" }}>+</button>
                       <button onClick={() => removeItem(item.id)} style={{ width:34, height:34, background:"none", border:`1px solid ${BORDER}`, borderRadius:8, color:TEXT3, cursor:"pointer", fontSize:14, display:"flex", alignItems:"center", justifyContent:"center" }}>✕</button>
                     </div>
                   </div>
@@ -200,7 +211,7 @@ export default function CartPage() {
             {/* Summary sidebar */}
             <div style={{ position:"sticky", top:20 }}>
               {/* Totals */}
-              <div style={{ background:SURFACE, border:`1px solid ${BORDER}`, borderRadius:14, padding:"18px" }}>
+              <div style={{ background:SURFACE, border:`1px solid ${BORDER}`, borderRadius: isDark ? 8 : 14, padding:"18px" }}>
                 <p style={{ fontWeight:700, fontSize:13, color:TEXT, marginBottom:16 }}>Zusammenfassung</p>
                 <div style={{ display:"flex", flexDirection:"column", gap:10, marginBottom:16 }}>
                   <div style={{ display:"flex", justifyContent:"space-between" }}>
@@ -211,14 +222,14 @@ export default function CartPage() {
                     <span style={{ color:TEXT2, fontSize:13 }}>Lieferung</span>
                     {shippingTotal > 0
                       ? <span style={{ color:TEXT, fontSize:13, fontWeight:600 }}>€{shippingTotal.toFixed(2)}</span>
-                      : <span style={{ color:"#16a34a", fontSize:13, fontWeight:600 }}>Kostenlos</span>}
+                      : <span style={{ color: isDark ? "#4ade80" : "#16a34a", fontSize:13, fontWeight:600 }}>Kostenlos</span>}
                   </div>
                 </div>
                 <div style={{ borderTop:`1.5px solid ${BORDER}`, paddingTop:14, display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:18 }}>
                   <span style={{ fontFamily:"'Inter',sans-serif", fontWeight:700, fontSize:15, color:TEXT }}>Gesamt</span>
                   <span style={{ fontFamily:"'Inter',sans-serif", fontWeight:800, fontSize:22, color:TEXT, letterSpacing:"-0.5px" }}>€{total.toFixed(2)}</span>
                 </div>
-                <a href="/checkout" style={{ display:"block", background:ORANGE, color:"#fff", fontWeight:700, padding:"14px", borderRadius:11, textDecoration:"none", fontSize:14, textAlign:"center", boxShadow:`0 4px 14px rgba(0,62,199,0.25)` }}>Zur Kasse →</a>
+                <a href="/checkout" style={{ display:"block", background: isDark ? BTN : ORANGE, color:"#fff", fontWeight:700, padding:"14px", borderRadius:11, textDecoration:"none", fontSize:14, textAlign:"center", boxShadow:`0 4px 14px rgba(0,62,199,0.25)` }}>Zur Kasse →</a>
                 <a href="/marketplace" style={{ display:"block", background:BG, color:TEXT2, fontWeight:600, padding:"12px", borderRadius:11, textDecoration:"none", fontSize:13, textAlign:"center", marginTop:8 }}>Weiter einkaufen</a>
               </div>
             </div>
@@ -231,8 +242,8 @@ export default function CartPage() {
         {[{icon:"🏪",label:"Marktplatz",href:"/marketplace",active:false},{icon:"🛒",label:"Warenkorb",href:"/cart",active:true},{icon:"📦",label:"Bestellungen",href:"/orders",active:false},{icon:"💬",label:"Nachrichten",href:"/messages",active:false},{icon:"👤",label:"Profil",href:"/profile",active:false}].map(({ icon, label, href, active }) => (
           <a key={label} href={href} style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:3, textDecoration:"none", padding:"0 12px" }}>
             <span style={{ fontSize:20, lineHeight:1 }}>{icon}</span>
-            <span style={{ fontSize:10, fontWeight:active?700:500, color:active?ORANGE:TEXT3 }}>{label}</span>
-            {active && <div style={{ width:16, height:2, background:ORANGE, borderRadius:2, marginTop:1 }} />}
+            <span style={{ fontSize:10, fontWeight:active?700:500, color:active?(isDark?ACCENT:ORANGE):TEXT3 }}>{label}</span>
+            {active && <div style={{ width:16, height:2, background: isDark ? ACCENT : ORANGE, borderRadius:2, marginTop:1 }} />}
           </a>
         ))}
       </nav>

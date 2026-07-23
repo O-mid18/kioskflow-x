@@ -1,22 +1,33 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 
-const BG = "var(--kf-bg)";
+const BG     = "var(--kf-bg)";
 const SURFACE = "var(--kf-surface)";
-const BORDER = "var(--kf-border)";
-const TEXT = "var(--kf-text)";
-const TEXT2 = "var(--kf-text2)";
-const TEXT3 = "var(--kf-text3)";
-const ORANGE = "#003ec7";
+const BORDER  = "var(--kf-border)";
+const TEXT    = "var(--kf-text)";
+const TEXT2   = "var(--kf-text2)";
+const TEXT3   = "var(--kf-text3)";
+const ORANGE  = "#003ec7";
+const ACCENT  = "var(--kf-accent)";
+const BTN     = "var(--kf-btn)";
 
 type WishItem = { id: string; products: { id: string; name: string; price: number; image_url: string | null; stock?: number; category?: string } };
 
 export default function WishlistPage() {
-  const [items, setItems] = useState<WishItem[]>([]);
+  const [items, setItems]   = useState<WishItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [role, setRole] = useState<string | null>(null);
+  const [role, setRole]     = useState<string | null>(null);
+  const [isDark, setIsDark] = useState(false);
+
+  useEffect(() => {
+    const check = () => setIsDark(document.documentElement.classList.contains("dark"));
+    check();
+    const obs = new MutationObserver(check);
+    obs.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+    return () => obs.disconnect();
+  }, []);
 
   useEffect(() => { fetchWishlist(); }, []);
 
@@ -35,6 +46,9 @@ export default function WishlistPage() {
     setItems(prev => prev.filter(i => i.id !== id));
   };
 
+  const accentColor = isDark ? ACCENT : ORANGE;
+  const btnColor    = isDark ? BTN    : ORANGE;
+
   return (
     <main style={{ minHeight: "100vh", background: BG, fontFamily: "'Inter','Helvetica Neue',system-ui,sans-serif", color: TEXT, paddingBottom: 60 }}>
       <style>{`@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap');`}</style>
@@ -46,8 +60,8 @@ export default function WishlistPage() {
           <span style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: 15, color: TEXT, letterSpacing: "-0.3px" }}>Flowio</span>
         </a>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          {role === "admin" && <a href="/owner/dashboard" title="Owner-Panel" style={{ background:`${ORANGE}15`, color:ORANGE, fontWeight:700, fontSize:13, textDecoration:"none", padding:"6px 12px", borderRadius:8 }}>🏛️</a>}
-          {role === "supplier" && <a href="/supplier/dashboard" title="Lieferanten-Dashboard" style={{ background:`${ORANGE}15`, color:ORANGE, fontWeight:700, fontSize:13, textDecoration:"none", padding:"6px 12px", borderRadius:8 }}>📦</a>}
+          {role === "admin" && <a href="/owner/dashboard" title="Owner-Panel" style={{ background:`${ORANGE}15`, color: accentColor, fontWeight:700, fontSize:13, textDecoration:"none", padding:"6px 12px", borderRadius:8 }}>🏛️</a>}
+          {role === "supplier" && <a href="/supplier/dashboard" title="Lieferanten-Dashboard" style={{ background:`${ORANGE}15`, color: accentColor, fontWeight:700, fontSize:13, textDecoration:"none", padding:"6px 12px", borderRadius:8 }}>📦</a>}
           <a href="/marketplace" style={{ color: TEXT2, fontSize: 13, fontWeight: 500, textDecoration: "none" }}>← Zum Marktplatz</a>
         </div>
       </header>
@@ -55,7 +69,7 @@ export default function WishlistPage() {
       <div style={{ maxWidth: 1100, margin: "0 auto", padding: "32px 24px" }}>
 
         {/* Hero */}
-        <div style={{ background: `linear-gradient(135deg, ${ORANGE} 0%, #1D4ED8 100%)`, borderRadius: 20, padding: "36px 40px", marginBottom: 32, position: "relative", overflow: "hidden" }}>
+        <div style={{ background: `linear-gradient(135deg, ${ORANGE} 0%, #1D4ED8 100%)`, borderRadius: isDark ? 12 : 20, padding: "36px 40px", marginBottom: 32, position: "relative", overflow: "hidden" }}>
           <div style={{ position: "absolute", top: -40, right: -40, width: 200, height: 200, borderRadius: "50%", background: "rgba(255,255,255,0.08)" }} />
           <p style={{ fontSize: 11, fontWeight: 700, color: "rgba(255,255,255,0.7)", letterSpacing: "2.5px", textTransform: "uppercase", marginBottom: 10 }}>Gespeicherte Produkte</p>
           <h1 style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: 32, color: "#fff", letterSpacing: "-1px", marginBottom: 8 }}>Meine Wunschliste</h1>
@@ -76,19 +90,19 @@ export default function WishlistPage() {
         {loading ? (
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: 200 }}>
             <style>{`@keyframes spin { to { transform:rotate(360deg); } }`}</style>
-            <div style={{ width: 32, height: 32, border: `3px solid ${BORDER}`, borderTopColor: ORANGE, borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
+            <div style={{ width: 32, height: 32, border: `3px solid ${BORDER}`, borderTopColor: accentColor, borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
           </div>
         ) : items.length === 0 ? (
           <div style={{ textAlign: "center", padding: "80px 0" }}>
             <p style={{ fontSize: 56, marginBottom: 16 }}>❤️</p>
             <h2 style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: 22, color: TEXT, marginBottom: 10 }}>Noch nichts gespeichert</h2>
             <p style={{ color: TEXT2, fontSize: 14, marginBottom: 28 }}>Entdecke Produkte und füge sie deiner Wunschliste hinzu.</p>
-            <a href="/marketplace" style={{ display: "inline-block", background: ORANGE, color: "#fff", fontWeight: 700, padding: "13px 28px", borderRadius: 12, textDecoration: "none", fontSize: 14, boxShadow: "0 4px 14px rgba(0,62,199,0.25)" }}>Zum Marktplatz →</a>
+            <a href="/marketplace" style={{ display: "inline-block", background: btnColor, color: "#fff", fontWeight: 700, padding: "13px 28px", borderRadius: 12, textDecoration: "none", fontSize: 14, boxShadow: "0 4px 14px rgba(0,62,199,0.25)" }}>Zum Marktplatz →</a>
           </div>
         ) : (
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: 16 }}>
             {items.map(item => (
-              <div key={item.id} style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 16, overflow: "hidden", transition: "box-shadow 0.2s" }}
+              <div key={item.id} style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: isDark ? 8 : 16, overflow: "hidden", transition: "box-shadow 0.2s" }}
                 onMouseEnter={e => e.currentTarget.style.boxShadow = "0 6px 24px rgba(0,0,0,0.08)"}
                 onMouseLeave={e => e.currentTarget.style.boxShadow = "none"}>
                 <div style={{ height: 180, overflow: "hidden", background: BG }}>
@@ -107,10 +121,10 @@ export default function WishlistPage() {
                     €{item.products?.price?.toFixed(2) ?? "—"}
                   </p>
                   {(item.products?.stock ?? 1) <= 0 && (
-                    <span style={{ display:"inline-block", fontSize:11, fontWeight:700, color:"#ef4444", background:"#fef2f2", padding:"2px 8px", borderRadius:6, marginBottom:8 }}>Ausverkauft</span>
+                    <span style={{ display:"inline-block", fontSize:11, fontWeight:700, color: isDark ? "#f87171" : "#ef4444", background: isDark ? "rgba(239,68,68,0.15)" : "#fef2f2", padding:"2px 8px", borderRadius:6, marginBottom:8 }}>Ausverkauft</span>
                   )}
                   <div style={{ display: "flex", gap: 8 }}>
-                    <a href={`/product/${item.products?.id}`} style={{ flex: 1, background: (item.products?.stock ?? 1) <= 0 ? BORDER : ORANGE, color: (item.products?.stock ?? 1) <= 0 ? TEXT3 : "#fff", textAlign: "center", fontSize: 13, fontWeight: 700, padding: "9px", borderRadius: 9, textDecoration: "none" }}>
+                    <a href={`/product/${item.products?.id}`} style={{ flex: 1, background: (item.products?.stock ?? 1) <= 0 ? BORDER : btnColor, color: (item.products?.stock ?? 1) <= 0 ? TEXT3 : "#fff", textAlign: "center", fontSize: 13, fontWeight: 700, padding: "9px", borderRadius: 9, textDecoration: "none" }}>
                       {(item.products?.stock ?? 1) <= 0 ? "Nicht verfügbar" : "Zum Produkt →"}
                     </a>
                     <button onClick={() => remove(item.id)}
@@ -130,8 +144,8 @@ export default function WishlistPage() {
         {[{ icon: "🏪", label: "Marktplatz", href: "/marketplace", active: false }, { icon: "🛒", label: "Warenkorb", href: "/cart", active: false }, { icon: "📦", label: "Bestellungen", href: "/orders", active: false }, { icon: "💬", label: "Nachrichten", href: "/messages", active: false }, { icon: "👤", label: "Profil", href: "/profile", active: false }].map(({ icon, label, href, active }) => (
           <a key={label} href={href} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 3, textDecoration: "none", padding: "0 12px" }}>
             <span style={{ fontSize: 20, lineHeight: 1 }}>{icon}</span>
-            <span style={{ fontSize: 10, fontWeight: active ? 700 : 500, color: active ? ORANGE : TEXT3 }}>{label}</span>
-            {active && <div style={{ width: 16, height: 2, background: ORANGE, borderRadius: 2, marginTop: 1 }} />}
+            <span style={{ fontSize: 10, fontWeight: active ? 700 : 500, color: active ? accentColor : TEXT3 }}>{label}</span>
+            {active && <div style={{ width: 16, height: 2, background: accentColor, borderRadius: 2, marginTop: 1 }} />}
           </a>
         ))}
       </nav>

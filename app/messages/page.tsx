@@ -1,15 +1,17 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useState, useRef } from "react";
 import { supabase } from "@/lib/supabase";
 
-const BG = "var(--kf-bg)";
+const BG     = "var(--kf-bg)";
 const SURFACE = "var(--kf-surface)";
-const BORDER = "var(--kf-border)";
-const TEXT = "var(--kf-text)";
-const TEXT2 = "var(--kf-text2)";
-const TEXT3 = "var(--kf-text3)";
-const ORANGE = "#003ec7";
+const BORDER  = "var(--kf-border)";
+const TEXT    = "var(--kf-text)";
+const TEXT2   = "var(--kf-text2)";
+const TEXT3   = "var(--kf-text3)";
+const ORANGE  = "#003ec7";
+const ACCENT  = "var(--kf-accent)";
+const BTN     = "var(--kf-btn)";
 
 type Conv = { id: string; supplier_id: string; supplier_name: string; last_message?: string; };
 type Msg  = { id: string; sender_id: string; content: string; created_at: string; };
@@ -25,8 +27,17 @@ export default function BuyerMessagesPage() {
   const [suppliers, setSuppliers] = useState<Sup[]>([]);
   const [showNew, setShowNew]     = useState(false);
   const [isAdmin, setIsAdmin]     = useState(false);
+  const [isDark, setIsDark]       = useState(false);
   const channelRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
   const endRef     = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const check = () => setIsDark(document.documentElement.classList.contains("dark"));
+    check();
+    const obs = new MutationObserver(check);
+    obs.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+    return () => obs.disconnect();
+  }, []);
 
   useEffect(() => {
     supabase.auth.getUser().then(async ({ data: { user } }) => {
@@ -103,10 +114,13 @@ export default function BuyerMessagesPage() {
 
   const fmt = (s: string) => new Date(s).toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" });
 
+  const accentColor = isDark ? ACCENT : ORANGE;
+  const btnColor    = isDark ? BTN    : ORANGE;
+
   if (loading) return (
     <main style={{ minHeight: "100vh", background: BG, display: "flex", alignItems: "center", justifyContent: "center" }}>
       <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
-      <div style={{ width: 32, height: 32, border: `3px solid ${BORDER}`, borderTopColor: ORANGE, borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
+      <div style={{ width: 32, height: 32, border: `3px solid ${BORDER}`, borderTopColor: accentColor, borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
     </main>
   );
 
@@ -122,7 +136,7 @@ export default function BuyerMessagesPage() {
         </a>
         <p style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 700, fontSize: 15, color: TEXT }}>Nachrichten</p>
         {isAdmin
-          ? <a href="/owner/dashboard" title="Owner-Panel" style={{ background:`${ORANGE}15`, color:ORANGE, fontWeight:700, fontSize:13, textDecoration:"none", padding:"6px 12px", borderRadius:8 }}>🏛️</a>
+          ? <a href="/owner/dashboard" title="Owner-Panel" style={{ background:`${ORANGE}15`, color: accentColor, fontWeight:700, fontSize:13, textDecoration:"none", padding:"6px 12px", borderRadius:8 }}>🏛️</a>
           : <div style={{ width: 80 }} />}
       </nav>
 
@@ -132,7 +146,7 @@ export default function BuyerMessagesPage() {
         {/* LEFT — conversation list */}
         <div style={{ width: 280, flexShrink: 0, borderRight: `1px solid ${BORDER}`, background: SURFACE, display: "flex", flexDirection: "column" }}>
           <div style={{ padding: 14, borderBottom: `1px solid ${BORDER}` }}>
-            <button onClick={loadSuppliers} style={{ width: "100%", background: ORANGE, color: "#fff", border: "none", borderRadius: 10, padding: "10px", fontWeight: 700, fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>
+            <button onClick={loadSuppliers} style={{ width: "100%", background: btnColor, color: "#fff", border: "none", borderRadius: isDark ? 6 : 10, padding: "10px", fontWeight: 700, fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>
               + Neue Unterhaltung
             </button>
           </div>
@@ -143,9 +157,9 @@ export default function BuyerMessagesPage() {
                 <p style={{ color: TEXT3, fontSize: 13 }}>Noch keine Gespräche</p>
               </div>
             ) : convs.map(c => (
-              <div key={c.id} onClick={() => openConv(c)} style={{ padding: "14px 16px", borderBottom: `1px solid ${BORDER}`, cursor: "pointer", background: active?.id === c.id ? `${ORANGE}10` : "transparent", borderLeft: `3px solid ${active?.id === c.id ? ORANGE : "transparent"}`, transition: "background 0.15s" }}>
+              <div key={c.id} onClick={() => openConv(c)} style={{ padding: "14px 16px", borderBottom: `1px solid ${BORDER}`, cursor: "pointer", background: active?.id === c.id ? `${ORANGE}10` : "transparent", borderLeft: `3px solid ${active?.id === c.id ? accentColor : "transparent"}`, transition: "background 0.15s" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                  <div style={{ width: 38, height: 38, background: `${ORANGE}20`, borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: 15, color: ORANGE, flexShrink: 0 }}>
+                  <div style={{ width: 38, height: 38, background: `${ORANGE}20`, borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: 15, color: accentColor, flexShrink: 0 }}>
                     {c.supplier_name[0]?.toUpperCase()}
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
@@ -163,7 +177,7 @@ export default function BuyerMessagesPage() {
           {active ? (
             <>
               <div style={{ padding: "0 20px", height: 56, borderBottom: `1px solid ${BORDER}`, display: "flex", alignItems: "center", gap: 12, flexShrink: 0 }}>
-                <div style={{ width: 36, height: 36, background: `${ORANGE}20`, borderRadius: 9, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: 14, color: ORANGE, flexShrink: 0 }}>
+                <div style={{ width: 36, height: 36, background: `${ORANGE}20`, borderRadius: 9, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: 14, color: accentColor, flexShrink: 0 }}>
                   {active.supplier_name[0]?.toUpperCase()}
                 </div>
                 <div>
@@ -177,7 +191,7 @@ export default function BuyerMessagesPage() {
                   const mine = m.sender_id === userId;
                   return (
                     <div key={m.id} style={{ display: "flex", justifyContent: mine ? "flex-end" : "flex-start" }}>
-                      <div style={{ maxWidth: "70%", background: mine ? ORANGE : SURFACE, border: mine ? "none" : `1px solid ${BORDER}`, color: mine ? "#fff" : TEXT, borderRadius: mine ? "16px 16px 4px 16px" : "16px 16px 16px 4px", padding: "10px 14px" }}>
+                      <div style={{ maxWidth: "70%", background: mine ? btnColor : SURFACE, border: mine ? "none" : `1px solid ${BORDER}`, color: mine ? "#fff" : TEXT, borderRadius: mine ? "16px 16px 4px 16px" : "16px 16px 16px 4px", padding: "10px 14px" }}>
                         <p style={{ fontSize: 14, lineHeight: 1.5, wordBreak: "break-word" }}>{m.content}</p>
                         <p style={{ fontSize: 10, marginTop: 4, opacity: 0.7, textAlign: mine ? "right" : "left" }}>{fmt(m.created_at)}</p>
                       </div>
@@ -191,10 +205,10 @@ export default function BuyerMessagesPage() {
                 <input value={text} onChange={e => setText(e.target.value)} maxLength={2000}
                   onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } }}
                   placeholder="Nachricht schreiben..."
-                  style={{ flex: 1, background: SURFACE, border: `1.5px solid ${BORDER}`, borderRadius: 10, padding: "10px 14px", color: TEXT, fontSize: 14, fontFamily: "inherit", outline: "none" }}
-                  onFocus={e => e.currentTarget.style.borderColor = ORANGE}
+                  style={{ flex: 1, background: SURFACE, border: `1.5px solid ${BORDER}`, borderRadius: isDark ? 4 : 10, padding: "10px 14px", color: TEXT, fontSize: 14, fontFamily: "inherit", outline: "none" }}
+                  onFocus={e => e.currentTarget.style.borderColor = accentColor}
                   onBlur={e => e.currentTarget.style.borderColor = BORDER} />
-                <button onClick={send} style={{ background: ORANGE, color: "#fff", border: "none", borderRadius: 10, padding: "10px 20px", fontWeight: 700, fontSize: 16, cursor: "pointer" }}>→</button>
+                <button onClick={send} style={{ background: btnColor, color: "#fff", border: "none", borderRadius: isDark ? 4 : 10, padding: "10px 20px", fontWeight: 700, fontSize: 16, cursor: "pointer" }}>→</button>
               </div>
             </>
           ) : (
@@ -211,15 +225,15 @@ export default function BuyerMessagesPage() {
       {showNew && (
         <>
           <div onClick={() => setShowNew(false)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 50 }} />
-          <div style={{ position: "fixed", top: "50%", left: "50%", transform: "translate(-50%,-50%)", background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 16, padding: 24, width: 340, maxHeight: "70vh", overflowY: "auto", zIndex: 51 }}>
+          <div style={{ position: "fixed", top: "50%", left: "50%", transform: "translate(-50%,-50%)", background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: isDark ? 8 : 16, padding: 24, width: 340, maxHeight: "70vh", overflowY: "auto", zIndex: 51 }}>
             <p style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: 16, color: TEXT, marginBottom: 16 }}>Lieferant auswählen</p>
             {suppliers.length === 0 ? (
               <p style={{ color: TEXT3, fontSize: 13 }}>Keine Lieferanten gefunden</p>
             ) : suppliers.map(s => (
-              <div key={s.id} onClick={() => startConv(s.id, s.name)} style={{ padding: "12px 14px", borderRadius: 10, cursor: "pointer", display: "flex", alignItems: "center", gap: 10, marginBottom: 6, background: BG, border: `1px solid ${BORDER}` }}
-                onMouseEnter={e => e.currentTarget.style.borderColor = ORANGE}
+              <div key={s.id} onClick={() => startConv(s.id, s.name)} style={{ padding: "12px 14px", borderRadius: isDark ? 6 : 10, cursor: "pointer", display: "flex", alignItems: "center", gap: 10, marginBottom: 6, background: BG, border: `1px solid ${BORDER}` }}
+                onMouseEnter={e => e.currentTarget.style.borderColor = accentColor}
                 onMouseLeave={e => e.currentTarget.style.borderColor = BORDER}>
-                <div style={{ width: 36, height: 36, background: `${ORANGE}20`, borderRadius: 9, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: 14, color: ORANGE }}>
+                <div style={{ width: 36, height: 36, background: `${ORANGE}20`, borderRadius: 9, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: 14, color: accentColor }}>
                   {s.name[0]?.toUpperCase()}
                 </div>
                 <p style={{ fontSize: 14, fontWeight: 600, color: TEXT }}>{s.name}</p>
@@ -238,7 +252,7 @@ export default function BuyerMessagesPage() {
           { href: "/messages", icon: "💬", label: "Nachrichten", active: true },
           { href: "/profile", icon: "👤", label: "Profil" },
         ].map(item => (
-          <a key={item.href} href={item.href} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 2, textDecoration: "none", color: item.active ? ORANGE : TEXT3 }}>
+          <a key={item.href} href={item.href} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 2, textDecoration: "none", color: item.active ? accentColor : TEXT3 }}>
             <span style={{ fontSize: 20 }}>{item.icon}</span>
             <span style={{ fontSize: 10, fontWeight: item.active ? 700 : 500 }}>{item.label}</span>
           </a>

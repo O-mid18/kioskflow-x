@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
@@ -10,6 +10,8 @@ const TEXT    = "var(--kf-text)";
 const TEXT2   = "var(--kf-text2)";
 const TEXT3   = "var(--kf-text3)";
 const ORANGE  = "#003ec7";
+const ACCENT  = "var(--kf-accent)";
+const BTN     = "var(--kf-btn)";
 
 const STATUS: Record<string, { label: string; color: string; bg: string; icon: string }> = {
   awaiting_quote:   { label: "Wartet auf Versandkosten", color: "#dc2626", bg: "#fef2f2", icon: "📦" },
@@ -20,6 +22,17 @@ const STATUS: Record<string, { label: string; color: string; bg: string; icon: s
   shipped:   { label: "Versandt",         color: "#003ec7", bg: "#eff6ff", icon: "🚚" },
   delivered: { label: "Geliefert",        color: "#16a34a", bg: "#f0fdf4", icon: "📦" },
   cancelled: { label: "Storniert",        color: "#dc2626", bg: "#fef2f2", icon: "❌" },
+};
+
+const STATUS_DARK: Record<string, { color: string; bg: string }> = {
+  awaiting_quote:   { color: "#f87171", bg: "rgba(239,68,68,0.15)" },
+  awaiting_payment: { color: "#fb923c", bg: "rgba(249,115,22,0.15)" },
+  pending:          { color: "#fb923c", bg: "rgba(249,115,22,0.15)" },
+  paid:             { color: "#b7c4ff", bg: "rgba(0,82,255,0.15)" },
+  preparing:        { color: "#b7c4ff", bg: "rgba(0,82,255,0.15)" },
+  shipped:          { color: "#b7c4ff", bg: "rgba(0,82,255,0.15)" },
+  delivered:        { color: "#b7c4ff", bg: "rgba(0,82,255,0.15)" },
+  cancelled:        { color: "#f87171", bg: "rgba(239,68,68,0.15)" },
 };
 
 const STEPS = [
@@ -39,19 +52,26 @@ type Order = {
   order_items?: OrderItem[];
 };
 
-function StatusBadge({ status }: { status: string }) {
+function StatusBadge({ status, isDark }: { status: string; isDark: boolean }) {
   const s = STATUS[status] ?? { label: status, color: TEXT3, bg: BG, icon: "•" };
+  const dk = STATUS_DARK[status];
   return (
-    <span style={{ background: s.bg, color: s.color, fontSize: 12, fontWeight: 700, padding: "4px 12px", borderRadius: 100, display: "inline-flex", alignItems: "center", gap: 5 }}>
+    <span style={{
+      background: isDark && dk ? dk.bg : s.bg,
+      color: isDark && dk ? dk.color : s.color,
+      fontSize: 12, fontWeight: 700, padding: "4px 12px", borderRadius: 100,
+      display: "inline-flex", alignItems: "center", gap: 5,
+    }}>
       {s.icon} {s.label}
     </span>
   );
 }
 
-function ProgressBar({ status }: { status: string }) {
+function ProgressBar({ status, isDark }: { status: string; isDark: boolean }) {
+  const accentColor = isDark ? ACCENT : ORANGE;
   if (status === "cancelled") return (
     <div style={{ marginTop: 16, display: "flex", alignItems: "center", gap: 8 }}>
-      <span style={{ background: "#fef2f2", color: "#dc2626", fontSize: 12, fontWeight: 700, padding: "4px 12px", borderRadius: 100 }}>❌ Bestellung storniert</span>
+      <span style={{ background: isDark ? "rgba(239,68,68,0.15)" : "#fef2f2", color: isDark ? "#f87171" : "#dc2626", fontSize: 12, fontWeight: 700, padding: "4px 12px", borderRadius: 100 }}>❌ Bestellung storniert</span>
     </div>
   );
 
@@ -65,13 +85,13 @@ function ProgressBar({ status }: { status: string }) {
           return (
             <div key={step.key} style={{ display: "flex", alignItems: "center", flex: i < STEPS.length - 1 ? 1 : 0 }}>
               <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
-                <div style={{ width: 28, height: 28, borderRadius: "50%", background: done ? ORANGE : BORDER, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 800, color: done ? "#fff" : TEXT3, flexShrink: 0, transition: "background 0.3s" }}>
+                <div style={{ width: 28, height: 28, borderRadius: "50%", background: done ? accentColor : BORDER, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 800, color: done ? "#fff" : TEXT3, flexShrink: 0, transition: "background 0.3s" }}>
                   {done ? "✓" : i + 1}
                 </div>
-                <p style={{ fontSize: 10, fontWeight: 600, color: done ? ORANGE : TEXT3, whiteSpace: "nowrap" }}>{step.label}</p>
+                <p style={{ fontSize: 10, fontWeight: 600, color: done ? accentColor : TEXT3, whiteSpace: "nowrap" }}>{step.label}</p>
               </div>
               {i < STEPS.length - 1 && (
-                <div style={{ flex: 1, height: 2, background: i < currentIdx ? ORANGE : BORDER, margin: "0 4px", marginBottom: 18, transition: "background 0.3s" }} />
+                <div style={{ flex: 1, height: 2, background: i < currentIdx ? accentColor : BORDER, margin: "0 4px", marginBottom: 18, transition: "background 0.3s" }} />
               )}
             </div>
           );
@@ -91,6 +111,15 @@ export default function OrdersPage() {
   const [confirmingCancel, setConfirmingCancel] = useState<string | null>(null);
   const [reorderToast, setReorderToast] = useState<string | null>(null);
   const [paying, setPaying]           = useState<string | null>(null);
+  const [isDark, setIsDark]           = useState(false);
+
+  useEffect(() => {
+    const check = () => setIsDark(document.documentElement.classList.contains("dark"));
+    check();
+    const obs = new MutationObserver(check);
+    obs.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+    return () => obs.disconnect();
+  }, []);
 
   useEffect(() => { fetchOrders(); }, []);
 
@@ -174,10 +203,13 @@ export default function OrdersPage() {
     .filter(o => ["paid","shipped","delivered"].includes(o.status))
     .reduce((s, o) => s + Number(o.total_price), 0);
 
+  const accentColor = isDark ? ACCENT : ORANGE;
+  const btnColor    = isDark ? BTN    : ORANGE;
+
   if (loading) return (
     <main style={{ minHeight: "100vh", background: BG, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Inter',system-ui,sans-serif" }}>
       <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
-      <div style={{ width: 36, height: 36, border: `3px solid ${BORDER}`, borderTopColor: ORANGE, borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
+      <div style={{ width: 36, height: 36, border: `3px solid ${BORDER}`, borderTopColor: accentColor, borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
     </main>
   );
 
@@ -188,7 +220,7 @@ export default function OrdersPage() {
         <div style={{ position:"fixed", bottom:90, right:20, zIndex:999, background:"var(--kf-toast-bg,#1a1714)", color:"var(--kf-toast-fg,#fff)", fontSize:13, padding:"12px 18px", borderRadius:12, display:"flex", alignItems:"center", gap:8, boxShadow:"0 4px 24px rgba(0,0,0,0.15)" }}>
           <span style={{ width:18, height:18, background:"#22c55e", borderRadius:"50%", display:"flex", alignItems:"center", justifyContent:"center", fontSize:9, fontWeight:900 }}>✓</span>
           {reorderToast}
-          <a href="/cart" style={{ color:ORANGE, fontWeight:700, fontSize:12, marginLeft:6 }}>Zum Warenkorb →</a>
+          <a href="/cart" style={{ color: accentColor, fontWeight:700, fontSize:12, marginLeft:6 }}>Zum Warenkorb →</a>
         </div>
       )}
 
@@ -199,8 +231,8 @@ export default function OrdersPage() {
           <span style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: 14, color: TEXT }}>Flowio</span>
         </a>
         <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-          {role === "admin" && <a href="/owner/dashboard" title="Owner-Panel" style={{ background:`${ORANGE}15`, color:ORANGE, fontWeight:700, fontSize:13, textDecoration:"none", padding:"6px 12px", borderRadius:8 }}>🏛️</a>}
-          {role === "supplier" && <a href="/supplier/dashboard" title="Lieferanten-Dashboard" style={{ background:`${ORANGE}15`, color:ORANGE, fontWeight:700, fontSize:13, textDecoration:"none", padding:"6px 12px", borderRadius:8 }}>📦</a>}
+          {role === "admin" && <a href="/owner/dashboard" title="Owner-Panel" style={{ background:`${ORANGE}15`, color: accentColor, fontWeight:700, fontSize:13, textDecoration:"none", padding:"6px 12px", borderRadius:8 }}>🏛️</a>}
+          {role === "supplier" && <a href="/supplier/dashboard" title="Lieferanten-Dashboard" style={{ background:`${ORANGE}15`, color: accentColor, fontWeight:700, fontSize:13, textDecoration:"none", padding:"6px 12px", borderRadius:8 }}>📦</a>}
           <a href="/marketplace" style={{ fontSize: 13, color: TEXT2, textDecoration: "none", fontWeight: 500, padding: "6px 14px", borderRadius: 8 }}>Marktplatz</a>
           <a href="/cart" style={{ fontSize: 13, color: TEXT2, textDecoration: "none", fontWeight: 500, padding: "6px 14px", borderRadius: 8 }}>Warenkorb</a>
           <a href="/analytics" style={{ fontSize: 13, color: TEXT2, textDecoration: "none", fontWeight: 500, padding: "6px 14px", borderRadius: 8 }}>📊 Analytik</a>
@@ -227,7 +259,7 @@ export default function OrdersPage() {
             { icon: "💶", label: "Ausgegeben",       value: `€${totalSpent.toFixed(2)}`, hi: true },
             { icon: "⏳", label: "Ausstehend",       value: String(orders.filter(o => o.status === "pending").length) },
           ].map(s => (
-            <div key={s.label} style={{ background: s.hi ? ORANGE : SURFACE, border: `1px solid ${s.hi ? ORANGE : BORDER}`, borderRadius: 14, padding: "18px 20px" }}>
+            <div key={s.label} style={{ background: s.hi ? btnColor : SURFACE, border: `1px solid ${s.hi ? btnColor : BORDER}`, borderRadius: isDark ? 8 : 14, padding: "18px 20px" }}>
               <span style={{ fontSize: 20 }}>{s.icon}</span>
               <p style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: 22, color: s.hi ? "#fff" : TEXT, margin: "8px 0 2px" }}>{s.value}</p>
               <p style={{ fontSize: 12, fontWeight: 600, color: s.hi ? "rgba(255,255,255,0.8)" : TEXT2 }}>{s.label}</p>
@@ -240,7 +272,7 @@ export default function OrdersPage() {
           {[{ key: "all", label: `Alle (${orders.length})` }, ...Object.entries(STATUS).map(([k, v]) => ({ key: k, label: `${v.icon} ${v.label} (${orders.filter(o => o.status === k).length})` }))]
             .map(f => (
               <button key={f.key} onClick={() => setStatusFilter(f.key)}
-                style={{ padding: "8px 14px", borderRadius: 100, border: `1.5px solid ${statusFilter === f.key ? ORANGE : BORDER}`, background: statusFilter === f.key ? `${ORANGE}15` : SURFACE, color: statusFilter === f.key ? ORANGE : TEXT2, fontWeight: 600, fontSize: 12, cursor: "pointer", whiteSpace: "nowrap" }}>
+                style={{ padding: "8px 14px", borderRadius: 100, border: `1.5px solid ${statusFilter === f.key ? accentColor : BORDER}`, background: statusFilter === f.key ? `${ORANGE}15` : SURFACE, color: statusFilter === f.key ? accentColor : TEXT2, fontWeight: 600, fontSize: 12, cursor: "pointer", whiteSpace: "nowrap" }}>
                 {f.label}
               </button>
             ))}
@@ -251,7 +283,7 @@ export default function OrdersPage() {
           <div style={{ textAlign: "center", padding: "80px 0" }}>
             <p style={{ fontSize: 48, marginBottom: 16 }}>📭</p>
             <p style={{ color: TEXT2, fontSize: 15, fontWeight: 600 }}>Keine Bestellungen gefunden.</p>
-            <a href="/marketplace" style={{ display: "inline-block", marginTop: 20, background: ORANGE, color: "#fff", fontWeight: 700, padding: "12px 24px", borderRadius: 10, textDecoration: "none", fontSize: 14 }}>
+            <a href="/marketplace" style={{ display: "inline-block", marginTop: 20, background: btnColor, color: "#fff", fontWeight: 700, padding: "12px 24px", borderRadius: 10, textDecoration: "none", fontSize: 14 }}>
               Zum Marktplatz →
             </a>
           </div>
@@ -263,7 +295,7 @@ export default function OrdersPage() {
               const itemCount = order.order_items?.length ?? 0;
 
               return (
-                <div key={order.id} style={{ background: SURFACE, border: `1.5px solid ${expanded ? ORANGE : BORDER}`, borderRadius: 16, overflow: "hidden", transition: "border-color 0.2s" }}>
+                <div key={order.id} style={{ background: SURFACE, border: `1.5px solid ${expanded ? accentColor : BORDER}`, borderRadius: isDark ? 8 : 16, overflow: "hidden", transition: "border-color 0.2s" }}>
                   {/* Order row */}
                   <div onClick={() => setExpandedId(expanded ? null : order.id)}
                     style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "18px 22px", cursor: "pointer" }}
@@ -283,7 +315,7 @@ export default function OrdersPage() {
                       </div>
                     </div>
                     <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-                      <StatusBadge status={order.status} />
+                      <StatusBadge status={order.status} isDark={isDark} />
                       <p style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: 18, color: TEXT }}>
                         €{Number(order.total_price).toFixed(2)}
                       </p>
@@ -325,7 +357,7 @@ export default function OrdersPage() {
                   {expanded && (
                     <div style={{ borderTop: `1px solid ${BORDER}`, padding: "20px 22px" }}>
                       {/* Progress */}
-                      <ProgressBar status={order.status} />
+                      <ProgressBar status={order.status} isDark={isDark} />
 
                       {/* Items */}
                       {itemCount > 0 && (
@@ -352,12 +384,12 @@ export default function OrdersPage() {
                           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 14px 0", borderTop: `1px solid ${BORDER}`, marginTop: 8 }}>
                             <div>
                               <p style={{ fontSize: 13, fontWeight: 700, color: TEXT2 }}>Gesamtbetrag</p>
-                              <p style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: 16, color: ORANGE }}>€{Number(order.total_price).toFixed(2)}</p>
+                              <p style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: 16, color: accentColor }}>€{Number(order.total_price).toFixed(2)}</p>
                             </div>
                             <button
                               onClick={() => reorderItems(order.id, order.order_items ?? [])}
                               disabled={reordering === order.id}
-                              style={{ display:"flex", alignItems:"center", gap:7, background: reordering === order.id ? BORDER : ORANGE, color:"#fff", border:"none", borderRadius:10, padding:"10px 18px", fontWeight:700, fontSize:13, cursor: reordering === order.id ? "not-allowed" : "pointer", transition:"all 0.2s" }}>
+                              style={{ display:"flex", alignItems:"center", gap:7, background: reordering === order.id ? BORDER : btnColor, color:"#fff", border:"none", borderRadius:10, padding:"10px 18px", fontWeight:700, fontSize:13, cursor: reordering === order.id ? "not-allowed" : "pointer", transition:"all 0.2s" }}>
                               {reordering === order.id ? "..." : "🔄 Wieder bestellen"}
                             </button>
                           </div>
@@ -377,8 +409,8 @@ export default function OrdersPage() {
         {[{ icon: "🏪", label: "Marktplatz", href: "/marketplace", active: false }, { icon: "🛒", label: "Warenkorb", href: "/cart", active: false }, { icon: "📦", label: "Bestellungen", href: "/orders", active: true }, { icon: "💬", label: "Nachrichten", href: "/messages", active: false }, { icon: "👤", label: "Profil", href: "/profile", active: false }].map(({ icon, label, href, active }) => (
           <a key={label} href={href} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 3, textDecoration: "none", padding: "0 12px" }}>
             <span style={{ fontSize: 20, lineHeight: 1 }}>{icon}</span>
-            <span style={{ fontSize: 10, fontWeight: active ? 700 : 500, color: active ? ORANGE : TEXT3 }}>{label}</span>
-            {active && <div style={{ width: 16, height: 2, background: ORANGE, borderRadius: 2, marginTop: 1 }} />}
+            <span style={{ fontSize: 10, fontWeight: active ? 700 : 500, color: active ? accentColor : TEXT3 }}>{label}</span>
+            {active && <div style={{ width: 16, height: 2, background: accentColor, borderRadius: 2, marginTop: 1 }} />}
           </a>
         ))}
       </nav>
