@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
@@ -10,6 +10,8 @@ const TEXT = "var(--kf-text)";
 const TEXT2 = "var(--kf-text2)";
 const TEXT3 = "var(--kf-text3)";
 const ORANGE = "#003ec7";
+const ACCENT = "var(--kf-accent)";
+const BTN    = "var(--kf-btn)";
 
 type OrderItem = {
   id: string;
@@ -41,6 +43,17 @@ const STATUS_MAP: Record<string, { label:string; color:string; bg:string }> = {
   cancelled: { label:"Storniert",        color:"#dc2626", bg:"#fef2f2" },
 };
 
+const STATUS_DARK: Record<string, { color: string; bg: string }> = {
+  awaiting_quote:   { color: "#f87171", bg: "rgba(239,68,68,0.15)" },
+  awaiting_payment: { color: "#fb923c", bg: "rgba(249,115,22,0.15)" },
+  pending:          { color: "#fb923c", bg: "rgba(249,115,22,0.15)" },
+  paid:             { color: "#b7c4ff", bg: "rgba(0,82,255,0.15)" },
+  preparing:        { color: "#b7c4ff", bg: "rgba(0,82,255,0.15)" },
+  shipped:          { color: "#b7c4ff", bg: "rgba(0,82,255,0.15)" },
+  delivered:        { color: "#b7c4ff", bg: "rgba(0,82,255,0.15)" },
+  cancelled:        { color: "#f87171", bg: "rgba(239,68,68,0.15)" },
+};
+
 export default function SupplierOrdersPage() {
   const [items,       setItems]       = useState<OrderItem[]>([]);
   const [loading,     setLoading]     = useState(true);
@@ -49,8 +62,17 @@ export default function SupplierOrdersPage() {
   const [updating,    setUpdating]    = useState<string | null>(null);
   const [quoteInputs, setQuoteInputs] = useState<Record<string, string>>({});
   const [quoting,     setQuoting]     = useState<string | null>(null);
+  const [isDark,      setIsDark]      = useState(false);
 
   useEffect(() => { fetchOrders(); }, []);
+
+  useEffect(() => {
+    const check = () => setIsDark(document.documentElement.classList.contains("dark"));
+    check();
+    const obs = new MutationObserver(check);
+    obs.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+    return () => obs.disconnect();
+  }, []);
 
   const STATUS_NOTIFY: Record<string, string> = {
     preparing: "📦 Deine Bestellung wird vorbereitet",
@@ -159,11 +181,13 @@ export default function SupplierOrdersPage() {
     Object.keys(STATUS_MAP).map(k => [k, items.filter(i => i.orders?.status === k).length])
   );
 
+  const accentColor = isDark ? ACCENT : ORANGE;
+
   if (loading) {
     return (
       <div style={{ display:"flex", alignItems:"center", justifyContent:"center", height:"100vh" }}>
         <style>{`@keyframes spin { to { transform:rotate(360deg); } }`}</style>
-        <div style={{ width:36, height:36, border:`3px solid ${BORDER}`, borderTopColor:ORANGE, borderRadius:"50%", animation:"spin 0.8s linear infinite" }} />
+        <div style={{ width:36, height:36, border:`3px solid ${BORDER}`, borderTopColor:accentColor, borderRadius:"50%", animation:"spin 0.8s linear infinite" }} />
       </div>
     );
   }
@@ -180,14 +204,17 @@ export default function SupplierOrdersPage() {
 
       {/* Status filter tabs */}
       <div style={{ display:"flex", gap:8, marginBottom:20, flexWrap:"wrap" }}>
-        <button onClick={() => setFilter("all")} style={{ padding:"8px 16px", borderRadius:100, border:`1.5px solid ${filter==="all"?ORANGE:BORDER}`, background:filter==="all"?`${ORANGE}15`:SURFACE, color:filter==="all"?ORANGE:TEXT2, fontWeight:600, fontSize:13, cursor:"pointer" }}>
+        <button onClick={() => setFilter("all")} style={{ padding:"8px 16px", borderRadius:100, border:`1.5px solid ${filter==="all"?accentColor:BORDER}`, background:filter==="all"?`${ORANGE}15`:SURFACE, color:filter==="all"?accentColor:TEXT2, fontWeight:600, fontSize:13, cursor:"pointer" }}>
           Alle ({items.length})
         </button>
-        {Object.entries(STATUS_MAP).map(([key, s]) => (
-          <button key={key} onClick={() => setFilter(key)} style={{ padding:"8px 16px", borderRadius:100, border:`1.5px solid ${filter===key?s.color:BORDER}`, background:filter===key?s.bg:SURFACE, color:filter===key?s.color:TEXT2, fontWeight:600, fontSize:13, cursor:"pointer" }}>
-            {s.label} ({statusCounts[key] ?? 0})
-          </button>
-        ))}
+        {Object.entries(STATUS_MAP).map(([key, s]) => {
+          const dk = isDark ? (STATUS_DARK[key] ?? s) : s;
+          return (
+            <button key={key} onClick={() => setFilter(key)} style={{ padding:"8px 16px", borderRadius:100, border:`1.5px solid ${filter===key?dk.color:BORDER}`, background:filter===key?dk.bg:SURFACE, color:filter===key?dk.color:TEXT2, fontWeight:600, fontSize:13, cursor:"pointer" }}>
+              {s.label} ({statusCounts[key] ?? 0})
+            </button>
+          );
+        })}
       </div>
 
       {/* Search */}
@@ -198,7 +225,7 @@ export default function SupplierOrdersPage() {
       </div>
 
       {/* Orders table */}
-      <div style={{ background:SURFACE, border:`1px solid ${BORDER}`, borderRadius:18, overflow:"hidden" }}>
+      <div style={{ background:SURFACE, border:`1px solid ${BORDER}`, borderRadius:isDark ? 8 : 18, overflow:"hidden" }}>
         {filtered.length === 0 ? (
           <div style={{ padding:"64px", textAlign:"center" }}>
             <p style={{ fontSize:48, marginBottom:14 }}>📭</p>
@@ -210,13 +237,15 @@ export default function SupplierOrdersPage() {
             <thead>
               <tr style={{ borderBottom:`1px solid ${BORDER}`, background:BG }}>
                 {["Produkt","Bestell-ID","Datum","Menge","Preis","Status","Aktion"].map(h => (
-                  <th key={h} style={{ padding:"12px 20px", textAlign:"left", fontSize:11, fontWeight:700, color:TEXT3, textTransform:"uppercase", letterSpacing:"0.8px", whiteSpace:"nowrap" }}>{h}</th>
+                  <th key={h} style={{ padding:"12px 20px", textAlign:"left", fontSize:11, fontWeight:700, color:TEXT3, textTransform:"uppercase", letterSpacing:"0.8px", whiteSpace:"nowrap", background: isDark ? "rgba(30,32,34,0.5)" : "transparent" }}>{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
               {filtered.map((item, i) => {
-                const s = STATUS_MAP[item.orders?.status ?? ""] ?? { label:item.orders?.status ?? "—", color:TEXT3, bg:BG };
+                const sLight = STATUS_MAP[item.orders?.status ?? ""] ?? { label:item.orders?.status ?? "—", color:TEXT3, bg:BG };
+                const sDark  = STATUS_DARK[item.orders?.status ?? ""] ?? { color:TEXT3, bg:BG };
+                const s      = isDark ? { ...sLight, ...sDark } : sLight;
                 return (
                   <tr key={item.id} style={{ borderBottom:i<filtered.length-1?`1px solid ${BORDER}`:"none", transition:"background 0.15s" }}
                     onMouseEnter={e => e.currentTarget.style.background=BG}
@@ -305,7 +334,7 @@ export default function SupplierOrdersPage() {
       {/* Summary footer */}
       {filtered.length > 0 && (
         <div style={{ marginTop:16, display:"flex", justifyContent:"flex-end" }}>
-          <div style={{ background:SURFACE, border:`1px solid ${BORDER}`, borderRadius:12, padding:"14px 22px", display:"flex", gap:28 }}>
+          <div style={{ background:SURFACE, border:`1px solid ${BORDER}`, borderRadius:isDark ? 8 : 12, padding:"14px 22px", display:"flex", gap:28 }}>
             <div style={{ textAlign:"right" }}>
               <p style={{ fontSize:11, color:TEXT3, marginBottom:3 }}>ARTIKEL</p>
               <p style={{ fontFamily:"'Manrope',sans-serif", fontWeight:800, fontSize:18, color:TEXT }}>{filtered.reduce((s,i)=>s+i.quantity,0)}</p>
@@ -313,7 +342,7 @@ export default function SupplierOrdersPage() {
             <div style={{ width:1, background:BORDER }} />
             <div style={{ textAlign:"right" }}>
               <p style={{ fontSize:11, color:TEXT3, marginBottom:3 }}>UMSATZ</p>
-              <p style={{ fontFamily:"'Manrope',sans-serif", fontWeight:800, fontSize:18, color:ORANGE }}>€{filtered.reduce((s,i)=>s+i.price_at_purchase*i.quantity,0).toFixed(2)}</p>
+              <p style={{ fontFamily:"'Manrope',sans-serif", fontWeight:800, fontSize:18, color:accentColor }}>€{filtered.reduce((s,i)=>s+i.price_at_purchase*i.quantity,0).toFixed(2)}</p>
             </div>
           </div>
         </div>

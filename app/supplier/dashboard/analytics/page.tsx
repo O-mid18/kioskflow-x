@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
@@ -10,6 +10,8 @@ const TEXT = "var(--kf-text)";
 const TEXT2 = "var(--kf-text2)";
 const TEXT3 = "var(--kf-text3)";
 const ORANGE = "#003ec7";
+const ACCENT = "var(--kf-accent)";
+const BTN    = "var(--kf-btn)";
 
 const MONTHS = ["Jan","Feb","Mär","Apr","Mai","Jun","Jul","Aug","Sep","Okt","Nov","Dez"];
 const CAT_COLORS = [ORANGE,"#3b82f6","#8b5cf6","#10b981","#f59e0b","#ec4899"];
@@ -38,9 +40,10 @@ function BarChart({ data, color }: { data: { label: string; value: number }[]; c
 }
 
 // ── Stat card ─────────────────────────────────────────────────────────────────
-function StatCard({ icon, label, value, sub, highlight }: { icon: string; label: string; value: string; sub: string; highlight?: boolean }) {
+function StatCard({ icon, label, value, sub, highlight, isDark }: { icon: string; label: string; value: string; sub: string; highlight?: boolean; isDark?: boolean }) {
+  const fillColor = isDark ? "var(--kf-btn)" : "#003ec7";
   return (
-    <div style={{ background: highlight ? ORANGE : SURFACE, border: `1px solid ${highlight ? ORANGE : BORDER}`, borderRadius: 16, padding: "20px 22px" }}>
+    <div style={{ background: highlight ? fillColor : SURFACE, border: `1px solid ${highlight ? fillColor : BORDER}`, borderRadius: isDark ? 8 : 16, padding: "20px 22px" }}>
       <span style={{ fontSize: 22 }}>{icon}</span>
       <p style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: 24, color: highlight ? "#fff" : TEXT, margin: "10px 0 2px", letterSpacing: "-0.5px" }}>{value}</p>
       <p style={{ fontSize: 12, fontWeight: 700, color: highlight ? "rgba(255,255,255,0.85)" : TEXT2 }}>{label}</p>
@@ -49,14 +52,39 @@ function StatCard({ icon, label, value, sub, highlight }: { icon: string; label:
   );
 }
 
+const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
+  pending:   { label: "Ausstehend", color: "#ea580c", bg: "#fff7ed" },
+  paid:      { label: "Bezahlt",    color: "#16a34a", bg: "#f0fdf4" },
+  shipped:   { label: "Versandt",   color: "#003ec7", bg: "#eff6ff" },
+  delivered: { label: "Geliefert",  color: "#16a34a", bg: "#f0fdf4" },
+  cancelled: { label: "Storniert",  color: "#dc2626", bg: "#fef2f2" },
+};
+
+const STATUS_CONFIG_DARK: Record<string, { color: string; bg: string }> = {
+  pending:   { color: "#fb923c", bg: "rgba(249,115,22,0.15)" },
+  paid:      { color: "#b7c4ff", bg: "rgba(0,82,255,0.15)" },
+  shipped:   { color: "#b7c4ff", bg: "rgba(0,82,255,0.15)" },
+  delivered: { color: "#b7c4ff", bg: "rgba(0,82,255,0.15)" },
+  cancelled: { color: "#f87171", bg: "rgba(239,68,68,0.15)" },
+};
+
 // ── Main page ─────────────────────────────────────────────────────────────────
 export default function SupplierAnalyticsPage() {
   const [items, setItems]     = useState<OrderItem[]>([]);
   const [products, setProducts] = useState<{ id: string; name: string; category: string | null }[]>([]);
   const [loading, setLoading] = useState(true);
   const [period, setPeriod]   = useState<"month" | "year">("year");
+  const [isDark, setIsDark]   = useState(false);
 
   useEffect(() => { fetchData(); }, []);
+
+  useEffect(() => {
+    const check = () => setIsDark(document.documentElement.classList.contains("dark"));
+    check();
+    const obs = new MutationObserver(check);
+    obs.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+    return () => obs.disconnect();
+  }, []);
 
   const fetchData = async () => {
     setLoading(true);
@@ -95,7 +123,6 @@ export default function SupplierAnalyticsPage() {
   const paidItems   = items.filter(i => i.orders?.status === "paid" || i.orders?.status === "delivered" || i.orders?.status === "shipped");
   const totalRev    = paidItems.reduce((s, i) => s + i.price_at_purchase * i.quantity, 0);
   const totalUnits  = items.reduce((s, i) => s + i.quantity, 0);
-  const uniqueOrders = new Set(items.map(i => JSON.stringify(i.orders?.created_at))).size;
 
   // Month-over-month
   const now = new Date();
@@ -145,20 +172,14 @@ export default function SupplierAnalyticsPage() {
   const cats = Object.entries(catRev).sort((a, b) => b[1] - a[1]).slice(0, 6);
   const totalCatRev = cats.reduce((s, [, v]) => s + v, 0) || 1;
 
-  // Status counts
-  const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
-    pending:   { label: "Ausstehend", color: "#ea580c", bg: "#fff7ed" },
-    paid:      { label: "Bezahlt",    color: "#16a34a", bg: "#f0fdf4" },
-    shipped:   { label: "Versandt",   color: "#003ec7", bg: "#eff6ff" },
-    delivered: { label: "Geliefert",  color: "#16a34a", bg: "#f0fdf4" },
-    cancelled: { label: "Storniert",  color: "#dc2626", bg: "#fef2f2" },
-  };
+  const accentColor = isDark ? ACCENT : ORANGE;
+  const btnColor    = isDark ? BTN    : ORANGE;
 
   if (loading) {
     return (
       <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100vh" }}>
         <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
-        <div style={{ width: 36, height: 36, border: `3px solid ${BORDER}`, borderTopColor: ORANGE, borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
+        <div style={{ width: 36, height: 36, border: `3px solid ${BORDER}`, borderTopColor: accentColor, borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
       </div>
     );
   }
@@ -178,19 +199,20 @@ export default function SupplierAnalyticsPage() {
 
       {/* KPI row */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 14, marginBottom: 24 }}>
-        <StatCard icon="💶" label="Gesamtumsatz" value={`€${totalRev.toFixed(2)}`} sub="Bezahlte Bestellungen" highlight />
-        <StatCard icon="📦" label="Bestellpositionen" value={String(items.length)} sub="Alle Zeiträume" />
-        <StatCard icon="🔢" label="Verkaufte Einheiten" value={String(totalUnits)} sub="Gesamt" />
+        <StatCard icon="💶" label="Gesamtumsatz" value={`€${totalRev.toFixed(2)}`} sub="Bezahlte Bestellungen" highlight isDark={isDark} />
+        <StatCard icon="📦" label="Bestellpositionen" value={String(items.length)} sub="Alle Zeiträume" isDark={isDark} />
+        <StatCard icon="🔢" label="Verkaufte Einheiten" value={String(totalUnits)} sub="Gesamt" isDark={isDark} />
         <StatCard
           icon={momChange !== null && momChange >= 0 ? "📈" : "📉"}
           label="Umsatz diesen Monat"
           value={`€${revThisMonth.toFixed(0)}`}
           sub={momChange !== null ? `${momChange >= 0 ? "+" : ""}${momChange.toFixed(1)}% vs. letzten Monat` : "Erster Monat"}
+          isDark={isDark}
         />
       </div>
 
       {/* Revenue chart + period toggle */}
-      <div style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 18, padding: "22px", marginBottom: 20 }}>
+      <div style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: isDark ? 8 : 18, padding: "22px", marginBottom: 20 }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
           <div>
             <h2 style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: 16, color: TEXT }}>Umsatzverlauf</h2>
@@ -199,7 +221,7 @@ export default function SupplierAnalyticsPage() {
           <div style={{ display: "flex", background: BG, borderRadius: 10, padding: 3 }}>
             {(["year", "month"] as const).map(p => (
               <button key={p} onClick={() => setPeriod(p)}
-                style={{ padding: "6px 14px", borderRadius: 8, border: "none", fontSize: 12, fontWeight: 700, cursor: "pointer", background: period === p ? ORANGE : "transparent", color: period === p ? "#fff" : TEXT3, transition: "all 0.2s" }}>
+                style={{ padding: "6px 14px", borderRadius: 8, border: "none", fontSize: 12, fontWeight: 700, cursor: "pointer", background: period === p ? btnColor : "transparent", color: period === p ? "#fff" : TEXT3, transition: "all 0.2s" }}>
                 {p === "year" ? "Jahr" : "Wochen"}
               </button>
             ))}
@@ -230,7 +252,7 @@ export default function SupplierAnalyticsPage() {
             <div style={{ width: 1, background: BORDER }} />
             <div>
               <p style={{ fontSize: 11, color: TEXT3, marginBottom: 3 }}>DIESEN MONAT</p>
-              <p style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: 16, color: ORANGE }}>
+              <p style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: 16, color: accentColor }}>
                 €{revThisMonth.toFixed(0)}
               </p>
             </div>
@@ -242,7 +264,7 @@ export default function SupplierAnalyticsPage() {
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, marginBottom: 20 }}>
 
         {/* Top products */}
-        <div style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 18, padding: "22px" }}>
+        <div style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: isDark ? 8 : 18, padding: "22px" }}>
           <h2 style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: 16, color: TEXT, marginBottom: 20 }}>Top Produkte</h2>
           {topProducts.length === 0 ? (
             <p style={{ color: TEXT3, fontSize: 13, textAlign: "center", padding: "32px 0" }}>Noch keine Daten.</p>
@@ -252,7 +274,7 @@ export default function SupplierAnalyticsPage() {
                 <div key={p.name}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                      <span style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: 13, color: i === 0 ? ORANGE : TEXT3, width: 18 }}>#{i + 1}</span>
+                      <span style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: 13, color: i === 0 ? accentColor : TEXT3, width: 18 }}>#{i + 1}</span>
                       <span style={{ fontSize: 13, fontWeight: 600, color: TEXT, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 150 }}>{p.name}</span>
                     </div>
                     <div style={{ display: "flex", gap: 10, alignItems: "center", flexShrink: 0 }}>
@@ -261,7 +283,7 @@ export default function SupplierAnalyticsPage() {
                     </div>
                   </div>
                   <div style={{ height: 6, background: BORDER, borderRadius: 3, overflow: "hidden" }}>
-                    <div style={{ height: "100%", width: `${(p.rev / maxProdRev) * 100}%`, background: i === 0 ? ORANGE : TEXT3, borderRadius: 3, transition: "width 0.6s ease", opacity: i === 0 ? 1 : 0.5 }} />
+                    <div style={{ height: "100%", width: `${(p.rev / maxProdRev) * 100}%`, background: i === 0 ? btnColor : TEXT3, borderRadius: 3, transition: "width 0.6s ease", opacity: i === 0 ? 1 : 0.5 }} />
                   </div>
                 </div>
               ))}
@@ -270,7 +292,7 @@ export default function SupplierAnalyticsPage() {
         </div>
 
         {/* Category breakdown */}
-        <div style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 18, padding: "22px" }}>
+        <div style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: isDark ? 8 : 18, padding: "22px" }}>
           <h2 style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: 16, color: TEXT, marginBottom: 20 }}>Umsatz nach Kategorie</h2>
           {cats.length === 0 ? (
             <p style={{ color: TEXT3, fontSize: 13, textAlign: "center", padding: "32px 0" }}>Noch keine Daten.</p>
@@ -302,20 +324,21 @@ export default function SupplierAnalyticsPage() {
       </div>
 
       {/* Order status */}
-      <div style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 18, padding: "22px" }}>
+      <div style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: isDark ? 8 : 18, padding: "22px" }}>
         <h2 style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: 16, color: TEXT, marginBottom: 20 }}>Bestellstatus-Übersicht</h2>
         {!hasData ? (
           <p style={{ color: TEXT3, fontSize: 13, textAlign: "center", padding: "20px 0" }}>Noch keine Bestellungen.</p>
         ) : (
           <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 12 }}>
             {Object.entries(STATUS_CONFIG).map(([key, s]) => {
+              const dk    = isDark ? (STATUS_CONFIG_DARK[key] ?? s) : s;
               const count = items.filter(i => i.orders?.status === key).length;
-              const pct = items.length > 0 ? (count / items.length) * 100 : 0;
+              const pct   = items.length > 0 ? (count / items.length) * 100 : 0;
               return (
-                <div key={key} style={{ background: s.bg, borderRadius: 14, padding: "16px", textAlign: "center" }}>
-                  <p style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: 28, color: s.color }}>{count}</p>
-                  <p style={{ fontSize: 12, fontWeight: 700, color: s.color, marginTop: 4 }}>{s.label}</p>
-                  <p style={{ fontSize: 11, color: s.color, opacity: 0.7, marginTop: 2 }}>{pct.toFixed(0)}%</p>
+                <div key={key} style={{ background: dk.bg, borderRadius: isDark ? 6 : 14, padding: "16px", textAlign: "center" }}>
+                  <p style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: 28, color: dk.color }}>{count}</p>
+                  <p style={{ fontSize: 12, fontWeight: 700, color: dk.color, marginTop: 4 }}>{s.label}</p>
+                  <p style={{ fontSize: 11, color: dk.color, opacity: 0.7, marginTop: 2 }}>{pct.toFixed(0)}%</p>
                 </div>
               );
             })}

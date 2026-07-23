@@ -1,6 +1,6 @@
-﻿"use client";
+"use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { CATEGORIES } from "@/lib/categories";
 
@@ -11,20 +11,23 @@ const TEXT = "var(--kf-text)";
 const TEXT2 = "var(--kf-text2)";
 const TEXT3 = "var(--kf-text3)";
 const ORANGE = "#003ec7";
+const ACCENT = "var(--kf-accent)";
+const BTN    = "var(--kf-btn)";
 
-function Field({ label, required, children }: { label:string; required?:boolean; children:React.ReactNode }) {
+function Field({ label, required, children, isDark }: { label:string; required?:boolean; children:React.ReactNode; isDark?: boolean }) {
+  const accentColor = isDark ? ACCENT : ORANGE;
   return (
     <div>
       <label style={{ display:"block", fontSize:12, fontWeight:600, color:TEXT2, marginBottom:7, letterSpacing:"0.2px" }}>
-        {label}{required && <span style={{ color:ORANGE, marginLeft:3 }}>*</span>}
+        {label}{required && <span style={{ color:accentColor, marginLeft:3 }}>*</span>}
       </label>
       {children}
     </div>
   );
 }
 
-function inputStyle(extra?: object) {
-  return { width:"100%", background:SURFACE, border:`1.5px solid ${BORDER}`, borderRadius:10, padding:"12px 15px", color:TEXT, fontSize:14, boxSizing:"border-box" as const, transition:"border-color 0.2s, box-shadow 0.2s", fontFamily:"inherit", ...extra };
+function inputStyle(dark = false, extra?: object) {
+  return { width:"100%", background:SURFACE, border:`1.5px solid ${BORDER}`, borderRadius: dark ? 4 : 10, padding:"12px 15px", color:TEXT, fontSize:14, boxSizing:"border-box" as const, transition:"border-color 0.2s, box-shadow 0.2s", fontFamily:"inherit", ...extra };
 }
 
 export default function AddProductPage() {
@@ -40,10 +43,22 @@ export default function AddProductPage() {
   const [uploadProgress, setUploadProgress] = useState(false);
   const [errorMsg, setErrorMsg]       = useState("");
   const [dragOver, setDragOver]       = useState(false);
+  const [isDark, setIsDark]           = useState(false);
   const fileInputRef                  = useRef<HTMLInputElement>(null);
 
+  useEffect(() => {
+    const check = () => setIsDark(document.documentElement.classList.contains("dark"));
+    check();
+    const obs = new MutationObserver(check);
+    obs.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+    return () => obs.disconnect();
+  }, []);
+
+  const accentColor = isDark ? ACCENT : ORANGE;
+  const btnColor    = isDark ? BTN    : ORANGE;
+
   const focus = (e: React.FocusEvent<HTMLInputElement|HTMLTextAreaElement|HTMLSelectElement>) => {
-    e.currentTarget.style.borderColor = ORANGE;
+    e.currentTarget.style.borderColor = accentColor;
     e.currentTarget.style.boxShadow = "0 0 0 3px rgba(0,62,199,0.1)";
   };
   const blur = (e: React.FocusEvent<HTMLInputElement|HTMLTextAreaElement|HTMLSelectElement>) => {
@@ -128,25 +143,25 @@ export default function AddProductPage() {
         </div>
 
         {errorMsg && (
-          <div style={{ background:"#fef2f2", border:"1.5px solid #fca5a5", borderRadius:10, padding:"12px 16px", marginBottom:24 }}>
-            <p style={{ color:"#dc2626", fontSize:13 }}>{errorMsg}</p>
+          <div style={{ background: isDark ? "rgba(239,68,68,0.15)" : "#fef2f2", border: `1.5px solid ${isDark ? "rgba(239,68,68,0.3)" : "#fca5a5"}`, borderRadius:10, padding:"12px 16px", marginBottom:24 }}>
+            <p style={{ color: isDark ? "#f87171" : "#dc2626", fontSize:13 }}>{errorMsg}</p>
           </div>
         )}
 
         <div style={{ display:"flex", flexDirection:"column", gap:14 }}>
           {/* Produktdetails */}
-          <div style={{ background:SURFACE, border:`1px solid ${BORDER}`, borderRadius:16, padding:"24px" }}>
+          <div style={{ background:SURFACE, border:`1px solid ${BORDER}`, borderRadius: isDark ? 8 : 16, padding:"24px" }}>
             <h2 style={{ fontFamily:"'Manrope',sans-serif", fontWeight:700, fontSize:14, color:TEXT, marginBottom:20 }}>Produktdetails</h2>
             <div style={{ display:"flex", flexDirection:"column", gap:16 }}>
-              <Field label="Name" required>
-                <input type="text" placeholder="z.B. Club Mate 500ml" value={name} onChange={e => setName(e.target.value)} style={inputStyle()} onFocus={focus} onBlur={blur} />
+              <Field label="Name" required isDark={isDark}>
+                <input type="text" placeholder="z.B. Club Mate 500ml" value={name} onChange={e => setName(e.target.value)} style={inputStyle(isDark)} onFocus={focus} onBlur={blur} />
               </Field>
-              <Field label="Beschreibung">
+              <Field label="Beschreibung" isDark={isDark}>
                 <textarea placeholder="Kurze Produktbeschreibung..." value={description} onChange={e => setDescription(e.target.value)} rows={3}
-                  style={{ ...inputStyle(), resize:"none" }} onFocus={focus} onBlur={blur} />
+                  style={{ ...inputStyle(isDark), resize:"none" }} onFocus={focus} onBlur={blur} />
               </Field>
-              <Field label="Kategorie">
-                <select value={category} onChange={e => setCategory(e.target.value)} style={{ ...inputStyle(), color:category?TEXT:TEXT3, cursor:"pointer" }} onFocus={focus} onBlur={blur}>
+              <Field label="Kategorie" isDark={isDark}>
+                <select value={category} onChange={e => setCategory(e.target.value)} style={{ ...inputStyle(isDark), color:category?TEXT:TEXT3, cursor:"pointer" }} onFocus={focus} onBlur={blur}>
                   <option value="">Kategorie wählen</option>
                   {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
                 </select>
@@ -155,7 +170,7 @@ export default function AddProductPage() {
           </div>
 
           {/* Produktbild */}
-          <div style={{ background:SURFACE, border:`1px solid ${BORDER}`, borderRadius:16, padding:"24px" }}>
+          <div style={{ background:SURFACE, border:`1px solid ${BORDER}`, borderRadius: isDark ? 8 : 16, padding:"24px" }}>
             <h2 style={{ fontFamily:"'Manrope',sans-serif", fontWeight:700, fontSize:14, color:TEXT, marginBottom:20 }}>Produktbild</h2>
 
             {imagePreview ? (
@@ -178,11 +193,11 @@ export default function AddProductPage() {
                 onDragOver={e => { e.preventDefault(); setDragOver(true); }}
                 onDragLeave={() => setDragOver(false)}
                 onDrop={e => { e.preventDefault(); setDragOver(false); handleFile(e.dataTransfer.files[0] ?? null); }}
-                style={{ border:`2px dashed ${dragOver ? ORANGE : BORDER}`, borderRadius:14, padding:"36px 20px", textAlign:"center", cursor:"pointer", background: dragOver ? `${ORANGE}08` : BG, transition:"all 0.2s" }}>
+                style={{ border:`2px dashed ${dragOver ? accentColor : BORDER}`, borderRadius:14, padding:"36px 20px", textAlign:"center", cursor:"pointer", background: dragOver ? `${ORANGE}08` : BG, transition:"all 0.2s" }}>
                 <div style={{ fontSize:36, marginBottom:12 }}>🖼️</div>
                 <p style={{ fontSize:14, fontWeight:600, color:TEXT, marginBottom:6 }}>Bild auswählen oder hierher ziehen</p>
                 <p style={{ fontSize:12, color:TEXT3 }}>JPG, PNG oder WebP · max. 5 MB</p>
-                <div style={{ display:"inline-block", marginTop:16, background:ORANGE, color:"#fff", borderRadius:9, padding:"9px 22px", fontSize:13, fontWeight:700 }}>
+                <div style={{ display:"inline-block", marginTop:16, background:btnColor, color:"#fff", borderRadius:9, padding:"9px 22px", fontSize:13, fontWeight:700 }}>
                   Datei auswählen
                 </div>
               </div>
@@ -193,22 +208,22 @@ export default function AddProductPage() {
           </div>
 
           {/* Preis & Lager */}
-          <div style={{ background:SURFACE, border:`1px solid ${BORDER}`, borderRadius:16, padding:"24px" }}>
+          <div style={{ background:SURFACE, border:`1px solid ${BORDER}`, borderRadius: isDark ? 8 : 16, padding:"24px" }}>
             <h2 style={{ fontFamily:"'Manrope',sans-serif", fontWeight:700, fontSize:14, color:TEXT, marginBottom:20 }}>Preis & Lagerbestand</h2>
             <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:16 }}>
-              <Field label="Preis" required>
+              <Field label="Preis" required isDark={isDark}>
                 <div style={{ position:"relative" }}>
                   <span style={{ position:"absolute", left:14, top:"50%", transform:"translateY(-50%)", color:TEXT3, fontSize:14, fontWeight:600 }}>€</span>
-                  <input type="number" min="0" step="0.01" placeholder="0.00" value={price} onChange={e => setPrice(e.target.value)} style={{ ...inputStyle({ paddingLeft:30 }) }} onFocus={focus} onBlur={blur} />
+                  <input type="number" min="0" step="0.01" placeholder="0.00" value={price} onChange={e => setPrice(e.target.value)} style={{ ...inputStyle(isDark, { paddingLeft:30 }) }} onFocus={focus} onBlur={blur} />
                 </div>
               </Field>
-              <Field label="Lagerbestand" required>
-                <input type="number" min="0" placeholder="0" value={stock} onChange={e => setStock(e.target.value)} style={inputStyle()} onFocus={focus} onBlur={blur} />
+              <Field label="Lagerbestand" required isDark={isDark}>
+                <input type="number" min="0" placeholder="0" value={stock} onChange={e => setStock(e.target.value)} style={inputStyle(isDark)} onFocus={focus} onBlur={blur} />
               </Field>
-              <Field label="Versandkosten">
+              <Field label="Versandkosten" isDark={isDark}>
                 <div style={{ position:"relative" }}>
                   <span style={{ position:"absolute", left:14, top:"50%", transform:"translateY(-50%)", color:TEXT3, fontSize:14, fontWeight:600 }}>€</span>
-                  <input type="number" min="0" step="0.01" placeholder="0.00" value={shippingCost} onChange={e => setShippingCost(e.target.value)} style={{ ...inputStyle({ paddingLeft:30 }) }} onFocus={focus} onBlur={blur} />
+                  <input type="number" min="0" step="0.01" placeholder="0.00" value={shippingCost} onChange={e => setShippingCost(e.target.value)} style={{ ...inputStyle(isDark, { paddingLeft:30 }) }} onFocus={focus} onBlur={blur} />
                 </div>
               </Field>
             </div>
@@ -217,9 +232,9 @@ export default function AddProductPage() {
 
           {/* Actions */}
           <div style={{ display:"flex", justifyContent:"flex-end", gap:10, paddingTop:4 }}>
-            <a href="/supplier/dashboard/products" style={{ background:"none", border:`1.5px solid ${BORDER}`, color:TEXT2, borderRadius:10, padding:"12px 22px", fontSize:14, fontWeight:600, textDecoration:"none", display:"inline-flex", alignItems:"center" }}>Abbrechen</a>
+            <a href="/supplier/dashboard/products" style={{ background:"none", border:`1.5px solid ${BORDER}`, color:TEXT2, borderRadius: isDark ? 4 : 10, padding:"12px 22px", fontSize:14, fontWeight:600, textDecoration:"none", display:"inline-flex", alignItems:"center" }}>Abbrechen</a>
             <button onClick={addProduct} disabled={isLoading}
-              style={{ background:isLoading?"rgba(0,62,199,0.55)":ORANGE, color:"#fff", border:"none", borderRadius:10, padding:"12px 28px", fontSize:14, fontFamily:"inherit", fontWeight:700, cursor:isLoading?"not-allowed":"pointer", transition:"opacity 0.2s", boxShadow:`0 4px 14px rgba(0,62,199,0.25)`, display:"flex", alignItems:"center", gap:8 }}>
+              style={{ background:isLoading?"rgba(0,62,199,0.55)":btnColor, color:"#fff", border:"none", borderRadius: isDark ? 4 : 10, padding:"12px 28px", fontSize:14, fontFamily:"inherit", fontWeight:700, cursor:isLoading?"not-allowed":"pointer", transition:"opacity 0.2s", boxShadow:`0 4px 14px rgba(0,62,199,0.25)`, display:"flex", alignItems:"center", gap:8 }}>
               {isLoading && <div style={{ width:14, height:14, border:"2px solid rgba(255,255,255,0.4)", borderTopColor:"#fff", borderRadius:"50%", animation:"spin 0.8s linear infinite" }} />}
               {uploadProgress ? "Bild wird hochgeladen..." : isLoading ? "Wird gespeichert..." : "Produkt speichern →"}
             </button>

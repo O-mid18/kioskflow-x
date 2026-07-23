@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
@@ -10,6 +10,8 @@ const TEXT = "var(--kf-text)";
 const TEXT2 = "var(--kf-text2)";
 const TEXT3 = "var(--kf-text3)";
 const ORANGE = "#003ec7";
+const ACCENT = "var(--kf-accent)";
+const BTN    = "var(--kf-btn)";
 
 type Product = {
   id: string; name: string; price: number; stock: number;
@@ -20,10 +22,15 @@ type SalesData = {
   units: number; orders: number; revenue: number; paidRevenue: number;
 };
 
-function stockBadge(stock: number) {
-  if (stock === 0)  return { label: "Ausverkauft",      color: "#dc2626", bg: "#fef2f2" };
+function stockBadge(stock: number, dark = false) {
+  if (dark) {
+    if (stock === 0)  return { label: "Ausverkauft",       color: "#f87171", bg: "rgba(239,68,68,0.15)" };
+    if (stock <= 5)   return { label: "Niedriger Bestand", color: "#fb923c", bg: "rgba(249,115,22,0.15)" };
+    return               { label: "Aktiv",                color: "#4ade80", bg: "rgba(22,163,74,0.15)" };
+  }
+  if (stock === 0)  return { label: "Ausverkauft",       color: "#dc2626", bg: "#fef2f2" };
   if (stock <= 5)   return { label: "Niedriger Bestand", color: "#ea580c", bg: "#fff7ed" };
-  return               { label: "Aktiv",               color: "#16a34a", bg: "#f0fdf4" };
+  return               { label: "Aktiv",                color: "#16a34a", bg: "#f0fdf4" };
 }
 
 export default function SupplierProductsPage() {
@@ -35,8 +42,17 @@ export default function SupplierProductsPage() {
   const [editingStock, setEditingStock] = useState<string | null>(null);
   const [newStock, setNewStock]     = useState(0);
   const [deleting, setDeleting]     = useState<string | null>(null);
+  const [isDark, setIsDark]         = useState(false);
 
   useEffect(() => { fetchAll(); }, []);
+
+  useEffect(() => {
+    const check = () => setIsDark(document.documentElement.classList.contains("dark"));
+    check();
+    const obs = new MutationObserver(check);
+    obs.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+    return () => obs.disconnect();
+  }, []);
 
   const fetchAll = async () => {
     setLoading(true);
@@ -111,11 +127,14 @@ export default function SupplierProductsPage() {
   const lowStock     = products.filter(p => p.stock <= 5 && p.stock > 0).length;
   const outOfStock   = products.filter(p => p.stock === 0).length;
 
+  const accentColor = isDark ? ACCENT : ORANGE;
+  const btnColor    = isDark ? BTN    : ORANGE;
+
   if (loading) {
     return (
       <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100vh" }}>
         <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
-        <div style={{ width: 36, height: 36, border: `3px solid ${BORDER}`, borderTopColor: ORANGE, borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
+        <div style={{ width: 36, height: 36, border: `3px solid ${BORDER}`, borderTopColor: accentColor, borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
       </div>
     );
   }
@@ -131,7 +150,7 @@ export default function SupplierProductsPage() {
           <h1 style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: 26, color: TEXT, letterSpacing: "-0.8px" }}>Meine Produkte</h1>
           <p style={{ fontSize: 13, color: TEXT2, marginTop: 4 }}>{products.length} Produkte · {totalUnits} Einheiten verkauft</p>
         </div>
-        <a href="/add-product" style={{ display: "inline-flex", alignItems: "center", gap: 7, background: ORANGE, color: "#fff", fontWeight: 700, padding: "11px 20px", borderRadius: 11, textDecoration: "none", fontSize: 14, flexShrink: 0 }}>
+        <a href="/add-product" style={{ display: "inline-flex", alignItems: "center", gap: 7, background: btnColor, color: "#fff", fontWeight: 700, padding: "11px 20px", borderRadius: 11, textDecoration: "none", fontSize: 14, flexShrink: 0 }}>
           + Produkt hinzufügen
         </a>
       </div>
@@ -144,9 +163,9 @@ export default function SupplierProductsPage() {
           { icon: "🔢", label: "Verkaufte Einheiten",  value: String(totalUnits),            sub: "Alle Produkte" },
           { icon: "⚠️", label: "Niedriger Bestand",   value: String(lowStock),              sub: "Produkte < 5 Stk.", warn: lowStock > 0 },
         ].map((s: any) => (
-          <div key={s.label} style={{ background: SURFACE, border: `1.5px solid ${s.warn ? ORANGE : BORDER}`, borderRadius: 14, padding: "18px" }}>
+          <div key={s.label} style={{ background: SURFACE, border: `1.5px solid ${s.warn ? accentColor : BORDER}`, borderRadius: isDark ? 8 : 14, padding: "18px" }}>
             <span style={{ fontSize: 22 }}>{s.icon}</span>
-            <p style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: 22, color: s.warn ? ORANGE : TEXT, margin: "10px 0 2px", letterSpacing: "-0.5px" }}>{s.value}</p>
+            <p style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: 22, color: s.warn ? accentColor : TEXT, margin: "10px 0 2px", letterSpacing: "-0.5px" }}>{s.value}</p>
             <p style={{ fontSize: 12, fontWeight: 600, color: TEXT2 }}>{s.label}</p>
             <p style={{ fontSize: 11, color: TEXT3, marginTop: 2 }}>{s.sub}</p>
           </div>
@@ -159,7 +178,7 @@ export default function SupplierProductsPage() {
           <svg style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)" }} width={14} height={14} fill="none" stroke={TEXT3} strokeWidth="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
           <input type="text" placeholder="Produkt suchen..." value={search} onChange={e => setSearch(e.target.value)}
             style={{ width: "100%", background: SURFACE, border: `1.5px solid ${BORDER}`, borderRadius: 10, padding: "10px 14px 10px 34px", color: TEXT, fontSize: 13, boxSizing: "border-box", outline: "none" }}
-            onFocus={e => e.currentTarget.style.borderColor = ORANGE}
+            onFocus={e => e.currentTarget.style.borderColor = accentColor}
             onBlur={e => e.currentTarget.style.borderColor = BORDER} />
         </div>
         <select value={sortBy} onChange={e => setSortBy(e.target.value as typeof sortBy)}
@@ -176,12 +195,12 @@ export default function SupplierProductsPage() {
         <div style={{ textAlign: "center", padding: "80px 0" }}>
           <p style={{ fontSize: 48, marginBottom: 16 }}>📦</p>
           <p style={{ color: TEXT2, fontSize: 15 }}>Keine Produkte gefunden.</p>
-          <a href="/add-product" style={{ display: "inline-block", marginTop: 20, background: ORANGE, color: "#fff", fontWeight: 700, padding: "12px 24px", borderRadius: 10, textDecoration: "none", fontSize: 14 }}>
+          <a href="/add-product" style={{ display: "inline-block", marginTop: 20, background: btnColor, color: "#fff", fontWeight: 700, padding: "12px 24px", borderRadius: 10, textDecoration: "none", fontSize: 14 }}>
             Erstes Produkt hinzufügen
           </a>
         </div>
       ) : (
-        <div style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 18, overflow: "hidden" }}>
+        <div style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: isDark ? 8 : 18, overflow: "hidden" }}>
           {/* Table head */}
           <div style={{ display: "grid", gridTemplateColumns: "2fr 100px 120px 120px 120px 160px", gap: 0, background: BG, borderBottom: `1px solid ${BORDER}`, padding: "10px 20px" }}>
             {["Produkt", "Preis", "Bestand", "Verkauft", "Umsatz", "Aktionen"].map(h => (
@@ -191,7 +210,7 @@ export default function SupplierProductsPage() {
 
           {/* Rows */}
           {filtered.map((product, i) => {
-            const badge   = stockBadge(product.stock);
+            const badge   = stockBadge(product.stock, isDark);
             const s       = sales[product.id] ?? { units: 0, orders: 0, revenue: 0, paidRevenue: 0 };
             const editing = editingStock === product.id;
             const isDel   = deleting === product.id;
@@ -222,9 +241,9 @@ export default function SupplierProductsPage() {
                   {editing ? (
                     <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
                       <input type="number" value={newStock} onChange={e => setNewStock(Number(e.target.value))}
-                        style={{ width: 52, background: BG, border: `1.5px solid ${ORANGE}`, color: TEXT, borderRadius: 7, padding: "4px 6px", fontSize: 12, textAlign: "center", outline: "none" }} />
+                        style={{ width: 52, background: BG, border: `1.5px solid ${accentColor}`, color: TEXT, borderRadius: 7, padding: "4px 6px", fontSize: 12, textAlign: "center", outline: "none" }} />
                       <button onClick={() => updateStock(product.id)}
-                        style={{ background: ORANGE, color: "#fff", border: "none", borderRadius: 7, padding: "5px 8px", fontWeight: 700, fontSize: 11, cursor: "pointer" }}>✓</button>
+                        style={{ background: btnColor, color: "#fff", border: "none", borderRadius: 7, padding: "5px 8px", fontWeight: 700, fontSize: 11, cursor: "pointer" }}>✓</button>
                       <button onClick={() => setEditingStock(null)}
                         style={{ background: "none", border: "none", color: TEXT3, cursor: "pointer", fontSize: 13 }}>✕</button>
                     </div>
@@ -244,14 +263,14 @@ export default function SupplierProductsPage() {
 
                 {/* Revenue */}
                 <div>
-                  <p style={{ fontSize: 14, fontWeight: 700, color: s.paidRevenue > 0 ? ORANGE : TEXT }}>€{s.paidRevenue.toFixed(0)}</p>
+                  <p style={{ fontSize: 14, fontWeight: 700, color: s.paidRevenue > 0 ? accentColor : TEXT }}>€{s.paidRevenue.toFixed(0)}</p>
                   {s.revenue !== s.paidRevenue && <p style={{ fontSize: 11, color: TEXT3 }}>€{s.revenue.toFixed(0)} gesamt</p>}
                 </div>
 
                 {/* Actions */}
                 <div style={{ display: "flex", gap: 7 }}>
                   <a href={`/edit-product/${product.id}`}
-                    style={{ flex: 1, background: ORANGE, color: "#fff", textAlign: "center", fontSize: 12, fontWeight: 700, padding: "8px 10px", borderRadius: 8, textDecoration: "none" }}>
+                    style={{ flex: 1, background: btnColor, color: "#fff", textAlign: "center", fontSize: 12, fontWeight: 700, padding: "8px 10px", borderRadius: 8, textDecoration: "none" }}>
                     Bearbeiten
                   </a>
                   <button onClick={() => deleteProduct(product.id)} disabled={isDel}

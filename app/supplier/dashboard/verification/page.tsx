@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
@@ -10,12 +10,15 @@ const TEXT    = "var(--kf-text)";
 const TEXT2   = "var(--kf-text2)";
 const TEXT3   = "var(--kf-text3)";
 const ORANGE  = "#003ec7";
+const ACCENT  = "var(--kf-accent)";
+const BTN     = "var(--kf-btn)";
 
-function Field({ label, required, hint, children }: { label: string; required?: boolean; hint?: string; children: React.ReactNode }) {
+function Field({ label, required, hint, children, isDark }: { label: string; required?: boolean; hint?: string; children: React.ReactNode; isDark?: boolean }) {
+  const accentColor = isDark ? ACCENT : ORANGE;
   return (
     <div>
       <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: TEXT2, marginBottom: 6 }}>
-        {label}{required && <span style={{ color: ORANGE, marginLeft: 3 }}>*</span>}
+        {label}{required && <span style={{ color: accentColor, marginLeft: 3 }}>*</span>}
       </label>
       {children}
       {hint && <p style={{ fontSize: 11, color: TEXT3, marginTop: 5 }}>{hint}</p>}
@@ -23,18 +26,13 @@ function Field({ label, required, hint, children }: { label: string; required?: 
   );
 }
 
-const iStyle: React.CSSProperties = {
-  width: "100%", background: SURFACE, border: `1.5px solid ${BORDER}`,
-  borderRadius: 10, padding: "11px 14px", color: TEXT, fontSize: 14,
-  boxSizing: "border-box", fontFamily: "inherit", outline: "none", transition: "border-color 0.2s",
-};
-
 export default function VerificationPage() {
   const [supplierId, setSupplierId] = useState<string | null>(null);
   const [loading, setLoading]       = useState(true);
   const [saving, setSaving]         = useState(false);
   const [verified, setVerified]     = useState(false);
   const [msg, setMsg]               = useState<{ text: string; ok: boolean } | null>(null);
+  const [isDark, setIsDark]         = useState(false);
 
   const [legalName,       setLegalName]       = useState("");
   const [street,          setStreet]          = useState("");
@@ -69,6 +67,14 @@ export default function VerificationPage() {
     })();
   }, []);
 
+  useEffect(() => {
+    const check = () => setIsDark(document.documentElement.classList.contains("dark"));
+    check();
+    const obs = new MutationObserver(check);
+    obs.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+    return () => obs.disconnect();
+  }, []);
+
   const save = async () => {
     if (!legalName || !street || !city || !postalCode) {
       setMsg({ text: "Bitte alle Pflichtfelder ausfüllen.", ok: false });
@@ -91,13 +97,22 @@ export default function VerificationPage() {
     setTimeout(() => setMsg(null), 4000);
   };
 
-  const fo = (e: React.FocusEvent<HTMLInputElement | HTMLSelectElement>) => e.currentTarget.style.borderColor = ORANGE;
+  const accentColor = isDark ? ACCENT : ORANGE;
+  const btnColor    = isDark ? BTN    : ORANGE;
+
+  const iStyle: React.CSSProperties = {
+    width: "100%", background: SURFACE, border: `1.5px solid ${BORDER}`,
+    borderRadius: isDark ? 4 : 10, padding: "11px 14px", color: TEXT, fontSize: 14,
+    boxSizing: "border-box", fontFamily: "inherit", outline: "none", transition: "border-color 0.2s",
+  };
+
+  const fo = (e: React.FocusEvent<HTMLInputElement | HTMLSelectElement>) => e.currentTarget.style.borderColor = accentColor;
   const bl = (e: React.FocusEvent<HTMLInputElement | HTMLSelectElement>) => e.currentTarget.style.borderColor = BORDER;
 
   if (loading) return (
     <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100vh" }}>
       <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
-      <div style={{ width: 34, height: 34, border: `3px solid ${BORDER}`, borderTopColor: ORANGE, borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
+      <div style={{ width: 34, height: 34, border: `3px solid ${BORDER}`, borderTopColor: accentColor, borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
     </div>
   );
 
@@ -114,24 +129,28 @@ export default function VerificationPage() {
 
       {/* Unternehmens-ID */}
       {supplierId && (
-        <div style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 12, padding: "14px 18px", marginBottom: 16, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <div style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: isDark ? 8 : 12, padding: "14px 18px", marginBottom: 16, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <div>
             <p style={{ fontSize: 10, fontWeight: 700, color: TEXT3, textTransform: "uppercase", letterSpacing: "1.5px", marginBottom: 4 }}>Ihre Unternehmens-ID</p>
             <p style={{ fontFamily: "monospace", fontSize: 15, fontWeight: 700, color: TEXT, letterSpacing: "1px" }}>{supplierId}</p>
             <p style={{ fontSize: 11, color: TEXT3, marginTop: 3 }}>Diese ID an den Admin weitergeben, damit er Ihr Unternehmen finden kann.</p>
           </div>
           <button onClick={() => { navigator.clipboard.writeText(supplierId); }}
-            style={{ background: `${ORANGE}15`, border: `1px solid ${ORANGE}30`, color: ORANGE, borderRadius: 8, padding: "8px 16px", fontSize: 12, fontWeight: 700, cursor: "pointer", flexShrink: 0 }}>
+            style={{ background: `${ORANGE}15`, border: `1px solid ${ORANGE}30`, color: accentColor, borderRadius: 8, padding: "8px 16px", fontSize: 12, fontWeight: 700, cursor: "pointer", flexShrink: 0 }}>
             Kopieren 📋
           </button>
         </div>
       )}
 
       {/* Status banner */}
-      <div style={{ background: verified ? "#f0fdf4" : `${ORANGE}10`, border: `1.5px solid ${verified ? "#bbf7d0" : `${ORANGE}40`}`, borderRadius: 12, padding: "14px 18px", marginBottom: 24, display: "flex", alignItems: "center", gap: 12 }}>
+      <div style={{
+        background: verified ? (isDark ? "rgba(0,82,255,0.15)" : "#f0fdf4") : `${ORANGE}10`,
+        border: `1.5px solid ${verified ? (isDark ? "rgba(0,82,255,0.3)" : "#bbf7d0") : `${ORANGE}40`}`,
+        borderRadius: isDark ? 8 : 12, padding: "14px 18px", marginBottom: 24, display: "flex", alignItems: "center", gap: 12
+      }}>
         <span style={{ fontSize: 22 }}>{verified ? "✅" : "⏳"}</span>
         <div>
-          <p style={{ fontSize: 13, fontWeight: 700, color: verified ? "#16a34a" : ORANGE }}>
+          <p style={{ fontSize: 13, fontWeight: 700, color: verified ? (isDark ? "#b7c4ff" : "#16a34a") : accentColor }}>
             {verified ? "Verifiziert" : "Verifizierung ausstehend"}
           </p>
           <p style={{ fontSize: 12, color: TEXT3, marginTop: 2 }}>
@@ -143,25 +162,29 @@ export default function VerificationPage() {
       </div>
 
       {msg && (
-        <div style={{ background: msg.ok ? "#f0fdf4" : "#fef2f2", border: `1.5px solid ${msg.ok ? "#bbf7d0" : "#fca5a5"}`, borderRadius: 10, padding: "12px 16px", marginBottom: 20 }}>
-          <p style={{ color: msg.ok ? "#16a34a" : "#dc2626", fontSize: 13, fontWeight: 600 }}>{msg.text}</p>
+        <div style={{
+          background: msg.ok ? (isDark ? "rgba(0,82,255,0.15)" : "#f0fdf4") : (isDark ? "rgba(239,68,68,0.15)" : "#fef2f2"),
+          border: `1.5px solid ${msg.ok ? (isDark ? "rgba(0,82,255,0.3)" : "#bbf7d0") : (isDark ? "rgba(239,68,68,0.3)" : "#fca5a5")}`,
+          borderRadius: 10, padding: "12px 16px", marginBottom: 20
+        }}>
+          <p style={{ color: msg.ok ? (isDark ? "#b7c4ff" : "#16a34a") : (isDark ? "#f87171" : "#dc2626"), fontSize: 13, fontWeight: 600 }}>{msg.text}</p>
         </div>
       )}
 
       <div style={{ display: "flex", flexDirection: "column", gap: 16, maxWidth: 680 }}>
 
         {/* Rechtliche Angaben */}
-        <div style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 16, padding: "24px" }}>
+        <div style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: isDark ? 8 : 16, padding: "24px" }}>
           <h2 style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 700, fontSize: 14, color: TEXT, marginBottom: 20 }}>Rechtliche Angaben</h2>
           <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-            <Field label="Offizieller Firmenname" required hint="Wie im Handelsregister eingetragen">
+            <Field label="Offizieller Firmenname" required hint="Wie im Handelsregister eingetragen" isDark={isDark}>
               <input value={legalName} onChange={e => setLegalName(e.target.value)} placeholder="z.B. Mustermann GmbH" style={iStyle} onFocus={fo} onBlur={bl} />
             </Field>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
-              <Field label="Handelsregisternummer" hint="z.B. HRB 12345">
+              <Field label="Handelsregisternummer" hint="z.B. HRB 12345" isDark={isDark}>
                 <input value={registrationNr} onChange={e => setRegistrationNr(e.target.value)} placeholder="HRB 12345" style={iStyle} onFocus={fo} onBlur={bl} />
               </Field>
-              <Field label="USt-IdNr. / Steuernummer" hint="z.B. DE123456789">
+              <Field label="USt-IdNr. / Steuernummer" hint="z.B. DE123456789" isDark={isDark}>
                 <input value={taxId} onChange={e => setTaxId(e.target.value)} placeholder="DE123456789" style={iStyle} onFocus={fo} onBlur={bl} />
               </Field>
             </div>
@@ -169,21 +192,21 @@ export default function VerificationPage() {
         </div>
 
         {/* Adresse */}
-        <div style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 16, padding: "24px" }}>
+        <div style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: isDark ? 8 : 16, padding: "24px" }}>
           <h2 style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 700, fontSize: 14, color: TEXT, marginBottom: 20 }}>Unternehmensadresse</h2>
           <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-            <Field label="Straße & Hausnummer" required>
+            <Field label="Straße & Hausnummer" required isDark={isDark}>
               <input value={street} onChange={e => setStreet(e.target.value)} placeholder="Musterstraße 42" style={iStyle} onFocus={fo} onBlur={bl} />
             </Field>
             <div style={{ display: "grid", gridTemplateColumns: "120px 1fr", gap: 14 }}>
-              <Field label="PLZ" required>
+              <Field label="PLZ" required isDark={isDark}>
                 <input value={postalCode} onChange={e => setPostalCode(e.target.value)} placeholder="60311" style={iStyle} onFocus={fo} onBlur={bl} />
               </Field>
-              <Field label="Stadt" required>
+              <Field label="Stadt" required isDark={isDark}>
                 <input value={city} onChange={e => setCity(e.target.value)} placeholder="Frankfurt am Main" style={iStyle} onFocus={fo} onBlur={bl} />
               </Field>
             </div>
-            <Field label="Land">
+            <Field label="Land" isDark={isDark}>
               <select value={country} onChange={e => setCountry(e.target.value)} style={{ ...iStyle, cursor: "pointer" }} onFocus={fo} onBlur={bl}>
                 {["Deutschland","Österreich","Schweiz","Andere"].map(c => <option key={c} value={c}>{c}</option>)}
               </select>
@@ -192,16 +215,16 @@ export default function VerificationPage() {
         </div>
 
         {/* Kontakt */}
-        <div style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 16, padding: "24px" }}>
+        <div style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: isDark ? 8 : 16, padding: "24px" }}>
           <h2 style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 700, fontSize: 14, color: TEXT, marginBottom: 20 }}>Kontaktdaten</h2>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
-            <Field label="Telefon">
+            <Field label="Telefon" isDark={isDark}>
               <input value={phone} onChange={e => setPhone(e.target.value)} placeholder="+49 69 123456" style={iStyle} onFocus={fo} onBlur={bl} />
             </Field>
-            <Field label="Geschäftliche E-Mail">
+            <Field label="Geschäftliche E-Mail" isDark={isDark}>
               <input type="email" value={contactEmail} onChange={e => setContactEmail(e.target.value)} placeholder="kontakt@mustermann.de" style={iStyle} onFocus={fo} onBlur={bl} />
             </Field>
-            <Field label="Mindestbestellmenge (Stück)">
+            <Field label="Mindestbestellmenge (Stück)" isDark={isDark}>
               <input type="number" min="0" value={minOrderQty} onChange={e => setMinOrderQty(e.target.value)} placeholder="z.B. 10 (leer = kein Minimum)" style={iStyle} onFocus={fo} onBlur={bl} />
             </Field>
           </div>
@@ -210,7 +233,7 @@ export default function VerificationPage() {
         {/* Save */}
         <div style={{ display: "flex", justifyContent: "flex-end" }}>
           <button onClick={save} disabled={saving}
-            style={{ background: saving ? "rgba(0,62,199,0.55)" : ORANGE, color: "#fff", border: "none", borderRadius: 10, padding: "12px 28px", fontSize: 14, fontWeight: 700, cursor: saving ? "not-allowed" : "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", gap: 8 }}>
+            style={{ background: saving ? "rgba(0,62,199,0.55)" : btnColor, color: "#fff", border: "none", borderRadius: isDark ? 4 : 10, padding: "12px 28px", fontSize: 14, fontWeight: 700, cursor: saving ? "not-allowed" : "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", gap: 8 }}>
             {saving && <div style={{ width: 14, height: 14, border: "2px solid rgba(255,255,255,0.4)", borderTopColor: "#fff", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />}
             {saving ? "Wird gespeichert..." : "Daten einreichen →"}
           </button>
