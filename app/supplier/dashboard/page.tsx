@@ -37,8 +37,15 @@ function StatusBadge({ status }: { status:string }) {
   const s = map[status] ?? { label:status, lightColor:"#737688", lightBg:BG, darkColor:"#8a8ca0", darkBg:"rgba(255,255,255,0.05)" };
   const color = isDark ? s.darkColor : s.lightColor;
   const bg    = isDark ? s.darkBg    : s.lightBg;
+  const glow  = isDark
+    ? (status === "shipped" || status === "paid" || status === "delivered")
+      ? "0 0 8px rgba(0,82,255,0.5)"
+      : status === "cancelled"
+      ? "0 0 8px rgba(239,68,68,0.4)"
+      : "none"
+    : "none";
   return (
-    <span style={{ background:bg, color, fontSize:11, fontWeight:700, padding:"3px 10px", borderRadius:100 }}>{s.label}</span>
+    <span style={{ background:bg, color, fontSize:11, fontWeight:700, padding:"3px 10px", borderRadius:100, boxShadow:glow }}>{s.label}</span>
   );
 }
 
@@ -313,7 +320,9 @@ export default function SupplierDashboardPage() {
         ].map(kpi => (
           <div key={kpi.label} className="kf-stat-card" style={{ background:SURFACE, border:`1.5px solid ${kpi.label==="Ausstehend"&&pending>0?ACCENT:BORDER}`, borderRadius:16, padding:"20px 20px 16px", display:"flex", flexDirection:"column", gap:0 }}>
             <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between" }}>
-              <span style={{ fontSize:22 }}>{kpi.icon}</span>
+              <div style={isDark ? { width:40, height:40, borderRadius:"50%", background:"rgba(183,196,255,0.1)", boxShadow:"0 0 12px -2px rgba(183,196,255,0.4)", display:"flex", alignItems:"center", justifyContent:"center" } : {}}>
+                <span style={{ fontSize:22 }}>{kpi.icon}</span>
+              </div>
               {kpi.spark && <Sparkline values={kpi.spark} color={kpi.sparkColor} />}
             </div>
             <p style={{ fontSize:11, fontWeight:600, color:TEXT3, letterSpacing:"1px", textTransform:"uppercase", marginTop:12, marginBottom:4 }}>{kpi.label}</p>
@@ -324,7 +333,7 @@ export default function SupplierDashboardPage() {
       </div>
 
       {/* ── Charts row ── */}
-      <div style={{ display:"grid", gridTemplateColumns:"1fr 380px", gap:20, marginBottom:28, alignItems:"start" }}>
+      <div style={{ display:"grid", gridTemplateColumns: isDark ? "8fr 4fr" : "1fr 380px", gap:20, marginBottom:28, alignItems:"start" }}>
 
         {/* Recent orders table */}
         <div style={{ background:SURFACE, border:`1px solid ${BORDER}`, borderRadius:18, overflow:"hidden" }}>
@@ -343,7 +352,7 @@ export default function SupplierDashboardPage() {
           ) : (
             <table style={{ width:"100%", borderCollapse:"collapse" }}>
               <thead>
-                <tr style={{ borderBottom:`1px solid ${BORDER}` }}>
+                <tr style={{ borderBottom:`1px solid ${BORDER}`, background: isDark ? "rgba(30,32,34,0.5)" : "transparent" }}>
                   {["Bestell-ID","Datum","Status","Gesamt"].map(h => (
                     <th key={h} style={{ padding:"10px 20px", textAlign:"left", fontSize:11, fontWeight:700, color:TEXT3, textTransform:"uppercase", letterSpacing:"0.8px", whiteSpace:"nowrap" }}>{h}</th>
                   ))}

@@ -450,6 +450,50 @@ export default function MarketplacePage({ initialProducts = [], initialSuppliers
       </header>
 
       <div style={{ maxWidth:1100, margin:"0 auto", padding:"0 20px" }}>
+        <div style={{ display: isDark ? "flex" : "block", alignItems:"flex-start", gap:24, paddingTop: isDark ? 24 : 0 }}>
+          {isDark && (
+            <aside style={{ width:256, flexShrink:0, position:"sticky", top:80 }}>
+              <div style={{ background:"#1a1c1e", border:"1px solid rgba(255,255,255,0.1)", borderRadius:4, padding:16, display:"flex", flexDirection:"column", gap:16 }}>
+                <div style={{ fontFamily:"'Manrope',sans-serif", fontWeight:600, fontSize:16, color:"#e2e2e5", paddingBottom:8, borderBottom:"1px solid rgba(255,255,255,0.1)" }}>Filters</div>
+                <div>
+                  <p style={{ fontSize:11, fontWeight:500, color:"rgba(255,255,255,0.5)", textTransform:"uppercase", letterSpacing:"0.04em", marginBottom:8 }}>Category</p>
+                  {categories.filter(c => c !== "Alle").map(cat => (
+                    <label key={cat} style={{ display:"flex", alignItems:"center", gap:8, cursor:"pointer", marginBottom:6 }}>
+                      <input type="checkbox" checked={category === "Alle" || category === cat} onChange={() => setCategory(category === cat ? "Alle" : cat)} style={{ width:16, height:16, accentColor:"#0052ff" }} />
+                      <span style={{ fontSize:14, color:"rgba(255,255,255,0.9)" }}>{(CATS[cat]||CATS.default).emoji} {cat}</span>
+                    </label>
+                  ))}
+                </div>
+                <div>
+                  <p style={{ fontSize:11, fontWeight:500, color:"rgba(255,255,255,0.5)", textTransform:"uppercase", letterSpacing:"0.04em", marginBottom:8 }}>Price Range</p>
+                  <div style={{ display:"flex", alignItems:"center", gap:8 }}>
+                    <input type="number" min="0" placeholder="Min €" value={priceMin} onChange={e => setPriceMin(e.target.value)}
+                      style={{ flex:1, height:32, padding:"0 8px", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.1)", borderRadius:2, color:"#fff", fontSize:14, outline:"none", width:"100%" }} />
+                    <span style={{ color:"rgba(255,255,255,0.5)", flexShrink:0 }}>-</span>
+                    <input type="number" min="0" placeholder="Max €" value={priceMax} onChange={e => setPriceMax(e.target.value)}
+                      style={{ flex:1, height:32, padding:"0 8px", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.1)", borderRadius:2, color:"#fff", fontSize:14, outline:"none", width:"100%" }} />
+                  </div>
+                </div>
+                <div>
+                  <p style={{ fontSize:11, fontWeight:500, color:"rgba(255,255,255,0.5)", textTransform:"uppercase", letterSpacing:"0.04em", marginBottom:8 }}>Availability</p>
+                  <label style={{ display:"flex", alignItems:"center", gap:8, cursor:"pointer", marginBottom:6 }}>
+                    <input type="checkbox" checked={inStockOnly} onChange={() => setInStockOnly(v => !v)} style={{ width:16, height:16, accentColor:"#0052ff" }} />
+                    <span style={{ fontSize:14, color:"rgba(255,255,255,0.9)" }}>In Stock</span>
+                  </label>
+                  <label style={{ display:"flex", alignItems:"center", gap:8, cursor:"pointer" }}>
+                    <input type="checkbox" disabled style={{ width:16, height:16, opacity:0.4 }} />
+                    <span style={{ fontSize:14, color:"rgba(255,255,255,0.5)" }}>Next Day Delivery</span>
+                  </label>
+                </div>
+                {hasActiveFilter && (
+                  <button onClick={clearFilters} style={{ background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.1)", borderRadius:4, padding:"6px 12px", color:"rgba(255,255,255,0.7)", fontSize:12, cursor:"pointer" }}>
+                    Zurücksetzen ×
+                  </button>
+                )}
+              </div>
+            </aside>
+          )}
+          <div style={{ flex:1, minWidth:0 }}>
 
         {/* ── HERO BANNER ── */}
         <div style={{ margin:"20px 0", borderRadius:20, overflow:"hidden", position:"relative",
@@ -515,7 +559,7 @@ export default function MarketplacePage({ initialProducts = [], initialSuppliers
           </div>
         )}
 
-        {/* ── CATEGORIES ── */}
+        {!isDark && (
         <div style={{ display:"flex", gap:10, overflowX:"auto", padding:"4px 0 12px", scrollbarWidth:"none" }}>
           {categories.map(cat => {
             const s = CATS[cat] || CATS.default;
@@ -534,6 +578,7 @@ export default function MarketplacePage({ initialProducts = [], initialSuppliers
             <option value="rating">Bewertung</option>
           </select>
         </div>
+        )}
 
 
         {/* ── DAILY DEALS ── */}
@@ -659,7 +704,7 @@ export default function MarketplacePage({ initialProducts = [], initialSuppliers
           </div>
         )}
 
-        {/* ── FILTER BAR ── */}
+        {!isDark && (
         <div style={{ display:"flex", gap:10, flexWrap:"wrap", alignItems:"center", marginBottom:20, padding:"12px 16px", background:SURFACE, borderRadius:14, border:`1px solid ${BORDER}` }}>
           <span style={{ fontSize:12, fontWeight:700, color:TEXT3, letterSpacing:"0.5px" }}>FILTER</span>
           <div style={{ width:1, height:16, background:BORDER }} />
@@ -684,6 +729,7 @@ export default function MarketplacePage({ initialProducts = [], initialSuppliers
             </button>
           )}
         </div>
+        )}
 
         {/* ── ALL PRODUCTS ── */}
         <div>
@@ -706,7 +752,7 @@ export default function MarketplacePage({ initialProducts = [], initialSuppliers
               {hasActiveFilter && <button onClick={clearFilters} style={{ background:BTN, color:"#fff", border:"none", borderRadius:10, padding:"10px 20px", fontSize:13, fontWeight:700, cursor:"pointer", marginTop:8 }}>Filter zurücksetzen</button>}
             </div>
           ) : (
-            <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(200px,1fr))", gap:14 }}>
+            <div style={{ display:"grid", gridTemplateColumns: isDark ? "repeat(auto-fill,minmax(250px,1fr))" : "repeat(auto-fill,minmax(200px,1fr))", gap:14 }}>
               {filtered.slice(0, visibleCount).map((product, i) => {
                 const cat = CATS[product.category||""] || CATS.default;
                 const pReviews = getReviews(product.id);
@@ -715,6 +761,42 @@ export default function MarketplacePage({ initialProducts = [], initialSuppliers
                 const isLow = product.stock !== undefined && product.stock < 30;
                 const isNew = product.created_at ? (Date.now() - new Date(product.created_at).getTime()) < 7 * 24 * 60 * 60 * 1000 : false;
                 const isTopRated = avg >= 4.0 && pReviews.length >= 2;
+
+                if (isDark) return (
+                  <div key={product.id} className="pcard"
+                    style={{ background:"#1a1c1e", border:"1px solid rgba(255,255,255,0.1)", borderRadius:2, overflow:"hidden", cursor:"pointer", display:"flex", flexDirection:"column", transition:"border-color 0.2s", animationDelay:`${i*0.03}s` }}
+                    onClick={() => { window.location.href = `/product/${product.id}`; }}
+                    onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.borderColor="#0052ff"; }}
+                    onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.borderColor="rgba(255,255,255,0.1)"; }}>
+                    <div style={{ aspectRatio:"1/1", width:"100%", background:"#282a2c", position:"relative", overflow:"hidden" }}>
+                      <img loading="lazy" decoding="async" src={product.image_url||"https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?w=400&q=80"} alt={product.name}
+                        style={{ width:"100%", height:"100%", objectFit:"cover", padding:24, opacity:0.9 }}
+                        onError={e => { (e.currentTarget as HTMLImageElement).src = "https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?w=400&q=80"; }} />
+                      {(isNew || isTopRated) && (
+                        <div style={{ position:"absolute", top:8, right:8, background:"#0052ff", padding:"2px 8px", borderRadius:100, fontSize:11, fontWeight:500, color:"#fff", letterSpacing:"0.02em" }}>
+                          {isNew ? "New" : "Top"}
+                        </div>
+                      )}
+                      {isLow && <div style={{ position:"absolute", bottom:8, left:8, background:"rgba(239,68,68,0.9)", padding:"2px 8px", borderRadius:100, fontSize:11, color:"#fff" }}>{product.stock} left</div>}
+                    </div>
+                    <div style={{ padding:16, display:"flex", flexDirection:"column", gap:4, flex:1 }}>
+                      <div style={{ fontSize:11, fontWeight:500, color:"rgba(255,255,255,0.5)", textTransform:"uppercase", letterSpacing:"0.04em" }}>{product.category || "Product"}</div>
+                      <div style={{ fontSize:16, fontWeight:600, color:"#fff", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{product.name}</div>
+                      <div style={{ flex:1 }} />
+                      <div style={{ display:"flex", alignItems:"flex-end", justifyContent:"space-between", marginTop:8 }}>
+                        <span style={{ fontSize:24, fontWeight:600, color:"#fff", fontFamily:"'Manrope',sans-serif" }}>€{product.price}</span>
+                      </div>
+                      <button onClick={e => { e.stopPropagation(); if ((product.stock ?? 0) > 0) addToCart(product); }}
+                        disabled={(product.stock ?? 0) <= 0}
+                        style={{ marginTop:8, width:"100%", height:32, fontSize:14, fontWeight:600, background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.1)", color:(product.stock ?? 0) <= 0 ? "rgba(255,255,255,0.3)" : "#fff", borderRadius:2, cursor:(product.stock ?? 0) <= 0 ? "not-allowed" : "pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:6, transition:"all 0.15s" }}
+                        onMouseEnter={e => { if ((product.stock ?? 0) > 0) { (e.currentTarget as HTMLButtonElement).style.background="#0052ff"; (e.currentTarget as HTMLButtonElement).style.borderColor="#0052ff"; } }}
+                        onMouseLeave={e => { if ((product.stock ?? 0) > 0) { (e.currentTarget as HTMLButtonElement).style.background="rgba(255,255,255,0.05)"; (e.currentTarget as HTMLButtonElement).style.borderColor="rgba(255,255,255,0.1)"; } }}>
+                        <span style={{ fontSize:18, lineHeight:1 }}>+</span>
+                        {(product.stock ?? 0) <= 0 ? "Ausverkauft" : "Add"}
+                      </button>
+                    </div>
+                  </div>
+                );
 
                 return (
                   <div key={product.id} className="pcard" style={{ animationDelay:`${i*0.03}s`, background:SURFACE, border:`1px solid ${BORDER}`, borderRadius:16, overflow:"hidden", cursor:"pointer", boxShadow:"0 2px 8px rgba(0,0,0,0.04)" }}
@@ -804,6 +886,8 @@ export default function MarketplacePage({ initialProducts = [], initialSuppliers
             <a href="/signup/supplier" style={{ display:"inline-block", background:BTN, color:"#fff", fontWeight:700, padding:"12px 28px", borderRadius:10, textDecoration:"none", fontSize:14 }}>Jetzt listen →</a>
           </div>
         )}
+          </div>
+        </div>
       </div>
 
       {/* ── BOTTOM NAV (mobile) ── */}

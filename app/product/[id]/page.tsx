@@ -43,8 +43,17 @@ export default function ProductDetailsPage() {
   const [cartCount, setCartCount] = useState(0);
   const [role, setRole] = useState<string | null>(null);
   const [currentSupplierRating, setCurrentSupplierRating] = useState<number | null>(null);
+  const [isDark, setIsDark] = useState(false);
 
   const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(null), 2500); };
+
+  useEffect(() => {
+    const check = () => setIsDark(document.documentElement.classList.contains("dark"));
+    check();
+    const obs = new MutationObserver(check);
+    obs.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+    return () => obs.disconnect();
+  }, []);
 
   const loadCartCount = useCallback(async () => {
     const { data: { user } } = await supabase.auth.getUser();
@@ -182,20 +191,20 @@ export default function ProductDetailsPage() {
         </div>
       </header>
 
-      <div style={{ maxWidth: 900, margin: "0 auto", padding: "32px 20px" }}>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 40 }}>
+      <div style={{ maxWidth: isDark ? 1280 : 900, margin: "0 auto", padding: "32px 20px" }}>
+        <div style={{ display: "grid", gridTemplateColumns: isDark ? "5fr 7fr" : "1fr 1fr", gap: isDark ? 20 : 40 }}>
 
           {/* LEFT — image */}
-          <div style={{ borderRadius: 20, overflow: "hidden", background: CARD_BG, border: `1px solid ${BORDER}`, aspectRatio: "1", position: "relative" }}>
+          <div style={{ borderRadius: isDark ? 8 : 20, overflow: "hidden", background: isDark ? "#0c0e10" : CARD_BG, border: isDark ? "1px solid #434656" : `1px solid ${BORDER}`, aspectRatio: isDark ? undefined : "1", height: isDark ? 500 : undefined, position: "relative", display: "flex", alignItems: "center", justifyContent: "center", padding: isDark ? 24 : 0 }}>
             <img
               src={product.image_url || "https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?w=800&q=80"}
               alt={product.name}
-              style={{ width: "100%", height: "100%", objectFit: "cover" }}
+              style={{ width: "100%", height: "100%", objectFit: isDark ? "contain" : "cover" }}
             />
           </div>
 
           {/* RIGHT — details */}
-          <div>
+          <div style={isDark ? { background:"#0c0e10", border:"1px solid #434656", borderRadius:8, padding:"32px", display:"flex", flexDirection:"column" } : {}}>
             <p style={{ fontSize: 11, fontWeight: 700, color: TEXT3, letterSpacing: "2px", textTransform: "uppercase", marginBottom: 8 }}>{product.category || "Produkt"}</p>
             <h1 style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 28, color: TEXT, letterSpacing: "-0.8px", lineHeight: 1.15, marginBottom: 16 }}>{product.name}</h1>
 
@@ -207,14 +216,14 @@ export default function ProductDetailsPage() {
             )}
 
             <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
-              <span style={{ fontFamily: "'DM Sans',sans-serif", fontSize: 36, fontWeight: 800, color: ACCENT }}>€{product.price}</span>
+              <span style={{ fontFamily: "'DM Sans',sans-serif", fontSize: isDark ? 48 : 36, fontWeight: isDark ? 700 : 800, color: ACCENT, letterSpacing: isDark ? "-0.02em" : undefined }}>€{product.price}</span>
               <span style={{ color: TEXT3, fontSize: 13 }}>/Stück</span>
             </div>
             {(product as any).shipping_cost > 0 && (
               <p style={{ fontSize: 13, color: TEXT3, marginBottom: 16 }}>+ €{(product as any).shipping_cost} Versand (einmalig, unabhängig von der Menge)</p>
             )}
 
-            {product.stock !== undefined && (
+            {product.stock !== undefined && !isDark && (
               <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: product.stock > 0 ? "#dcfce7" : "#fee2e2", borderRadius: 8, padding: "5px 12px", marginBottom: 20 }}>
                 <div style={{ width: 6, height: 6, borderRadius: "50%", background: product.stock > 0 ? "#16a34a" : "#ef4444" }} />
                 <span style={{ color: product.stock > 0 ? "#16a34a" : "#ef4444", fontSize: 12, fontWeight: 600 }}>
@@ -223,11 +232,24 @@ export default function ProductDetailsPage() {
               </div>
             )}
 
+            {isDark && (
+              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:16, marginBottom:24 }}>
+                <div style={{ background:"rgba(30,32,34,0.5)", border:"1px solid #434656", borderRadius:8, padding:16 }}>
+                  <p style={{ fontSize:11, fontWeight:500, color:"#c3c5d9", textTransform:"uppercase", letterSpacing:"0.04em", marginBottom:4 }}>Lagerbestand</p>
+                  <p style={{ fontSize:32, fontWeight:600, color:"#e2e2e5", lineHeight:1.25 }}>{product.stock ?? 0}</p>
+                </div>
+                <div style={{ background:"rgba(30,32,34,0.5)", border:"1px solid #434656", borderRadius:8, padding:16 }}>
+                  <p style={{ fontSize:11, fontWeight:500, color:"#c3c5d9", textTransform:"uppercase", letterSpacing:"0.04em", marginBottom:4 }}>Lieferkosten</p>
+                  <p style={{ fontSize:32, fontWeight:600, color:"#e2e2e5", lineHeight:1.25 }}>{(product as any).shipping_cost > 0 ? `€${(product as any).shipping_cost}` : "Gratis"}</p>
+                </div>
+              </div>
+            )}
+
             {product.description && (
               <p style={{ color: TEXT2, fontSize: 14, lineHeight: 1.8, marginBottom: 28 }}>{product.description}</p>
             )}
 
-            <button onClick={addToCart} style={{ width: "100%", background: BTN, color: "#fff", border: "none", borderRadius: 14, padding: "16px", fontWeight: 700, fontSize: 15, cursor: "pointer", fontFamily: "'DM Sans',sans-serif", marginBottom: 10 }}>
+            <button onClick={addToCart} style={{ width: "100%", background: BTN, color: "#fff", border: "none", borderRadius: isDark ? 4 : 14, padding: "16px", fontWeight: 700, fontSize: 15, cursor: "pointer", fontFamily: "'DM Sans',sans-serif", marginBottom: 10 }}>
               🛒 In den Warenkorb
             </button>
             <a href="/marketplace" style={{ display: "block", textAlign: "center", color: TEXT2, fontSize: 13, textDecoration: "none", padding: "10px", fontWeight: 500 }}>

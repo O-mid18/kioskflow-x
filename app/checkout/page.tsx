@@ -34,6 +34,7 @@ export default function CheckoutPage() {
   const [loading, setLoading] = useState(true);
   const [paying, setPaying] = useState(false);
   const [error, setError]   = useState<string | null>(null);
+  const [isDark, setIsDark] = useState(false);
 
   // Address fields
   const [firstName,  setFirstName]  = useState("");
@@ -48,6 +49,14 @@ export default function CheckoutPage() {
   const [discountCode, setDiscountCode] = useState("");
   const [discountInfo, setDiscountInfo] = useState<{ pct: number; label: string } | null>(null);
   const [discountErr,  setDiscountErr]  = useState<string | null>(null);
+
+  useEffect(() => {
+    const check = () => setIsDark(document.documentElement.classList.contains("dark"));
+    check();
+    const obs = new MutationObserver(check);
+    obs.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+    return () => obs.disconnect();
+  }, []);
 
   useEffect(() => {
     fetchCart();
@@ -198,7 +207,7 @@ export default function CheckoutPage() {
         </div>
       </div>
 
-      <div style={{ maxWidth: 640, margin: "0 auto", padding: "32px 24px" }}>
+      <div style={{ maxWidth: isDark ? 1100 : 640, margin: "0 auto", padding: "32px 24px" }}>
         <div style={{ marginBottom: 28 }}>
           <p style={{ fontSize: 11, fontWeight: 700, color: TEXT3, letterSpacing: "2.5px", textTransform: "uppercase", marginBottom: 8 }}>Kasse</p>
           <h1 style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: 26, color: TEXT, letterSpacing: "-0.8px" }}>Bestellung abschließen</h1>
@@ -217,7 +226,8 @@ export default function CheckoutPage() {
             <a href="/marketplace" style={{ display: "inline-block", marginTop: 20, color: ACCENT, fontSize: 14, fontWeight: 700, textDecoration: "none" }}>Zum Marktplatz →</a>
           </div>
         ) : (
-          <>
+          <div style={isDark ? { display:"grid", gridTemplateColumns:"1fr 380px", gap:32, alignItems:"start" } : {}}>
+            <div>
             {/* ── Items ── */}
             <div style={{ background: CARD_BG, border: `1px solid ${BORDER}`, borderRadius: 16, overflow: "hidden", marginBottom: 20 }}>
               <div style={{ padding: "14px 18px", borderBottom: `1px solid ${BORDER}` }}>
@@ -323,6 +333,23 @@ export default function CheckoutPage() {
               {discountInfo && <p style={{ fontSize: 12, color: "#16a34a", fontWeight: 600, marginTop: 8 }}>✓ {discountInfo.label} angewendet</p>}
               {discountErr  && <p style={{ fontSize: 12, color: "#dc2626", fontWeight: 600, marginTop: 8 }}>{discountErr}</p>}
             </div>
+            </div>
+            <div style={isDark ? { position:"sticky", top:80 } : {}}>
+            {isDark && (
+              <div style={{ background:"#1e2022", border:"1px solid #434656", borderRadius:8, padding:"16px 18px", marginBottom:16 }}>
+                <h2 style={{ fontFamily:"'Manrope',sans-serif", fontWeight:600, fontSize:18, color:"#e2e2e5", paddingBottom:12, marginBottom:12, borderBottom:"1px solid #434656" }}>Order Summary</h2>
+                {items.map((item, i) => (
+                  <div key={item.id} style={{ display:"flex", alignItems:"center", gap:12, paddingBottom:12, borderBottom:i < items.length-1 ? "1px solid #434656" : "none", marginBottom:i < items.length-1 ? 12 : 0 }}>
+                    <div style={{ width:48, height:48, borderRadius:4, background:"#282a2c", border:"1px solid #434656", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, fontSize:18 }}>🛍️</div>
+                    <div style={{ flex:1 }}>
+                      <p style={{ fontSize:14, fontWeight:600, color:"#e2e2e5", marginBottom:2 }}>{item.products?.name}</p>
+                      <p style={{ fontSize:12, color:"#8a8ca0" }}>{item.quantity}× à €{item.products?.price?.toFixed(2)}</p>
+                    </div>
+                    <p style={{ fontSize:14, fontWeight:600, color:"#e2e2e5" }}>€{(item.products?.price * item.quantity).toFixed(2)}</p>
+                  </div>
+                ))}
+              </div>
+            )}
 
             {/* ── Summary ── */}
             <div style={{ background: CARD_BG, border: `1px solid ${BORDER}`, borderRadius: 16, padding: "20px 18px", marginBottom: 16 }}>
@@ -338,7 +365,7 @@ export default function CheckoutPage() {
               ))}
               <div style={{ borderTop: `1px solid ${BORDER}`, paddingTop: 14, marginTop: 4, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <span style={{ fontFamily: "'Inter',sans-serif", fontWeight: 700, fontSize: 15, color: TEXT }}>Zwischensumme (vorläufig)</span>
-                <span style={{ fontFamily: "'Inter',sans-serif", fontWeight: 800, fontSize: 24, color: ACCENT, letterSpacing: "-0.5px" }}>≈ €{productSubtotal.toFixed(2)}</span>
+                <span style={{ fontFamily: "'Inter',sans-serif", fontWeight: 800, fontSize: isDark ? 48 : 24, color: ACCENT, letterSpacing: "-0.5px" }}>≈ €{productSubtotal.toFixed(2)}</span>
               </div>
               <p style={{ fontSize: 11, color: TEXT3, marginTop: 8, textAlign: "right" }}>Endpreis inkl. Versand nach Lieferantenbestätigung.</p>
             </div>
@@ -355,12 +382,13 @@ export default function CheckoutPage() {
 
             {/* CTA */}
             <button onClick={handlePayment} disabled={paying}
-              style={{ width: "100%", background: paying ? TEXT3 : BTN, color: "#fff", border: "none", borderRadius: 12, padding: "16px", fontFamily: "'Inter',sans-serif", fontWeight: 700, fontSize: 15, cursor: paying ? "not-allowed" : "pointer", transition: "opacity 0.2s", marginBottom: 12, boxShadow: `0 4px 16px rgba(0,62,199,0.25)` }}>
+              style={{ width: "100%", background: paying ? TEXT3 : BTN, color: "#fff", border: "none", borderRadius: isDark ? 8 : 12, padding: "16px", fontFamily: "'Inter',sans-serif", fontWeight: 700, fontSize: 15, cursor: paying ? "not-allowed" : "pointer", transition: "opacity 0.2s", marginBottom: 12, boxShadow: `0 4px 16px rgba(0,62,199,0.25)` }}>
               {paying ? "Wird gesendet..." : "Bestellung senden →"}
             </button>
 
             <p style={{ textAlign: "center", color: TEXT3, fontSize: 12 }}>Der Lieferant bestätigt die Versandkosten — dann kannst du sicher bezahlen.</p>
-          </>
+            </div>
+          </div>
         )}
       </div>
     </main>
