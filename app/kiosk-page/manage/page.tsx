@@ -1,15 +1,17 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 
-const BG = "var(--kf-bg)";
+const BG     = "var(--kf-bg)";
 const SURFACE = "var(--kf-surface)";
-const BORDER = "var(--kf-border)";
-const TEXT = "var(--kf-text)";
-const TEXT2 = "var(--kf-text2)";
-const TEXT3 = "var(--kf-text3)";
-const ORANGE = "#003ec7";
+const BORDER  = "var(--kf-border)";
+const TEXT    = "var(--kf-text)";
+const TEXT2   = "var(--kf-text2)";
+const TEXT3   = "var(--kf-text3)";
+const ORANGE  = "#003ec7";
+const ACCENT  = "var(--kf-accent)";
+const BTN     = "var(--kf-btn)";
 
 const STATUS_LABELS: Record<string, { label: string; color: string; bg: string }> = {
   in_stock: { label: "Auf Lager", color: "#16a34a", bg: "#f0fdf4" },
@@ -17,8 +19,14 @@ const STATUS_LABELS: Record<string, { label: string; color: string; bg: string }
   out:      { label: "Ausverkauft", color: "#dc2626", bg: "#fef2f2" },
 };
 
-function inputStyle(): React.CSSProperties {
-  return { width: "100%", padding: "10px 14px", borderRadius: 10, border: `1.5px solid ${BORDER}`, background: BG, color: TEXT, fontSize: 14, outline: "none", fontFamily: "inherit" };
+const STATUS_DARK: Record<string, { color: string; bg: string }> = {
+  in_stock: { color: "#4ade80", bg: "rgba(22,163,74,0.15)" },
+  low:      { color: "#fb923c", bg: "rgba(249,115,22,0.15)" },
+  out:      { color: "#f87171", bg: "rgba(239,68,68,0.15)" },
+};
+
+function inputStyle(isDark = false): React.CSSProperties {
+  return { width: "100%", padding: "10px 14px", borderRadius: isDark ? 4 : 10, border: `1.5px solid ${BORDER}`, background: BG, color: TEXT, fontSize: 14, outline: "none", fontFamily: "inherit" };
 }
 
 export default function KioskPageManage() {
@@ -26,6 +34,7 @@ export default function KioskPageManage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState<{ text: string; ok: boolean } | null>(null);
+  const [isDark, setIsDark] = useState(false);
 
   const [enabled, setEnabled] = useState(false);
   const [businessHours, setBusinessHours] = useState("");
@@ -62,6 +71,14 @@ export default function KioskPageManage() {
   const [newLinkedProductId, setNewLinkedProductId] = useState("");
 
   useEffect(() => {
+    const check = () => setIsDark(document.documentElement.classList.contains("dark"));
+    check();
+    const obs = new MutationObserver(check);
+    obs.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+    return () => obs.disconnect();
+  }, []);
+
+  useEffect(() => {
     (async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) { window.location.href = "/login"; return; }
@@ -96,8 +113,6 @@ export default function KioskPageManage() {
       const { data: offRows } = await supabase.from("restock_offers").select("*, suppliers(id, user_id, profiles!suppliers_user_id_fkey(full_name, company_name))").eq("kiosk_id", user.id).eq("status", "pending");
       setOffers(offRows ?? []);
 
-      // Products this kiosk has actually ordered before — used to pre-populate
-      // the "link to supplier for restock alerts" dropdown with relevant options.
       const { data: pastItems } = await supabase
         .from("order_items")
         .select("products(id, name), orders!inner(buyer_id)")
@@ -250,9 +265,6 @@ export default function KioskPageManage() {
         link: "/kiosk-page/manage",
       });
     } else if (item.stock_status !== "in_stock" && qty > 0) {
-      // Restocked — quantity is back above the low/out threshold (or above
-      // zero, for items without a configured threshold). Auto-revert the
-      // status instead of leaving it stuck on "low"/"out" forever.
       const backInStock = item.min_stock_threshold != null ? qty > item.min_stock_threshold : true;
       if (backInStock) await setStatus({ ...item, quantity: qty }, "in_stock");
     }
@@ -270,10 +282,6 @@ export default function KioskPageManage() {
     if (negDeltas.length < 2) return null;
     const totalConsumed = negDeltas.reduce((s: number, h: any) => s + Math.abs(h.delta), 0);
     const span = (new Date(negDeltas[negDeltas.length - 1].recorded_at).getTime() - new Date(negDeltas[0].recorded_at).getTime()) / 86400000;
-    // Require at least a full day of real history — a shorter span (e.g.
-    // several quantity corrections made minutes apart while testing)
-    // produces an absurdly high extrapolated daily rate, showing "~0 Tage"
-    // even for healthy stock right after a restock.
     if (span < 1) return null;
     const dailyRate = totalConsumed / span;
     return dailyRate > 0 ? Math.round(currentQty / dailyRate) : null;
@@ -313,6 +321,9 @@ export default function KioskPageManage() {
     window.location.href = "/cart";
   };
 
+  const accentColor = isDark ? ACCENT : ORANGE;
+  const btnColor    = isDark ? BTN    : ORANGE;
+
   if (loading) return <div style={{ minHeight: "100vh", background: BG, display: "flex", alignItems: "center", justifyContent: "center", color: TEXT2 }}>Lade…</div>;
 
   return (
@@ -324,12 +335,12 @@ export default function KioskPageManage() {
         <p style={{ fontSize: 13, color: TEXT3, marginBottom: 24 }}>Öffentliche Seite für Kunden und Lieferanten mit deinen Produkten, Öffnungszeiten und Adresse.</p>
 
         {msg && (
-          <div style={{ background: msg.ok ? "#f0fdf4" : "#fef2f2", border: `1.5px solid ${msg.ok ? "#bbf7d0" : "#fca5a5"}`, borderRadius: 10, padding: "12px 16px", marginBottom: 16 }}>
-            <p style={{ color: msg.ok ? "#16a34a" : "#dc2626", fontSize: 13, fontWeight: 600 }}>{msg.text}</p>
+          <div style={{ background: msg.ok ? (isDark ? "rgba(0,82,255,0.1)" : "#f0fdf4") : (isDark ? "rgba(239,68,68,0.1)" : "#fef2f2"), border: `1.5px solid ${msg.ok ? (isDark ? "rgba(0,82,255,0.3)" : "#bbf7d0") : (isDark ? "rgba(239,68,68,0.3)" : "#fca5a5")}`, borderRadius: 10, padding: "12px 16px", marginBottom: 16 }}>
+            <p style={{ color: msg.ok ? (isDark ? "#b7c4ff" : "#16a34a") : (isDark ? "#f87171" : "#dc2626"), fontSize: 13, fontWeight: 600 }}>{msg.text}</p>
           </div>
         )}
 
-        <div style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 16, padding: 24, marginBottom: 20 }}>
+        <div style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: isDark ? 8 : 16, padding: 24, marginBottom: 20 }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
             <div>
               <h2 style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 700, fontSize: 14, color: TEXT }}>Seite veröffentlichen</h2>
@@ -337,7 +348,7 @@ export default function KioskPageManage() {
             </div>
             <label style={{ position: "relative", display: "inline-block", width: 44, height: 24, cursor: "pointer", flexShrink: 0 }}>
               <input type="checkbox" checked={enabled} onChange={e => setEnabled(e.target.checked)} style={{ opacity: 0, width: 0, height: 0 }} />
-              <span style={{ position: "absolute", inset: 0, background: enabled ? ORANGE : BORDER, borderRadius: 24, transition: "background 0.2s" }} />
+              <span style={{ position: "absolute", inset: 0, background: enabled ? btnColor : BORDER, borderRadius: 24, transition: "background 0.2s" }} />
               <span style={{ position: "absolute", top: 3, left: enabled ? 23 : 3, width: 18, height: 18, background: "#fff", borderRadius: "50%", transition: "left 0.2s" }} />
             </label>
           </div>
@@ -352,15 +363,15 @@ export default function KioskPageManage() {
             </div>
             <div>
               <label style={{ fontSize: 12, fontWeight: 600, color: TEXT2, display: "block", marginBottom: 6 }}>Adresse</label>
-              <input value={address} onChange={e => setAddress(e.target.value)} placeholder="Musterstraße 42" style={inputStyle()} />
+              <input value={address} onChange={e => setAddress(e.target.value)} placeholder="Musterstraße 42" style={inputStyle(isDark)} />
             </div>
             <div>
               <label style={{ fontSize: 12, fontWeight: 600, color: TEXT2, display: "block", marginBottom: 6 }}>Stadt</label>
-              <input value={city} onChange={e => setCity(e.target.value)} placeholder="Frankfurt" style={inputStyle()} />
+              <input value={city} onChange={e => setCity(e.target.value)} placeholder="Frankfurt" style={inputStyle(isDark)} />
             </div>
             <div>
               <label style={{ fontSize: 12, fontWeight: 600, color: TEXT2, display: "block", marginBottom: 6 }}>Telefon</label>
-              <input value={phone} onChange={e => setPhone(e.target.value)} placeholder="+49 69 123456" style={inputStyle()} />
+              <input value={phone} onChange={e => setPhone(e.target.value)} placeholder="+49 69 123456" style={inputStyle(isDark)} />
             </div>
             <div>
               <label style={{ fontSize: 12, fontWeight: 600, color: TEXT2, display: "block", marginBottom: 8 }}>Öffnungszeiten</label>
@@ -370,10 +381,10 @@ export default function KioskPageManage() {
                     <span style={{ fontSize: 12, fontWeight: 700, color: TEXT2 }}>{DAY_LABELS[day]}</span>
                     <input type="time" value={hours[day].open} disabled={hours[day].closed}
                       onChange={e => setHours(prev => ({ ...prev, [day]: { ...prev[day], open: e.target.value } }))}
-                      style={{ ...inputStyle(), padding: "6px 10px", opacity: hours[day].closed ? 0.4 : 1 }} />
+                      style={{ ...inputStyle(isDark), padding: "6px 10px", opacity: hours[day].closed ? 0.4 : 1 }} />
                     <input type="time" value={hours[day].close} disabled={hours[day].closed}
                       onChange={e => setHours(prev => ({ ...prev, [day]: { ...prev[day], close: e.target.value } }))}
-                      style={{ ...inputStyle(), padding: "6px 10px", opacity: hours[day].closed ? 0.4 : 1 }} />
+                      style={{ ...inputStyle(isDark), padding: "6px 10px", opacity: hours[day].closed ? 0.4 : 1 }} />
                     <label style={{ fontSize: 11, color: TEXT3, display: "flex", alignItems: "center", gap: 4, cursor: "pointer", whiteSpace: "nowrap" }}>
                       <input type="checkbox" checked={hours[day].closed} onChange={e => setHours(prev => ({ ...prev, [day]: { ...prev[day], closed: e.target.checked } }))} />
                       zu
@@ -387,7 +398,7 @@ export default function KioskPageManage() {
               <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
                 {SERVICE_OPTIONS.map(opt => (
                   <button key={opt.key} type="button" onClick={() => toggleService(opt.key)}
-                    style={{ padding: "7px 12px", borderRadius: 100, border: `1.5px solid ${services.includes(opt.key) ? ORANGE : BORDER}`, background: services.includes(opt.key) ? `${ORANGE}15` : "transparent", color: services.includes(opt.key) ? ORANGE : TEXT2, fontSize: 12, fontWeight: 600, cursor: "pointer" }}>
+                    style={{ padding: "7px 12px", borderRadius: 100, border: `1.5px solid ${services.includes(opt.key) ? accentColor : BORDER}`, background: services.includes(opt.key) ? `${ORANGE}15` : "transparent", color: services.includes(opt.key) ? accentColor : TEXT2, fontSize: 12, fontWeight: 600, cursor: "pointer" }}>
                     {opt.label}
                   </button>
                 ))}
@@ -395,12 +406,12 @@ export default function KioskPageManage() {
             </div>
           </div>
           <button onClick={saveProfile} disabled={saving}
-            style={{ marginTop: 18, background: ORANGE, color: "#fff", border: "none", borderRadius: 10, padding: "11px 20px", fontSize: 13, fontWeight: 700, cursor: saving ? "not-allowed" : "pointer" }}>
+            style={{ marginTop: 18, background: btnColor, color: "#fff", border: "none", borderRadius: isDark ? 6 : 10, padding: "11px 20px", fontSize: 13, fontWeight: 700, cursor: saving ? "not-allowed" : "pointer" }}>
             {saving ? "Speichert…" : "Speichern"}
           </button>
         </div>
 
-        <div style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 16, padding: 24, marginBottom: 20 }}>
+        <div style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: isDark ? 8 : 16, padding: 24, marginBottom: 20 }}>
           <h2 style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 700, fontSize: 14, color: TEXT, marginBottom: 16 }}>Fotos vom Kiosk</h2>
           <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 16 }}>
             {photos.map((p: any) => (
@@ -413,22 +424,22 @@ export default function KioskPageManage() {
           <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
             <input type="file" accept="image/*" onChange={e => setNewPhotoFile(e.target.files?.[0] ?? null)} style={{ fontSize: 12, color: TEXT2 }} />
             <button onClick={addPhoto} disabled={!newPhotoFile || uploadingPhoto}
-              style={{ background: ORANGE, color: "#fff", border: "none", borderRadius: 8, padding: "7px 14px", fontSize: 12, fontWeight: 700, cursor: (!newPhotoFile || uploadingPhoto) ? "not-allowed" : "pointer" }}>
+              style={{ background: btnColor, color: "#fff", border: "none", borderRadius: 8, padding: "7px 14px", fontSize: 12, fontWeight: 700, cursor: (!newPhotoFile || uploadingPhoto) ? "not-allowed" : "pointer" }}>
               {uploadingPhoto ? "Lädt…" : "+ Foto hinzufügen"}
             </button>
           </div>
         </div>
 
         {suggestions.length > 0 && (
-          <div style={{ background: "#fefce8", border: "1.5px solid #fcd34d", borderRadius: 16, padding: 20, marginBottom: 20 }}>
-            <h2 style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 700, fontSize: 14, color: "#92400e", marginBottom: 12 }}>📦 Vorbereitete Bestellungen</h2>
-            <p style={{ fontSize: 12, color: "#78350f", marginBottom: 12 }}>Diese Artikel sind knapp — Flowio hat passende Bestellungen vorbereitet.</p>
+          <div style={{ background: isDark ? "rgba(245,158,11,0.1)" : "#fefce8", border: `1.5px solid ${isDark ? "rgba(245,158,11,0.3)" : "#fcd34d"}`, borderRadius: isDark ? 8 : 16, padding: 20, marginBottom: 20 }}>
+            <h2 style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 700, fontSize: 14, color: isDark ? "#fb923c" : "#92400e", marginBottom: 12 }}>📦 Vorbereitete Bestellungen</h2>
+            <p style={{ fontSize: 12, color: isDark ? TEXT2 : "#78350f", marginBottom: 12 }}>Diese Artikel sind knapp — Flowio hat passende Bestellungen vorbereitet.</p>
             <div style={{ display: "grid", gap: 8 }}>
               {suggestions.map((item: any) => (
-                <div key={item.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", background: "#fff", border: "1px solid #fcd34d", borderRadius: 10, padding: "10px 14px" }}>
+                <div key={item.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", background: isDark ? BG : "#fff", border: `1px solid ${isDark ? BORDER : "#fcd34d"}`, borderRadius: isDark ? 6 : 10, padding: "10px 14px" }}>
                   <div>
-                    <p style={{ fontSize: 13, fontWeight: 600, color: "#92400e" }}>{item.name}</p>
-                    <p style={{ fontSize: 11, color: "#b45309" }}>{item.stock_status === "out" ? "Ausverkauft" : "Wird knapp"}</p>
+                    <p style={{ fontSize: 13, fontWeight: 600, color: isDark ? TEXT : "#92400e" }}>{item.name}</p>
+                    <p style={{ fontSize: 11, color: isDark ? TEXT3 : "#b45309" }}>{item.stock_status === "out" ? "Ausverkauft" : "Wird knapp"}</p>
                   </div>
                   <button onClick={() => confirmSuggestedOrder(item)} disabled={confirmingOrder === item.id}
                     style={{ background: "#f59e0b", color: "#fff", border: "none", borderRadius: 8, padding: "7px 14px", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
@@ -441,33 +452,33 @@ export default function KioskPageManage() {
         )}
 
         {offers.length > 0 && (
-          <div style={{ background: SURFACE, border: `1.5px solid ${ORANGE}40`, borderRadius: 16, padding: 20, marginBottom: 20 }}>
+          <div style={{ background: SURFACE, border: `1.5px solid ${ORANGE}40`, borderRadius: isDark ? 8 : 16, padding: 20, marginBottom: 20 }}>
             <h2 style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 700, fontSize: 14, color: TEXT, marginBottom: 12 }}>💬 Angebote von Lieferanten</h2>
             <div style={{ display: "grid", gap: 10 }}>
               {offers.map((offer: any) => {
                 const supplierName = offer.suppliers?.profiles?.company_name || offer.suppliers?.profiles?.full_name || "Lieferant";
                 const invItem = items.find(i => i.id === offer.inventory_id);
                 return (
-                  <div key={offer.id} style={{ background: BG, border: `1px solid ${BORDER}`, borderRadius: 12, padding: 14 }}>
+                  <div key={offer.id} style={{ background: BG, border: `1px solid ${BORDER}`, borderRadius: isDark ? 6 : 12, padding: 14 }}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
                       <div>
                         <p style={{ fontSize: 13, fontWeight: 700, color: TEXT }}>{supplierName}</p>
                         {invItem && <p style={{ fontSize: 11, color: TEXT3 }}>für: {invItem.name}</p>}
                       </div>
                       <div style={{ textAlign: "right" }}>
-                        {offer.price && <p style={{ fontSize: 14, fontWeight: 800, color: ORANGE }}>€{offer.price}</p>}
-                        {offer.discount_pct && <p style={{ fontSize: 11, color: "#16a34a" }}>−{offer.discount_pct}% Rabatt</p>}
+                        {offer.price && <p style={{ fontSize: 14, fontWeight: 800, color: accentColor }}>€{offer.price}</p>}
+                        {offer.discount_pct && <p style={{ fontSize: 11, color: isDark ? "#4ade80" : "#16a34a" }}>−{offer.discount_pct}% Rabatt</p>}
                         {offer.delivery_estimate && <p style={{ fontSize: 11, color: TEXT3 }}>⏰ {offer.delivery_estimate}</p>}
                       </div>
                     </div>
                     {offer.message && <p style={{ fontSize: 12, color: TEXT2, marginBottom: 8, fontStyle: "italic" }}>"{offer.message}"</p>}
                     <div style={{ display: "flex", gap: 8 }}>
                       <button onClick={() => respondToOffer(offer.id, true)}
-                        style={{ flex: 1, background: "#16a34a", color: "#fff", border: "none", borderRadius: 8, padding: "8px", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
+                        style={{ flex: 1, background: isDark ? "rgba(22,163,74,0.2)" : "#16a34a", color: isDark ? "#4ade80" : "#fff", border: isDark ? "1px solid rgba(74,222,128,0.3)" : "none", borderRadius: 8, padding: "8px", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
                         ✓ Annehmen
                       </button>
                       <button onClick={() => respondToOffer(offer.id, false)}
-                        style={{ flex: 1, background: "#fef2f2", color: "#dc2626", border: "1px solid #fca5a5", borderRadius: 8, padding: "8px", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
+                        style={{ flex: 1, background: isDark ? "rgba(239,68,68,0.1)" : "#fef2f2", color: isDark ? "#f87171" : "#dc2626", border: `1px solid ${isDark ? "rgba(239,68,68,0.3)" : "#fca5a5"}`, borderRadius: 8, padding: "8px", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
                         ✕ Ablehnen
                       </button>
                     </div>
@@ -478,30 +489,30 @@ export default function KioskPageManage() {
           </div>
         )}
 
-        <div style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 16, padding: 24 }}>
+        <div style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: isDark ? 8 : 16, padding: 24 }}>
           <h2 style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 700, fontSize: 14, color: TEXT, marginBottom: 16 }}>Meine Produkte ({items.length})</h2>
 
           <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr 2fr auto", gap: 8, marginBottom: 20, alignItems: "end" }}>
             <div>
               <label style={{ fontSize: 11, color: TEXT3, display: "block", marginBottom: 4 }}>Name</label>
-              <input value={newName} onChange={e => setNewName(e.target.value)} placeholder="z.B. Coca-Cola 0,5L" style={inputStyle()} />
+              <input value={newName} onChange={e => setNewName(e.target.value)} placeholder="z.B. Coca-Cola 0,5L" style={inputStyle(isDark)} />
             </div>
             <div>
               <label style={{ fontSize: 11, color: TEXT3, display: "block", marginBottom: 4 }}>Preis (€)</label>
-              <input type="number" min="0" step="0.01" value={newPrice} onChange={e => setNewPrice(e.target.value)} placeholder="1,50" style={inputStyle()} />
+              <input type="number" min="0" step="0.01" value={newPrice} onChange={e => setNewPrice(e.target.value)} placeholder="1,50" style={inputStyle(isDark)} />
             </div>
             <div>
               <label style={{ fontSize: 11, color: TEXT3, display: "block", marginBottom: 4 }}>Kategorie</label>
-              <input value={newCategory} onChange={e => setNewCategory(e.target.value)} placeholder="Getränke" style={inputStyle()} />
+              <input value={newCategory} onChange={e => setNewCategory(e.target.value)} placeholder="Getränke" style={inputStyle(isDark)} />
             </div>
             <div>
               <label style={{ fontSize: 11, color: TEXT3, display: "block", marginBottom: 4 }}>Lieferant für Nachbestellung (optional)</label>
-              <select value={newLinkedProductId} onChange={e => setNewLinkedProductId(e.target.value)} style={inputStyle()}>
+              <select value={newLinkedProductId} onChange={e => setNewLinkedProductId(e.target.value)} style={inputStyle(isDark)}>
                 <option value="">— Kein Link —</option>
                 {myProducts.map((p: any) => <option key={p.id} value={p.id}>{p.name}</option>)}
               </select>
             </div>
-            <button onClick={addItem} style={{ background: ORANGE, color: "#fff", border: "none", borderRadius: 10, padding: "10px 16px", fontSize: 13, fontWeight: 700, cursor: "pointer", height: 42 }}>
+            <button onClick={addItem} style={{ background: btnColor, color: "#fff", border: "none", borderRadius: isDark ? 6 : 10, padding: "10px 16px", fontSize: 13, fontWeight: 700, cursor: "pointer", height: 42 }}>
               + Hinzufügen
             </button>
           </div>
@@ -512,6 +523,7 @@ export default function KioskPageManage() {
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
               {items.map((item: any) => {
                 const s = STATUS_LABELS[item.stock_status] ?? STATUS_LABELS.in_stock;
+                const dk = STATUS_DARK[item.stock_status] ?? STATUS_DARK.in_stock;
                 const daysLeft = predictDaysLeft(item.id, item.quantity ?? 0);
                 return (
                   <div key={item.id} style={{ padding: "12px 14px", background: BG, borderRadius: 10, border: `1px solid ${BORDER}` }}>
@@ -520,7 +532,7 @@ export default function KioskPageManage() {
                         <p style={{ fontSize: 13, fontWeight: 600, color: TEXT }}>{item.name}{item.price ? ` · €${item.price}` : ""}</p>
                         {item.linked_product_id && <p style={{ fontSize: 11, color: TEXT3 }}>🔗 Verknüpft für Nachbestellung</p>}
                         {daysLeft !== null && (
-                          <p style={{ fontSize: 11, color: daysLeft < 3 ? "#dc2626" : daysLeft < 7 ? "#d97706" : "#16a34a" }}>
+                          <p style={{ fontSize: 11, color: daysLeft < 3 ? (isDark ? "#f87171" : "#dc2626") : daysLeft < 7 ? (isDark ? "#fb923c" : "#d97706") : (isDark ? "#4ade80" : "#16a34a") }}>
                             ~{daysLeft} Tag{daysLeft !== 1 ? "e" : ""} Vorrat verbleibend
                           </p>
                         )}
@@ -539,7 +551,7 @@ export default function KioskPageManage() {
                             style={{ width: 60, padding: "4px 8px", borderRadius: 7, border: `1px solid ${BORDER}`, background: SURFACE, color: TEXT, fontSize: 12, fontFamily: "inherit" }} />
                         </div>
                         <select value={item.stock_status} onChange={e => setStatus(item, e.target.value as any)}
-                          style={{ background: s.bg, color: s.color, border: "none", borderRadius: 8, padding: "6px 10px", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
+                          style={{ background: isDark ? dk.bg : s.bg, color: isDark ? dk.color : s.color, border: "none", borderRadius: 8, padding: "6px 10px", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
                           <option value="in_stock">Auf Lager</option>
                           <option value="low">Wird knapp</option>
                           <option value="out">Ausverkauft</option>

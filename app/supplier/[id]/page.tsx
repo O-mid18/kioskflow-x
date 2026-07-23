@@ -1,16 +1,18 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useState, useCallback } from "react";
 import { useParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 
-const BG = "var(--kf-bg)";
+const BG     = "var(--kf-bg)";
 const SURFACE = "var(--kf-surface)";
-const BORDER = "var(--kf-border)";
-const TEXT = "var(--kf-text)";
-const TEXT2 = "var(--kf-text2)";
-const TEXT3 = "var(--kf-text3)";
-const ORANGE = "#2563EB";
+const BORDER  = "var(--kf-border)";
+const TEXT    = "var(--kf-text)";
+const TEXT2   = "var(--kf-text2)";
+const TEXT3   = "var(--kf-text3)";
+const ORANGE  = "#2563EB";
+const ACCENT  = "var(--kf-accent)";
+const BTN     = "var(--kf-btn)";
 
 export default function SupplierProfilePage() {
   const params = useParams();
@@ -21,6 +23,15 @@ export default function SupplierProfilePage() {
   const [cartCount, setCartCount] = useState(0);
   const [chatting, setChatting] = useState(false);
   const [role, setRole] = useState<string | null>(null);
+  const [isDark, setIsDark] = useState(false);
+
+  useEffect(() => {
+    const check = () => setIsDark(document.documentElement.classList.contains("dark"));
+    check();
+    const obs = new MutationObserver(check);
+    obs.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+    return () => obs.disconnect();
+  }, []);
 
   const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(null), 2500); };
 
@@ -69,11 +80,14 @@ export default function SupplierProfilePage() {
     window.location.href = "/messages";
   };
 
+  const accentColor = isDark ? ACCENT : ORANGE;
+  const btnColor    = isDark ? BTN    : ORANGE;
+
   if (loading) return (
     <main style={{ minHeight: "100vh", background: BG, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'DM Sans',system-ui,sans-serif" }}>
       <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
       <div style={{ textAlign: "center" }}>
-        <div style={{ width: 36, height: 36, border: `3px solid ${BORDER}`, borderTopColor: ORANGE, borderRadius: "50%", animation: "spin 0.8s linear infinite", margin: "0 auto 14px" }} />
+        <div style={{ width: 36, height: 36, border: `3px solid ${BORDER}`, borderTopColor: accentColor, borderRadius: "50%", animation: "spin 0.8s linear infinite", margin: "0 auto 14px" }} />
         <p style={{ color: TEXT3, fontSize: 13 }}>Lieferant wird geladen...</p>
       </div>
     </main>
@@ -83,7 +97,7 @@ export default function SupplierProfilePage() {
     <main style={{ minHeight: "100vh", background: BG, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 16, fontFamily: "'DM Sans',system-ui,sans-serif" }}>
       <p style={{ fontSize: 48 }}>😭</p>
       <p style={{ color: TEXT, fontSize: 18, fontWeight: 700 }}>Lieferant nicht gefunden</p>
-      <a href="/marketplace" style={{ color: ORANGE, fontWeight: 600, fontSize: 14, textDecoration: "none" }}>← Zurück zum Marktplatz</a>
+      <a href="/marketplace" style={{ color: accentColor, fontWeight: 600, fontSize: 14, textDecoration: "none" }}>← Zurück zum Marktplatz</a>
     </main>
   );
 
@@ -106,13 +120,13 @@ export default function SupplierProfilePage() {
           <span style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 15, color: TEXT, letterSpacing: "-0.3px" }}>Flowio</span>
         </a>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          {role === "admin" && <a href="/owner/dashboard" title="Owner-Panel" style={{ background:`${ORANGE}15`, color:ORANGE, fontWeight:700, fontSize:13, textDecoration:"none", padding:"7px 12px", borderRadius:9 }}>🏛️</a>}
-          {role === "supplier" && <a href="/supplier/dashboard" title="Lieferanten-Dashboard" style={{ background:`${ORANGE}15`, color:ORANGE, fontWeight:700, fontSize:13, textDecoration:"none", padding:"7px 12px", borderRadius:9 }}>📦</a>}
+          {role === "admin" && <a href="/owner/dashboard" title="Owner-Panel" style={{ background:`${ORANGE}15`, color: accentColor, fontWeight:700, fontSize:13, textDecoration:"none", padding:"7px 12px", borderRadius:9 }}>🏛️</a>}
+          {role === "supplier" && <a href="/supplier/dashboard" title="Lieferanten-Dashboard" style={{ background:`${ORANGE}15`, color: accentColor, fontWeight:700, fontSize:13, textDecoration:"none", padding:"7px 12px", borderRadius:9 }}>📦</a>}
           <a href="/marketplace" style={{ color: TEXT2, fontSize: 13, fontWeight: 500, textDecoration: "none" }}>← Marktplatz</a>
-          <a href="/cart" style={{ position: "relative", display: "flex", alignItems: "center", gap: 6, background: ORANGE, color: "#fff", fontWeight: 700, fontSize: 13, textDecoration: "none", padding: "7px 14px", borderRadius: 9 }}>
+          <a href="/cart" style={{ position: "relative", display: "flex", alignItems: "center", gap: 6, background: btnColor, color: "#fff", fontWeight: 700, fontSize: 13, textDecoration: "none", padding: "7px 14px", borderRadius: 9 }}>
             🛒 Warenkorb
             {cartCount > 0 && (
-              <span style={{ background: "#fff", color: ORANGE, fontSize: 10, fontWeight: 900, borderRadius: "50%", width: 18, height: 18, display: "flex", alignItems: "center", justifyContent: "center" }}>{cartCount}</span>
+              <span style={{ background: "#fff", color: btnColor, fontSize: 10, fontWeight: 900, borderRadius: "50%", width: 18, height: 18, display: "flex", alignItems: "center", justifyContent: "center" }}>{cartCount}</span>
             )}
           </a>
         </div>
@@ -125,14 +139,14 @@ export default function SupplierProfilePage() {
             {supplier.logo_url ? (
               <img loading="lazy" decoding="async" src={supplier.logo_url} alt={supplier.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
             ) : (
-              <span style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 28, color: ORANGE }}>{supplier.name?.trim()?.[0]?.toUpperCase() ?? "?"}</span>
+              <span style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 28, color: accentColor }}>{supplier.name?.trim()?.[0]?.toUpperCase() ?? "?"}</span>
             )}
           </div>
           <div style={{ flex: 1, minWidth: 200 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
               <h1 style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 24, color: TEXT, letterSpacing: "-0.5px" }}>{supplier.name}</h1>
               {supplier.verified && (
-                <span style={{ background: "#dcfce7", color: "#16a34a", fontSize: 11, fontWeight: 700, padding: "3px 10px", borderRadius: 100 }}>✓ Verifiziert</span>
+                <span style={{ background: isDark ? "rgba(0,82,255,0.15)" : "#dcfce7", color: isDark ? "#b7c4ff" : "#16a34a", fontSize: 11, fontWeight: 700, padding: "3px 10px", borderRadius: 100 }}>✓ Verifiziert</span>
               )}
             </div>
             {supplier.city && <p style={{ color: TEXT3, fontSize: 13 }}>📍 {supplier.city}</p>}
@@ -140,13 +154,13 @@ export default function SupplierProfilePage() {
           </div>
           <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 10, flexShrink: 0 }}>
             <div style={{ textAlign: "right" }}>
-              <p style={{ fontFamily: "'DM Sans',sans-serif", fontWeight: 800, fontSize: 28, color: ORANGE }}>{products.length}</p>
+              <p style={{ fontFamily: "'DM Sans',sans-serif", fontWeight: 800, fontSize: 28, color: accentColor }}>{products.length}</p>
               <p style={{ color: TEXT3, fontSize: 12 }}>Produkte</p>
             </div>
             <button
               onClick={startChat}
               disabled={chatting}
-              style={{ background: chatting ? TEXT3 : "#1a1a2e", color: "#fff", border: "none", borderRadius: 10, padding: "10px 18px", fontSize: 13, fontWeight: 700, cursor: chatting ? "not-allowed" : "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", gap: 7 }}
+              style={{ background: chatting ? TEXT3 : "#1a1a2e", color: "#fff", border: "none", borderRadius: isDark ? 6 : 10, padding: "10px 18px", fontSize: 13, fontWeight: 700, cursor: chatting ? "not-allowed" : "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", gap: 7 }}
             >
               {chatting
                 ? <><div style={{ width: 12, height: 12, border: "2px solid rgba(255,255,255,0.4)", borderTopColor: "#fff", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} /> Öffnet...</>
@@ -172,7 +186,7 @@ export default function SupplierProfilePage() {
             {products.map(product => {
               const img = product.image_url?.trim() ? product.image_url : "https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?w=400&q=80";
               return (
-                <div key={product.id} style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 16, overflow: "hidden" }}>
+                <div key={product.id} style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: isDark ? 8 : 16, overflow: "hidden" }}>
                   <a href={`/product/${product.id}`} style={{ display: "block", height: 160, overflow: "hidden", textDecoration: "none" }}>
                     <img loading="lazy" decoding="async" src={img} alt={product.name} style={{ width: "100%", height: "100%", objectFit: "cover", transition: "transform 0.3s" }}
                       onMouseEnter={e => (e.currentTarget.style.transform = "scale(1.05)")}
@@ -184,9 +198,9 @@ export default function SupplierProfilePage() {
                     </a>
                     {product.description && <p style={{ color: TEXT3, fontSize: 12, marginBottom: 8, lineHeight: 1.5, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{product.description}</p>}
                     <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: 8 }}>
-                      <span style={{ fontFamily: "'DM Sans',sans-serif", fontWeight: 800, fontSize: 18, color: ORANGE }}>€{product.price}</span>
+                      <span style={{ fontFamily: "'DM Sans',sans-serif", fontWeight: 800, fontSize: 18, color: accentColor }}>€{product.price}</span>
                       <button onClick={() => addToCart(product.id)}
-                        style={{ background: ORANGE, color: "#fff", border: "none", fontSize: 12, fontWeight: 700, padding: "7px 14px", borderRadius: 8, cursor: "pointer" }}>
+                        style={{ background: btnColor, color: "#fff", border: "none", fontSize: 12, fontWeight: 700, padding: "7px 14px", borderRadius: isDark ? 4 : 8, cursor: "pointer" }}>
                         + Warenkorb
                       </button>
                     </div>

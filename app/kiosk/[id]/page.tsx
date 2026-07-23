@@ -4,18 +4,26 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 
-const BG = "var(--kf-bg)";
+const BG     = "var(--kf-bg)";
 const SURFACE = "var(--kf-surface)";
-const BORDER = "var(--kf-border)";
-const TEXT = "var(--kf-text)";
-const TEXT2 = "var(--kf-text2)";
-const TEXT3 = "var(--kf-text3)";
-const ORANGE = "#2563EB";
+const BORDER  = "var(--kf-border)";
+const TEXT    = "var(--kf-text)";
+const TEXT2   = "var(--kf-text2)";
+const TEXT3   = "var(--kf-text3)";
+const ORANGE  = "#2563EB";
+const ACCENT  = "var(--kf-accent)";
+const BTN     = "var(--kf-btn)";
 
 const STATUS_LABELS: Record<string, { label: string; color: string; bg: string }> = {
   in_stock: { label: "✓ Auf Lager", color: "#16a34a", bg: "#f0fdf4" },
   low:      { label: "Wird knapp",  color: "#d97706", bg: "#fef3c7" },
   out:      { label: "Ausverkauft", color: "#dc2626", bg: "#fef2f2" },
+};
+
+const STATUS_DARK: Record<string, { color: string; bg: string }> = {
+  in_stock: { color: "#4ade80", bg: "rgba(22,163,74,0.15)" },
+  low:      { color: "#fb923c", bg: "rgba(249,115,22,0.15)" },
+  out:      { color: "#f87171", bg: "rgba(239,68,68,0.15)" },
 };
 
 const SERVICE_LABELS: Record<string, string> = {
@@ -53,6 +61,15 @@ export default function KioskPublicPage() {
   const [myComment, setMyComment] = useState("");
   const [submittingReview, setSubmittingReview] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
+  const [isDark, setIsDark] = useState(false);
+
+  useEffect(() => {
+    const check = () => setIsDark(document.documentElement.classList.contains("dark"));
+    check();
+    const obs = new MutationObserver(check);
+    obs.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+    return () => obs.disconnect();
+  }, []);
 
   useEffect(() => {
     (async () => {
@@ -94,13 +111,16 @@ export default function KioskPublicPage() {
     }
   };
 
+  const accentColor = isDark ? ACCENT : ORANGE;
+  const btnColor    = isDark ? BTN    : ORANGE;
+
   if (loading) return <div style={{ minHeight: "100vh", background: BG, display: "flex", alignItems: "center", justifyContent: "center", color: TEXT2 }}>Lade…</div>;
 
   if (notFound) {
     return (
       <div style={{ minHeight: "100vh", background: BG, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 12 }}>
         <p style={{ color: TEXT2, fontSize: 14 }}>Diese Kiosk-Seite ist nicht verfügbar.</p>
-        <a href="/marketplace" style={{ color: ORANGE, fontSize: 13, textDecoration: "none" }}>← Zum Marktplatz</a>
+        <a href="/marketplace" style={{ color: accentColor, fontSize: 13, textDecoration: "none" }}>← Zum Marktplatz</a>
       </div>
     );
   }
@@ -131,16 +151,16 @@ export default function KioskPublicPage() {
         {photos.length > 0 && (
           <div style={{ display: "flex", gap: 8, overflowX: "auto", marginBottom: 20, borderRadius: 16 }}>
             {photos.map((p: any) => (
-              <img key={p.id} src={p.image_url} alt="" style={{ width: 200, height: 140, objectFit: "cover", borderRadius: 14, flexShrink: 0 }} />
+              <img key={p.id} src={p.image_url} alt="" style={{ width: 200, height: 140, objectFit: "cover", borderRadius: isDark ? 8 : 14, flexShrink: 0 }} />
             ))}
           </div>
         )}
 
-        <div style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 18, padding: 28, marginBottom: 24 }}>
+        <div style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: isDark ? 8 : 18, padding: 28, marginBottom: 24 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 12 }}>
             {kiosk.kiosk_logo_url && <img src={kiosk.kiosk_logo_url} alt="" style={{ width: 56, height: 56, borderRadius: 12, objectFit: "cover", border: `1px solid ${BORDER}` }} />}
             <div>
-              <span style={{ background: `${ORANGE}15`, color: ORANGE, fontSize: 11, fontWeight: 700, padding: "3px 10px", borderRadius: 100 }}>KIOSK</span>
+              <span style={{ background: `${ORANGE}15`, color: accentColor, fontSize: 11, fontWeight: 700, padding: "3px 10px", borderRadius: 100 }}>KIOSK</span>
               <h1 style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 24, color: TEXT, marginTop: 6 }}>
                 {kiosk.company_name || kiosk.full_name || "Kiosk"}
               </h1>
@@ -148,7 +168,7 @@ export default function KioskPublicPage() {
           </div>
 
           {openStatus && (
-            <span style={{ display: "inline-block", marginBottom: 14, background: openStatus.open ? "#dcfce7" : "#fee2e2", color: openStatus.open ? "#16a34a" : "#dc2626", fontSize: 12, fontWeight: 700, padding: "4px 12px", borderRadius: 100 }}>
+            <span style={{ display: "inline-block", marginBottom: 14, background: openStatus.open ? (isDark ? "rgba(22,163,74,0.15)" : "#dcfce7") : (isDark ? "rgba(239,68,68,0.15)" : "#fee2e2"), color: openStatus.open ? (isDark ? "#4ade80" : "#16a34a") : (isDark ? "#f87171" : "#dc2626"), fontSize: 12, fontWeight: 700, padding: "4px 12px", borderRadius: 100 }}>
               {openStatus.open ? "🟢 Jetzt geöffnet" : "🔴 Geschlossen"}
             </span>
           )}
@@ -158,7 +178,7 @@ export default function KioskPublicPage() {
 
           <div style={{ display: "grid", gap: 8 }}>
             {kiosk.address && (
-              <a href={`https://www.google.com/maps/search/?api=1&query=${mapsQuery}`} target="_blank" rel="noopener noreferrer" style={{ fontSize: 14, color: ORANGE, textDecoration: "none" }}>
+              <a href={`https://www.google.com/maps/search/?api=1&query=${mapsQuery}`} target="_blank" rel="noopener noreferrer" style={{ fontSize: 14, color: accentColor, textDecoration: "none" }}>
                 📍 {kiosk.address}{kiosk.city ? `, ${kiosk.city}` : ""} · Auf Karte öffnen →
               </a>
             )}
@@ -199,12 +219,13 @@ export default function KioskPublicPage() {
               <div style={{ display: "grid", gap: 10 }}>
                 {catItems.map((item: any) => {
                   const s = STATUS_LABELS[item.stock_status] ?? STATUS_LABELS.in_stock;
+                  const dk = STATUS_DARK[item.stock_status] ?? STATUS_DARK.in_stock;
                   return (
-                    <div key={item.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 12, padding: "14px 18px" }}>
+                    <div key={item.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: isDark ? 6 : 12, padding: "14px 18px" }}>
                       <p style={{ fontSize: 14, fontWeight: 600, color: TEXT }}>{item.name}</p>
                       <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                         {item.price && <span style={{ fontSize: 14, fontWeight: 700, color: TEXT }}>€{item.price}</span>}
-                        <span style={{ background: s.bg, color: s.color, fontSize: 11, fontWeight: 700, padding: "3px 10px", borderRadius: 100 }}>{s.label}</span>
+                        <span style={{ background: isDark ? dk.bg : s.bg, color: isDark ? dk.color : s.color, fontSize: 11, fontWeight: 700, padding: "3px 10px", borderRadius: 100 }}>{s.label}</span>
                       </div>
                     </div>
                   );
@@ -220,16 +241,16 @@ export default function KioskPublicPage() {
           </h2>
 
           {userId && userId !== kiosk.id && (
-            <div style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 14, padding: 16, marginBottom: 16 }}>
+            <div style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: isDark ? 8 : 14, padding: 16, marginBottom: 16 }}>
               <div style={{ display: "flex", gap: 4, marginBottom: 10 }}>
                 {[1, 2, 3, 4, 5].map(n => (
                   <button key={n} onClick={() => setMyRating(n)} style={{ background: "none", border: "none", fontSize: 22, cursor: "pointer", opacity: n <= myRating ? 1 : 0.3 }}>⭐</button>
                 ))}
               </div>
               <textarea value={myComment} onChange={e => setMyComment(e.target.value)} placeholder="Deine Erfahrung (optional)…" rows={2}
-                style={{ width: "100%", padding: 10, borderRadius: 8, border: `1px solid ${BORDER}`, background: BG, color: TEXT, fontSize: 13, resize: "vertical", fontFamily: "inherit" }} />
+                style={{ width: "100%", padding: 10, borderRadius: isDark ? 4 : 8, border: `1px solid ${BORDER}`, background: BG, color: TEXT, fontSize: 13, resize: "vertical", fontFamily: "inherit" }} />
               <button onClick={submitReview} disabled={myRating === 0 || submittingReview}
-                style={{ marginTop: 8, background: ORANGE, color: "#fff", border: "none", borderRadius: 8, padding: "8px 16px", fontSize: 12, fontWeight: 700, cursor: myRating === 0 ? "not-allowed" : "pointer" }}>
+                style={{ marginTop: 8, background: btnColor, color: "#fff", border: "none", borderRadius: isDark ? 4 : 8, padding: "8px 16px", fontSize: 12, fontWeight: 700, cursor: myRating === 0 ? "not-allowed" : "pointer" }}>
                 {submittingReview ? "Speichert…" : "Bewertung abgeben"}
               </button>
             </div>
@@ -240,7 +261,7 @@ export default function KioskPublicPage() {
           ) : (
             <div style={{ display: "grid", gap: 10 }}>
               {reviews.map((r: any) => (
-                <div key={r.id} style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 12, padding: 14 }}>
+                <div key={r.id} style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: isDark ? 6 : 12, padding: 14 }}>
                   <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
                     <span style={{ fontSize: 13, fontWeight: 600, color: TEXT }}>{r.profiles?.full_name ?? "Nutzer"}</span>
                     <span style={{ fontSize: 12 }}>{"⭐".repeat(r.rating)}</span>
