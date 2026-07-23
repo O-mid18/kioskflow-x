@@ -10,6 +10,10 @@ const TEXT    = "var(--kf-text)";
 const TEXT2   = "var(--kf-text2)";
 const TEXT3   = "var(--kf-text3)";
 const ORANGE  = "#003ec7";
+const ACCENT  = "var(--kf-accent)";  // text/links/focus (→#b7c4ff dark)
+const BTN     = "var(--kf-btn)";     // filled button bg  (→#0052ff dark)
+const CARD_BG  = "var(--kf-card-bg)";   // section card bg (→#1e2022 dark)
+const INPUT_BG = "var(--kf-input-bg)";  // input bg        (→#1a1c1e dark)
 
 interface Product  { name: string; price: number; shipping_cost?: number; }
 interface CartItem { id: string; quantity: number; products: Product; }
@@ -17,7 +21,7 @@ interface CartItem { id: string; quantity: number; products: Product; }
 const LS_KEY = "kf_shipping_address";
 
 const iStyle: React.CSSProperties = {
-  width: "100%", background: BG, border: `1.5px solid ${BORDER}`,
+  width: "100%", background: INPUT_BG, border: `1.5px solid ${BORDER}`,
   borderRadius: 10, padding: "11px 14px", color: TEXT, fontSize: 14,
   fontFamily: "inherit", outline: "none", boxSizing: "border-box", transition: "border-color 0.2s",
 };
@@ -153,14 +157,14 @@ export default function CheckoutPage() {
   const discountAmount = discountInfo ? total * discountInfo.pct : 0;
   const finalTotal = total - discountAmount;
 
-  const fo = (e: React.FocusEvent<HTMLInputElement | HTMLSelectElement>) => e.currentTarget.style.borderColor = ORANGE;
+  const fo = (e: React.FocusEvent<HTMLInputElement | HTMLSelectElement>) => e.currentTarget.style.borderColor = ACCENT;
   const bl = (e: React.FocusEvent<HTMLInputElement | HTMLSelectElement>) => e.currentTarget.style.borderColor = BORDER;
 
   if (loading) return (
     <main style={{ minHeight: "100vh", background: BG, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Inter',system-ui,sans-serif" }}>
       <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
       <div style={{ textAlign: "center" }}>
-        <div style={{ width: 36, height: 36, border: `3px solid ${BORDER}`, borderTopColor: ORANGE, borderRadius: "50%", animation: "spin 0.8s linear infinite", margin: "0 auto 14px" }} />
+        <div style={{ width: 36, height: 36, border: `3px solid ${BORDER}`, borderTopColor: ACCENT, borderRadius: "50%", animation: "spin 0.8s linear infinite", margin: "0 auto 14px" }} />
         <p style={{ color: TEXT3, fontSize: 13 }}>Warenkorb laden...</p>
       </div>
     </main>
@@ -210,12 +214,12 @@ export default function CheckoutPage() {
           <div style={{ textAlign: "center", padding: "64px 0" }}>
             <p style={{ fontSize: 48, marginBottom: 16 }}>🛒</p>
             <p style={{ color: TEXT2, fontSize: 15 }}>Dein Warenkorb ist leer.</p>
-            <a href="/marketplace" style={{ display: "inline-block", marginTop: 20, color: ORANGE, fontSize: 14, fontWeight: 700, textDecoration: "none" }}>Zum Marktplatz →</a>
+            <a href="/marketplace" style={{ display: "inline-block", marginTop: 20, color: ACCENT, fontSize: 14, fontWeight: 700, textDecoration: "none" }}>Zum Marktplatz →</a>
           </div>
         ) : (
           <>
             {/* ── Items ── */}
-            <div style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 16, overflow: "hidden", marginBottom: 20 }}>
+            <div style={{ background: CARD_BG, border: `1px solid ${BORDER}`, borderRadius: 16, overflow: "hidden", marginBottom: 20 }}>
               <div style={{ padding: "14px 18px", borderBottom: `1px solid ${BORDER}` }}>
                 <p style={{ fontSize: 12, fontWeight: 700, color: TEXT3, letterSpacing: "1px", textTransform: "uppercase" }}>{items.length} Artikel</p>
               </div>
@@ -234,7 +238,7 @@ export default function CheckoutPage() {
             </div>
 
             {/* ── Shipping address ── */}
-            <div id="addr-section" style={{ background: SURFACE, border: `1.5px solid ${addrErr ? "#fca5a5" : BORDER}`, borderRadius: 16, padding: "22px", marginBottom: 20 }}>
+            <div id="addr-section" style={{ background: CARD_BG, border: `1.5px solid ${addrErr ? "#fca5a5" : BORDER}`, borderRadius: 16, padding: "22px", marginBottom: 20 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20 }}>
                 <div style={{ width: 32, height: 32, borderRadius: 8, background: `${ORANGE}15`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16 }}>📦</div>
                 <div>
@@ -253,35 +257,35 @@ export default function CheckoutPage() {
                 {/* Name row */}
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
                   <div>
-                    <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: TEXT2, marginBottom: 6 }}>Vorname <span style={{ color: ORANGE }}>*</span></label>
+                    <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: TEXT2, marginBottom: 6 }}>Vorname <span style={{ color: ACCENT }}>*</span></label>
                     <input value={firstName} onChange={e => setFirstName(e.target.value)} placeholder="Max" style={iStyle} onFocus={fo} onBlur={bl} />
                   </div>
                   <div>
-                    <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: TEXT2, marginBottom: 6 }}>Nachname <span style={{ color: ORANGE }}>*</span></label>
+                    <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: TEXT2, marginBottom: 6 }}>Nachname <span style={{ color: ACCENT }}>*</span></label>
                     <input value={lastName} onChange={e => setLastName(e.target.value)} placeholder="Mustermann" style={iStyle} onFocus={fo} onBlur={bl} />
                   </div>
                 </div>
 
                 {/* Email */}
                 <div>
-                  <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: TEXT2, marginBottom: 6 }}>E-Mail-Adresse <span style={{ color: ORANGE }}>*</span></label>
+                  <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: TEXT2, marginBottom: 6 }}>E-Mail-Adresse <span style={{ color: ACCENT }}>*</span></label>
                   <input value={email} onChange={e => setEmail(e.target.value)} type="email" placeholder="max@beispiel.de" style={iStyle} onFocus={fo} onBlur={bl} />
                 </div>
 
                 {/* Street */}
                 <div>
-                  <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: TEXT2, marginBottom: 6 }}>Straße & Hausnummer <span style={{ color: ORANGE }}>*</span></label>
+                  <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: TEXT2, marginBottom: 6 }}>Straße & Hausnummer <span style={{ color: ACCENT }}>*</span></label>
                   <input value={street} onChange={e => setStreet(e.target.value)} placeholder="Musterstraße 42" style={iStyle} onFocus={fo} onBlur={bl} />
                 </div>
 
                 {/* PLZ + Stadt */}
                 <div style={{ display: "grid", gridTemplateColumns: "130px 1fr", gap: 12 }}>
                   <div>
-                    <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: TEXT2, marginBottom: 6 }}>PLZ <span style={{ color: ORANGE }}>*</span></label>
+                    <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: TEXT2, marginBottom: 6 }}>PLZ <span style={{ color: ACCENT }}>*</span></label>
                     <input value={postalCode} onChange={e => setPostalCode(e.target.value)} placeholder="60311" style={iStyle} onFocus={fo} onBlur={bl} />
                   </div>
                   <div>
-                    <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: TEXT2, marginBottom: 6 }}>Stadt <span style={{ color: ORANGE }}>*</span></label>
+                    <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: TEXT2, marginBottom: 6 }}>Stadt <span style={{ color: ACCENT }}>*</span></label>
                     <input value={city} onChange={e => setCity(e.target.value)} placeholder="Frankfurt am Main" style={iStyle} onFocus={fo} onBlur={bl} />
                   </div>
                 </div>
@@ -295,9 +299,9 @@ export default function CheckoutPage() {
                 </div>
 
                 {/* Save checkbox */}
-                <label style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer", padding: "10px 14px", background: BG, borderRadius: 10, border: `1px solid ${saveAddr ? ORANGE + "50" : BORDER}`, transition: "border-color 0.2s" }}>
+                <label style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer", padding: "10px 14px", background: BG, borderRadius: 10, border: `1px solid ${saveAddr ? BORDER : BORDER}`, transition: "border-color 0.2s" }}>
                   <div onClick={() => setSaveAddr(!saveAddr)}
-                    style={{ width: 20, height: 20, borderRadius: 6, border: `2px solid ${saveAddr ? ORANGE : BORDER}`, background: saveAddr ? ORANGE : "transparent", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, cursor: "pointer", transition: "all 0.15s" }}>
+                    style={{ width: 20, height: 20, borderRadius: 6, border: `2px solid ${saveAddr ? ACCENT : BORDER}`, background: saveAddr ? BTN : "transparent", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, cursor: "pointer", transition: "all 0.15s" }}>
                     {saveAddr && <span style={{ color: "#fff", fontSize: 11, fontWeight: 800, lineHeight: 1 }}>✓</span>}
                   </div>
                   <div onClick={() => setSaveAddr(!saveAddr)}>
@@ -309,19 +313,19 @@ export default function CheckoutPage() {
             </div>
 
             {/* ── Discount code ── */}
-            <div style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 16, padding: "16px 18px", marginBottom: 16 }}>
+            <div style={{ background: CARD_BG, border: `1px solid ${BORDER}`, borderRadius: 16, padding: "16px 18px", marginBottom: 16 }}>
               <p style={{ fontSize: 12, fontWeight: 700, color: TEXT3, letterSpacing: "1px", textTransform: "uppercase", marginBottom: 10 }}>Rabattcode</p>
               <div style={{ display: "flex", gap: 8 }}>
                 <input value={discountCode} onChange={e => { setDiscountCode(e.target.value); setDiscountInfo(null); setDiscountErr(null); }}
                   placeholder="Code eingeben" style={{ ...iStyle, flex: 1 }} onFocus={fo} onBlur={bl} />
-                <button onClick={applyDiscount} style={{ background: ORANGE, color: "#fff", border: "none", borderRadius: 10, padding: "0 18px", fontWeight: 700, fontSize: 13, cursor: "pointer", flexShrink: 0 }}>OK</button>
+                <button onClick={applyDiscount} style={{ background: BTN, color: "#fff", border: "none", borderRadius: 10, padding: "0 18px", fontWeight: 700, fontSize: 13, cursor: "pointer", flexShrink: 0 }}>OK</button>
               </div>
               {discountInfo && <p style={{ fontSize: 12, color: "#16a34a", fontWeight: 600, marginTop: 8 }}>✓ {discountInfo.label} angewendet</p>}
               {discountErr  && <p style={{ fontSize: 12, color: "#dc2626", fontWeight: 600, marginTop: 8 }}>{discountErr}</p>}
             </div>
 
             {/* ── Summary ── */}
-            <div style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 16, padding: "20px 18px", marginBottom: 16 }}>
+            <div style={{ background: CARD_BG, border: `1px solid ${BORDER}`, borderRadius: 16, padding: "20px 18px", marginBottom: 16 }}>
               {[
                 { label: "Zwischensumme", value: `€${productSubtotal.toFixed(2)}`, valueColor: TEXT },
                 { label: "Lieferung (Schätzung)", value: "Wird vom Lieferanten festgelegt", valueColor: TEXT3 },
@@ -334,7 +338,7 @@ export default function CheckoutPage() {
               ))}
               <div style={{ borderTop: `1px solid ${BORDER}`, paddingTop: 14, marginTop: 4, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <span style={{ fontFamily: "'Inter',sans-serif", fontWeight: 700, fontSize: 15, color: TEXT }}>Zwischensumme (vorläufig)</span>
-                <span style={{ fontFamily: "'Inter',sans-serif", fontWeight: 800, fontSize: 24, color: TEXT, letterSpacing: "-0.5px" }}>≈ €{productSubtotal.toFixed(2)}</span>
+                <span style={{ fontFamily: "'Inter',sans-serif", fontWeight: 800, fontSize: 24, color: ACCENT, letterSpacing: "-0.5px" }}>≈ €{productSubtotal.toFixed(2)}</span>
               </div>
               <p style={{ fontSize: 11, color: TEXT3, marginTop: 8, textAlign: "right" }}>Endpreis inkl. Versand nach Lieferantenbestätigung.</p>
             </div>
@@ -351,7 +355,7 @@ export default function CheckoutPage() {
 
             {/* CTA */}
             <button onClick={handlePayment} disabled={paying}
-              style={{ width: "100%", background: paying ? `rgba(0,62,199,0.55)` : ORANGE, color: "#fff", border: "none", borderRadius: 12, padding: "16px", fontFamily: "'Inter',sans-serif", fontWeight: 700, fontSize: 15, cursor: paying ? "not-allowed" : "pointer", transition: "opacity 0.2s", marginBottom: 12, boxShadow: `0 4px 16px rgba(0,62,199,0.25)` }}>
+              style={{ width: "100%", background: paying ? TEXT3 : BTN, color: "#fff", border: "none", borderRadius: 12, padding: "16px", fontFamily: "'Inter',sans-serif", fontWeight: 700, fontSize: 15, cursor: paying ? "not-allowed" : "pointer", transition: "opacity 0.2s", marginBottom: 12, boxShadow: `0 4px 16px rgba(0,62,199,0.25)` }}>
               {paying ? "Wird gesendet..." : "Bestellung senden →"}
             </button>
 

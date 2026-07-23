@@ -11,6 +11,10 @@ const TEXT = "var(--kf-text)";
 const TEXT2 = "var(--kf-text2)";
 const TEXT3 = "var(--kf-text3)";
 const ORANGE = "#2563EB";
+const ACCENT   = "var(--kf-accent)";   // text/links/focus (→#b7c4ff dark)
+const BTN      = "var(--kf-btn)";      // filled button bg  (→#0052ff dark)
+const CARD_BG  = "var(--kf-card-bg)";  // card/panel bg     (→#1e2022 dark)
+const INPUT_BG = "var(--kf-input-bg)"; // input bg          (→#1a1c1e dark)
 
 function Stars({ rating, size = 12 }: { rating: number; size?: number }) {
   return (
@@ -134,7 +138,7 @@ export default function ProductDetailsPage() {
     <main style={{ minHeight: "100vh", background: BG, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'DM Sans',system-ui,sans-serif" }}>
       <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
       <div style={{ textAlign: "center" }}>
-        <div style={{ width: 36, height: 36, border: `3px solid ${BORDER}`, borderTopColor: ORANGE, borderRadius: "50%", animation: "spin 0.8s linear infinite", margin: "0 auto 14px" }} />
+        <div style={{ width: 36, height: 36, border: `3px solid ${BORDER}`, borderTopColor: ACCENT, borderRadius: "50%", animation: "spin 0.8s linear infinite", margin: "0 auto 14px" }} />
         <p style={{ color: TEXT3, fontSize: 13 }}>Produkt wird geladen...</p>
       </div>
     </main>
@@ -144,7 +148,7 @@ export default function ProductDetailsPage() {
     <main style={{ minHeight: "100vh", background: BG, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 16, fontFamily: "'DM Sans',system-ui,sans-serif" }}>
       <p style={{ fontSize: 48 }}>📦</p>
       <p style={{ color: TEXT, fontSize: 18, fontWeight: 700 }}>Produkt nicht gefunden</p>
-      <a href="/marketplace" style={{ color: ORANGE, fontWeight: 600, fontSize: 14, textDecoration: "none" }}>← Zurück zum Marktplatz</a>
+      <a href="/marketplace" style={{ color: ACCENT, fontWeight: 600, fontSize: 14, textDecoration: "none" }}>← Zurück zum Marktplatz</a>
     </main>
   );
 
@@ -167,12 +171,12 @@ export default function ProductDetailsPage() {
           <span style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 15, color: TEXT, letterSpacing: "-0.3px" }}>Flowio</span>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          {role === "admin" && <a href="/owner/dashboard" title="Owner-Panel" style={{ background:`${ORANGE}15`, color:ORANGE, fontWeight:700, fontSize:13, textDecoration:"none", padding:"7px 12px", borderRadius:9 }}>🏛️</a>}
-          {role === "supplier" && <a href="/supplier/dashboard" title="Lieferanten-Dashboard" style={{ background:`${ORANGE}15`, color:ORANGE, fontWeight:700, fontSize:13, textDecoration:"none", padding:"7px 12px", borderRadius:9 }}>📦</a>}
-          <a href="/cart" style={{ position: "relative", display: "flex", alignItems: "center", gap: 6, background: ORANGE, color: "#fff", fontWeight: 700, fontSize: 13, textDecoration: "none", padding: "7px 14px", borderRadius: 9 }}>
+          {role === "admin" && <a href="/owner/dashboard" title="Owner-Panel" style={{ background:`${ORANGE}15`, color:ACCENT, fontWeight:700, fontSize:13, textDecoration:"none", padding:"7px 12px", borderRadius:9 }}>🏛️</a>}
+          {role === "supplier" && <a href="/supplier/dashboard" title="Lieferanten-Dashboard" style={{ background:`${ORANGE}15`, color:ACCENT, fontWeight:700, fontSize:13, textDecoration:"none", padding:"7px 12px", borderRadius:9 }}>📦</a>}
+          <a href="/cart" style={{ position: "relative", display: "flex", alignItems: "center", gap: 6, background: BTN, color: "#fff", fontWeight: 700, fontSize: 13, textDecoration: "none", padding: "7px 14px", borderRadius: 9 }}>
             🛒 Warenkorb
             {cartCount > 0 && (
-              <span style={{ background: "#fff", color: ORANGE, fontSize: 10, fontWeight: 900, borderRadius: "50%", width: 18, height: 18, display: "flex", alignItems: "center", justifyContent: "center" }}>{cartCount}</span>
+              <span style={{ background: "#fff", color: "#003ec7", fontSize: 10, fontWeight: 900, borderRadius: "50%", width: 18, height: 18, display: "flex", alignItems: "center", justifyContent: "center" }}>{cartCount}</span>
             )}
           </a>
         </div>
@@ -182,7 +186,7 @@ export default function ProductDetailsPage() {
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 40 }}>
 
           {/* LEFT — image */}
-          <div style={{ borderRadius: 20, overflow: "hidden", background: SURFACE, border: `1px solid ${BORDER}`, aspectRatio: "1", position: "relative" }}>
+          <div style={{ borderRadius: 20, overflow: "hidden", background: CARD_BG, border: `1px solid ${BORDER}`, aspectRatio: "1", position: "relative" }}>
             <img
               src={product.image_url || "https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?w=800&q=80"}
               alt={product.name}
@@ -203,7 +207,7 @@ export default function ProductDetailsPage() {
             )}
 
             <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
-              <span style={{ fontFamily: "'DM Sans',sans-serif", fontSize: 36, fontWeight: 800, color: ORANGE }}>€{product.price}</span>
+              <span style={{ fontFamily: "'DM Sans',sans-serif", fontSize: 36, fontWeight: 800, color: ACCENT }}>€{product.price}</span>
               <span style={{ color: TEXT3, fontSize: 13 }}>/Stück</span>
             </div>
             {(product as any).shipping_cost > 0 && (
@@ -223,7 +227,7 @@ export default function ProductDetailsPage() {
               <p style={{ color: TEXT2, fontSize: 14, lineHeight: 1.8, marginBottom: 28 }}>{product.description}</p>
             )}
 
-            <button onClick={addToCart} style={{ width: "100%", background: ORANGE, color: "#fff", border: "none", borderRadius: 14, padding: "16px", fontWeight: 700, fontSize: 15, cursor: "pointer", fontFamily: "'DM Sans',sans-serif", marginBottom: 10 }}>
+            <button onClick={addToCart} style={{ width: "100%", background: BTN, color: "#fff", border: "none", borderRadius: 14, padding: "16px", fontWeight: 700, fontSize: 15, cursor: "pointer", fontFamily: "'DM Sans',sans-serif", marginBottom: 10 }}>
               🛒 In den Warenkorb
             </button>
             <a href="/marketplace" style={{ display: "block", textAlign: "center", color: TEXT2, fontSize: 13, textDecoration: "none", padding: "10px", fontWeight: 500 }}>
@@ -286,10 +290,10 @@ export default function ProductDetailsPage() {
 
               <textarea value={comment} onChange={e => setComment(e.target.value)} placeholder="Deine Bewertung..." rows={4} maxLength={1000}
                 style={{ width: "100%", background: BG, border: `1.5px solid ${BORDER}`, borderRadius: 10, padding: "10px 14px", color: TEXT, fontSize: 14, fontFamily: "inherit", resize: "none", boxSizing: "border-box", outline: "none", marginBottom: 12 }}
-                onFocus={e => e.currentTarget.style.borderColor = ORANGE}
+                onFocus={e => e.currentTarget.style.borderColor = ACCENT}
                 onBlur={e => e.currentTarget.style.borderColor = BORDER} />
 
-              <button onClick={submitReview} disabled={submitting || !comment.trim()} style={{ background: submitting || !comment.trim() ? TEXT3 : ORANGE, color: "#fff", border: "none", borderRadius: 10, padding: "11px 22px", fontWeight: 700, fontSize: 14, cursor: submitting || !comment.trim() ? "not-allowed" : "pointer", fontFamily: "'DM Sans',sans-serif" }}>
+              <button onClick={submitReview} disabled={submitting || !comment.trim()} style={{ background: submitting || !comment.trim() ? TEXT3 : BTN, color: "#fff", border: "none", borderRadius: 10, padding: "11px 22px", fontWeight: 700, fontSize: 14, cursor: submitting || !comment.trim() ? "not-allowed" : "pointer", fontFamily: "'DM Sans',sans-serif" }}>
                 {submitting ? "Wird gespeichert..." : "Bewertung abgeben ⭐"}
               </button>
             </div>

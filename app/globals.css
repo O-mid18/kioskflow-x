@@ -20,6 +20,11 @@
   /* Toasts */
   --kf-toast-bg: #131b2e;
   --kf-toast-fg: #ffffff;
+  /* Accent & button fill — light values match existing ORANGE=#003ec7 exactly */
+  --kf-accent:   #003ec7;  /* text accent, links, focus rings */
+  --kf-btn:      #003ec7;  /* filled CTA button background */
+  --kf-card-bg:  #ffffff;  /* section card bg (checkout/product panels) */
+  --kf-input-bg: #faf8ff;  /* form input bg */
 }
 
 .dark {
@@ -33,6 +38,11 @@
   --kf-text3:   #8a8ca0;  /* subtle / outline */
   --kf-toast-bg: #e2e2e5;
   --kf-toast-fg: #121416;
+  /* Accent & button fill — Stitch Deep Black Edition */
+  --kf-accent:   #b7c4ff;  /* primary — text on dark bg */
+  --kf-btn:      #0052ff;  /* primary-container — button fill */
+  --kf-card-bg:  #1e2022;  /* surface-container — section cards */
+  --kf-input-bg: #1a1c1e;  /* surface — form inputs */
 }
 
 /* analytics-bento overrides */
@@ -220,6 +230,16 @@
   .kf-hamburger {
     display: none;
   }
+}
+
+/* ── Supplier stat card elevation (Stitch Deep Black) ── */
+.dark .kf-stat-card {
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.5), 0 2px 4px -1px rgba(0,0,0,0.3);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+.dark .kf-stat-card:hover {
+  box-shadow: 0 10px 15px -3px rgba(0,0,0,0.6);
+  transform: translateY(-2px);
 }
 
 /* ── Scroll-reveal animations ── */
