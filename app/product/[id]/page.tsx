@@ -31,6 +31,8 @@ function Stars({ rating, size = 12 }: { rating: number; size?: number }) {
 export default function ProductDetailsPage() {
   const params = useParams();
   const [product, setProduct] = useState<any>(null);
+  const [galleryPhotos, setGalleryPhotos] = useState<any[]>([]);
+  const [activeImage, setActiveImage] = useState<string | null>(null);
   const [reviews, setReviews] = useState<any[]>([]);
   const [priceComparison, setPriceComparison] = useState<any[]>([]);
   const [comment, setComment] = useState("");
@@ -70,6 +72,7 @@ export default function ProductDetailsPage() {
     const fetchProduct = async () => {
       const { data } = await supabase.from("products").select("*").eq("id", String(params.id)).maybeSingle();
       setProduct(data);
+      supabase.from("product_photos").select("*").eq("product_id", String(params.id)).order("created_at", { ascending: true }).then(({ data: gp }) => setGalleryPhotos(gp ?? []));
       if (data?.supplier_id) {
         supabase.from("suppliers").select("user_id").eq("id", data.supplier_id).maybeSingle().then(({ data: s }) => setSupplierUserId(s?.user_id ?? null));
       }
@@ -212,12 +215,22 @@ export default function ProductDetailsPage() {
         <div style={{ display: "grid", gridTemplateColumns: isDark ? "5fr 7fr" : "1fr 1fr", gap: isDark ? 20 : 40 }}>
 
           {/* LEFT — image */}
-          <div style={{ borderRadius: isDark ? 8 : 20, overflow: "hidden", background: isDark ? "#0c0e10" : CARD_BG, border: isDark ? "1px solid #434656" : `1px solid ${BORDER}`, aspectRatio: isDark ? undefined : "1", height: isDark ? 500 : undefined, position: "relative", display: "flex", alignItems: "center", justifyContent: "center", padding: isDark ? 24 : 0 }}>
-            <img
-              src={product.image_url || "https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?w=800&q=80"}
-              alt={product.name}
-              style={{ width: "100%", height: "100%", objectFit: isDark ? "contain" : "cover" }}
-            />
+          <div>
+            <div style={{ borderRadius: isDark ? 8 : 20, overflow: "hidden", background: isDark ? "#0c0e10" : CARD_BG, border: isDark ? "1px solid #434656" : `1px solid ${BORDER}`, aspectRatio: isDark ? undefined : "1", height: isDark ? 500 : undefined, position: "relative", display: "flex", alignItems: "center", justifyContent: "center", padding: isDark ? 24 : 0 }}>
+              <img
+                src={activeImage || product.image_url || "https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?w=800&q=80"}
+                alt={product.name}
+                style={{ width: "100%", height: "100%", objectFit: isDark ? "contain" : "cover" }}
+              />
+            </div>
+            {galleryPhotos.length > 0 && (
+              <div style={{ display: "flex", gap: 8, marginTop: 10, flexWrap: "wrap" }}>
+                {[{ id: "main", image_url: product.image_url }, ...galleryPhotos].filter(p => p.image_url).map((p: any) => (
+                  <img key={p.id} src={p.image_url} alt="" onClick={() => setActiveImage(p.image_url)}
+                    style={{ width: 56, height: 56, objectFit: "cover", borderRadius: 8, cursor: "pointer", border: (activeImage || product.image_url) === p.image_url ? `2px solid ${ACCENT}` : "1px solid var(--kf-border)" }} />
+                ))}
+              </div>
+            )}
           </div>
 
           {/* RIGHT — details */}

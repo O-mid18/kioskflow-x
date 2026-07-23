@@ -205,6 +205,7 @@ export default function KioskPageManage() {
 
   const addItemPhoto = async (inventoryId: string, file: File) => {
     if (!userId) return;
+    if ((itemPhotos[inventoryId] ?? []).length >= 5) { setMsg({ text: "Maximal 5 Fotos pro Produkt.", ok: false }); return; }
     setUploadingPhotoFor(inventoryId);
     const ext = file.name.split(".").pop();
     const path = `kiosk-item-photos/${userId}/${inventoryId}/${Date.now()}.${ext}`;
@@ -617,7 +618,7 @@ export default function KioskPageManage() {
                     )}
 
                     <div style={{ marginTop: 10, paddingTop: 10, borderTop: `1px solid ${BORDER}` }}>
-                      <p style={{ fontSize: 11, color: TEXT3, marginBottom: 6 }}>📷 Produktfotos ({(itemPhotos[item.id] ?? []).length})</p>
+                      <p style={{ fontSize: 11, color: TEXT3, marginBottom: 6 }}>📷 Produktfotos ({(itemPhotos[item.id] ?? []).length}/5)</p>
                       <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
                         {(itemPhotos[item.id] ?? []).map((p: any) => (
                           <div key={p.id} style={{ position: "relative", width: 56, height: 56 }}>
@@ -625,11 +626,13 @@ export default function KioskPageManage() {
                             <button onClick={() => deleteItemPhoto(item.id, p.id)} style={{ position: "absolute", top: -5, right: -5, background: "#dc2626", color: "#fff", border: "none", borderRadius: "50%", width: 16, height: 16, fontSize: 9, cursor: "pointer", lineHeight: 1 }}>×</button>
                           </div>
                         ))}
-                        <label style={{ width: 56, height: 56, borderRadius: 8, border: `1.5px dashed ${BORDER}`, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", fontSize: 18, color: TEXT3 }}>
-                          {uploadingPhotoFor === item.id ? "…" : "+"}
-                          <input type="file" accept="image/*" style={{ display: "none" }}
-                            onChange={e => { const f = e.target.files?.[0]; if (f) addItemPhoto(item.id, f); e.target.value = ""; }} />
-                        </label>
+                        {(itemPhotos[item.id] ?? []).length < 5 && (
+                          <label style={{ width: 56, height: 56, borderRadius: 8, border: `1.5px dashed ${BORDER}`, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", fontSize: 18, color: TEXT3 }}>
+                            {uploadingPhotoFor === item.id ? "…" : "+"}
+                            <input type="file" accept="image/*" style={{ display: "none" }}
+                              onChange={e => { const f = e.target.files?.[0]; if (f) addItemPhoto(item.id, f); e.target.value = ""; }} />
+                          </label>
+                        )}
                       </div>
                     </div>
                   </div>

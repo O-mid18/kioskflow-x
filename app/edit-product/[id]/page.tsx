@@ -44,6 +44,8 @@ export default function EditProductPage() {
   const [saleEndsAt, setSaleEndsAt] = useState("");
   const [existingImageUrl, setExistingImageUrl] = useState("");
   const [imageFile, setImageFile]     = useState<File | null>(null);
+  const [galleryPhotos, setGalleryPhotos] = useState<any[]>([]);
+  const [uploadingGalleryPhoto, setUploadingGalleryPhoto] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [category, setCategory]       = useState("");
   const [description, setDescription] = useState("");
@@ -90,6 +92,7 @@ export default function EditProductPage() {
         setExistingImageUrl(data.image_url || "");
         setCategory(data.category || "");
         setDescription(data.description || "");
+        supabase.from("product_photos").select("*").eq("product_id", String(params.id)).order("created_at", { ascending: true }).then(({ data: gp }) => setGalleryPhotos(gp ?? []));
       }
       setLoading(false);
     });
@@ -112,6 +115,27 @@ export default function EditProductPage() {
     if (error) { setErrorMsg("Bild-Upload fehlgeschlagen. Bitte erneut versuchen."); return null; }
     const { data } = supabase.storage.from("product-images").getPublicUrl(path);
     return data.publicUrl;
+  };
+
+  const addGalleryPhoto = async (file: File) => {
+    if (galleryPhotos.length >= 5) { setErrorMsg("Maximal 5 Fotos pro Produkt."); return; }
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    setUploadingGalleryPhoto(true);
+    const ext = file.name.split(".").pop();
+    const path = `${user.id}/gallery-${String(params.id)}-${Date.now()}.${ext}`;
+    const { error: upErr } = await supabase.storage.from("product-images").upload(path, file, { contentType: file.type });
+    if (upErr) { setUploadingGalleryPhoto(false); setErrorMsg("Foto-Upload fehlgeschlagen."); return; }
+    const { data: pub } = supabase.storage.from("product-images").getPublicUrl(path);
+    const { data, error } = await supabase.from("product_photos").insert({ product_id: String(params.id), image_url: pub.publicUrl }).select().single();
+    setUploadingGalleryPhoto(false);
+    if (error) { setErrorMsg("Foto konnte nicht gespeichert werden."); return; }
+    setGalleryPhotos(prev => [...prev, data]);
+  };
+
+  const deleteGalleryPhoto = async (photoId: string) => {
+    await supabase.from("product_photos").delete().eq("id", photoId);
+    setGalleryPhotos(prev => prev.filter(p => p.id !== photoId));
   };
 
   const updateProduct = async () => {
@@ -264,6 +288,27 @@ export default function EditProductPage() {
 
             <input ref={fileInputRef} type="file" accept="image/*" style={{ display:"none" }}
               onChange={e => handleFile(e.target.files?.[0] ?? null)} />
+          </div>
+
+          {/* Weitere Fotos (Galerie) */}
+          <div style={{ background:SURFACE, border:`1px solid ${BORDER}`, borderRadius: isDark ? 8 : 16, padding:"24px" }}>
+            <h2 style={{ fontFamily:"'Syne',sans-serif", fontWeight:700, fontSize:14, color:TEXT, marginBottom:6 }}>Weitere Fotos ({galleryPhotos.length}/5)</h2>
+            <p style={{ fontSize:12, color:TEXT3, marginBottom:16 }}>Zusätzlich zum Hauptbild — für Detailansichten, Verpackung, o.ä.</p>
+            <div style={{ display:"flex", gap:10, flexWrap:"wrap" }}>
+              {galleryPhotos.map(p => (
+                <div key={p.id} style={{ position:"relative", width:80, height:80 }}>
+                  <img src={p.image_url} alt="" style={{ width:"100%", height:"100%", objectFit:"cover", borderRadius:10 }} />
+                  <button onClick={() => deleteGalleryPhoto(p.id)} style={{ position:"absolute", top:-6, right:-6, background:"#dc2626", color:"#fff", border:"none", borderRadius:"50%", width:20, height:20, fontSize:11, cursor:"pointer" }}>×</button>
+                </div>
+              ))}
+              {galleryPhotos.length < 5 && (
+                <label style={{ width:80, height:80, borderRadius:10, border:`1.5px dashed ${BORDER}`, display:"flex", alignItems:"center", justifyContent:"center", cursor:"pointer", fontSize:22, color:TEXT3 }}>
+                  {uploadingGalleryPhoto ? "…" : "+"}
+                  <input type="file" accept="image/*" style={{ display:"none" }}
+                    onChange={e => { const f = e.target.files?.[0]; if (f) addGalleryPhoto(f); e.target.value = ""; }} />
+                </label>
+              )}
+            </div>
           </div>
 
           {/* Preis & Lager */}
