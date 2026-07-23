@@ -1,6 +1,6 @@
-﻿"use client";
+"use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import { translateAuthError } from "@/lib/utils";
 
@@ -11,12 +11,26 @@ const TEXT = "var(--kf-text)";
 const TEXT2 = "var(--kf-text2)";
 const TEXT3 = "var(--kf-text3)";
 const ORANGE = "#003ec7";
+const ACCENT = "var(--kf-accent)";
+const BTN    = "var(--kf-btn)";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+  const [isDark, setIsDark] = useState(false);
+
+  useEffect(() => {
+    const check = () => setIsDark(document.documentElement.classList.contains("dark"));
+    check();
+    const obs = new MutationObserver(check);
+    obs.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+    return () => obs.disconnect();
+  }, []);
+
+  const accentColor = isDark ? ACCENT : ORANGE;
+  const btnColor    = isDark ? BTN    : ORANGE;
 
   const handleSubmit = async () => {
     setErrorMsg("");
@@ -35,7 +49,7 @@ export default function ForgotPasswordPage() {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap');
         input::placeholder { color: ${TEXT3}; }
-        input:focus { outline:none; border-color:${ORANGE} !important; box-shadow:0 0 0 3px rgba(0,62,199,0.1); }
+        input:focus { outline:none; border-color:${accentColor} !important; box-shadow:0 0 0 3px rgba(0,62,199,0.1); }
       `}</style>
 
       <div style={{ width: "100%", maxWidth: 400 }}>
@@ -51,7 +65,7 @@ export default function ForgotPasswordPage() {
             <p style={{ color: TEXT2, fontSize: 14, lineHeight: 1.6, marginBottom: 20 }}>
               Falls ein Konto mit dieser E-Mail-Adresse existiert, haben wir einen Link zum Zurücksetzen des Passworts gesendet.
             </p>
-            <a href="/login" style={{ color: ORANGE, fontWeight: 700, fontSize: 14, textDecoration: "none" }}>← Zurück zum Login</a>
+            <a href="/login" style={{ color: accentColor, fontWeight: 700, fontSize: 14, textDecoration: "none" }}>← Zurück zum Login</a>
           </div>
         ) : (
           <>
@@ -60,8 +74,8 @@ export default function ForgotPasswordPage() {
             <p style={{ color: TEXT2, fontSize: 14, marginBottom: 28 }}>Gib deine E-Mail-Adresse ein und wir senden dir einen Reset-Link.</p>
 
             {errorMsg && (
-              <div style={{ background: "#fef2f2", border: "1.5px solid #fca5a5", borderRadius: 10, padding: "12px 16px", marginBottom: 20 }}>
-                <p style={{ color: "#dc2626", fontSize: 13 }}>{errorMsg}</p>
+              <div style={{ background: isDark ? "rgba(239,68,68,0.15)" : "#fef2f2", border: `1.5px solid ${isDark ? "rgba(239,68,68,0.3)" : "#fca5a5"}`, borderRadius: 10, padding: "12px 16px", marginBottom: 20 }}>
+                <p style={{ color: isDark ? "#f87171" : "#dc2626", fontSize: 13 }}>{errorMsg}</p>
               </div>
             )}
 
@@ -74,20 +88,20 @@ export default function ForgotPasswordPage() {
                   value={email}
                   onChange={e => setEmail(e.target.value)}
                   onKeyDown={e => e.key === "Enter" && handleSubmit()}
-                  style={{ width: "100%", background: SURFACE, border: `1.5px solid ${BORDER}`, borderRadius: 11, padding: "12px 15px", color: TEXT, fontSize: 14, boxSizing: "border-box" }}
+                  style={{ width: "100%", background: SURFACE, border: `1.5px solid ${BORDER}`, borderRadius: isDark ? 4 : 11, padding: "12px 15px", color: TEXT, fontSize: 14, boxSizing: "border-box" }}
                 />
               </div>
               <button
                 onClick={handleSubmit}
                 disabled={loading}
-                style={{ width: "100%", background: loading ? "rgba(0,62,199,0.55)" : ORANGE, color: "#fff", border: "none", borderRadius: 11, padding: "14px", fontWeight: 700, fontSize: 15, cursor: loading ? "not-allowed" : "pointer", boxShadow: "0 4px 14px rgba(0,62,199,0.25)" }}
+                style={{ width: "100%", background: loading ? "rgba(0,62,199,0.55)" : btnColor, color: "#fff", border: "none", borderRadius: isDark ? 4 : 11, padding: "14px", fontWeight: 700, fontSize: 15, cursor: loading ? "not-allowed" : "pointer", boxShadow: "0 4px 14px rgba(0,62,199,0.25)" }}
               >
                 {loading ? "Sende..." : "Reset-Link senden →"}
               </button>
             </div>
 
             <p style={{ textAlign: "center", marginTop: 24, fontSize: 13, color: TEXT2 }}>
-              <a href="/login" style={{ color: ORANGE, fontWeight: 700, textDecoration: "none" }}>← Zurück zum Login</a>
+              <a href="/login" style={{ color: accentColor, fontWeight: 700, textDecoration: "none" }}>← Zurück zum Login</a>
             </p>
           </>
         )}

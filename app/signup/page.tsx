@@ -1,4 +1,6 @@
-﻿"use client";
+"use client";
+
+import { useState, useEffect } from "react";
 
 const BG = "var(--kf-bg)";
 const SURFACE = "var(--kf-surface)";
@@ -7,8 +9,21 @@ const TEXT = "var(--kf-text)";
 const TEXT2 = "var(--kf-text2)";
 const TEXT3 = "var(--kf-text3)";
 const ORANGE = "#003ec7";
+const ACCENT = "var(--kf-accent)";
+const BTN    = "var(--kf-btn)";
 
 export default function SignupPage() {
+  const [isDark, setIsDark] = useState(false);
+
+  useEffect(() => {
+    const check = () => setIsDark(document.documentElement.classList.contains("dark"));
+    check();
+    const obs = new MutationObserver(check);
+    obs.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+    return () => obs.disconnect();
+  }, []);
+
+  const accentColor = isDark ? ACCENT : ORANGE;
 
   return (
     <main style={{ minHeight: "100vh", background: BG, display: "flex", fontFamily: "'Inter','Helvetica Neue',system-ui,sans-serif" }}>
@@ -56,8 +71,8 @@ export default function SignupPage() {
               { label: "Als Käufer", sub: "Produkte bestellen", href: "/signup/buyer", icon: "🛒" },
               { label: "Als Verkäufer", sub: "Produkte verkaufen", href: "/signup/supplier", icon: "📦" },
             ].map(opt => (
-              <a key={opt.href} href={opt.href} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8, padding: "18px 12px", background: SURFACE, border: `1.5px solid ${BORDER}`, borderRadius: 12, textDecoration: "none", transition: "border-color 0.2s" }}
-                onMouseEnter={e => (e.currentTarget.style.borderColor = ORANGE)}
+              <a key={opt.href} href={opt.href} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8, padding: "18px 12px", background: SURFACE, border: `1.5px solid ${BORDER}`, borderRadius: isDark ? 8 : 12, textDecoration: "none", transition: "border-color 0.2s" }}
+                onMouseEnter={e => (e.currentTarget.style.borderColor = accentColor)}
                 onMouseLeave={e => (e.currentTarget.style.borderColor = BORDER)}>
                 <span style={{ fontSize: 28 }}>{opt.icon}</span>
                 <p style={{ fontFamily: "'Inter',sans-serif", fontWeight: 700, fontSize: 14, color: TEXT, textAlign: "center" }}>{opt.label}</p>
@@ -68,7 +83,7 @@ export default function SignupPage() {
 
           <p style={{ color: TEXT2, fontSize: 13, textAlign: "center", marginTop: 24 }}>
             Bereits registriert?{" "}
-            <a href="/login" style={{ color: ORANGE, fontWeight: 700, textDecoration: "none" }}>Einloggen</a>
+            <a href="/login" style={{ color: accentColor, fontWeight: 700, textDecoration: "none" }}>Einloggen</a>
           </p>
         </div>
       </div>
