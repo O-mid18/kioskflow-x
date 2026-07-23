@@ -32,12 +32,18 @@ export default function SupplierDashboardLayout({ children }: { children: React.
   const [supplierName, setSupplierName] = useState<string | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [verified, setVerified] = useState<boolean | null>(null);
+  const [hasSupplierRow, setHasSupplierRow] = useState<boolean | null>(null);
 
   useEffect(() => {
     supabase.auth.getUser().then(async ({ data: { user } }) => {
       if (!user) { window.location.href = "/login"; return; }
       const { data: supplierRow } = await supabase
         .from("suppliers").select("name, verified").eq("user_id", user.id).maybeSingle();
+      if (!supplierRow) {
+        window.location.href = "/marketplace";
+        return;
+      }
+      setHasSupplierRow(true);
       setSupplierName(supplierRow?.name ?? user.email ?? "Lieferant");
       setVerified(supplierRow?.verified ?? false);
     });
@@ -47,7 +53,7 @@ export default function SupplierDashboardLayout({ children }: { children: React.
     ? supplierName.split(" ").map(w => w[0]).slice(0,2).join("").toUpperCase()
     : "S";
 
-  const isPendingBlocked = verified === false && !ALLOWED_WHILE_PENDING.some(p => pathname.startsWith(p));
+  const isPendingBlocked = hasSupplierRow === true && verified === false && !ALLOWED_WHILE_PENDING.some(p => pathname.startsWith(p));
 
   if (isPendingBlocked) {
     return (
