@@ -52,6 +52,14 @@ export async function POST(request: Request) {
       );
     }
 
+    const cartSupplierIds = [...new Set((cartItems as any[]).map((i: any) => i.products?.supplier_id).filter(Boolean))];
+    if (cartSupplierIds.length > 0) {
+      const { data: ownSuppliers } = await supabase.from("suppliers").select("id").in("id", cartSupplierIds).eq("user_id", user.id);
+      if (ownSuppliers && ownSuppliers.length > 0) {
+        return NextResponse.json({ error: "Du kannst deine eigenen Produkte nicht kaufen. Bitte entferne sie aus dem Warenkorb." }, { status: 403 });
+      }
+    }
+
     const productTotalCents = (cartItems as any[]).reduce((sum: number, item: any) => {
       return sum + Math.round(item.products.price * 100) * item.quantity;
     }, 0);

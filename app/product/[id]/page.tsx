@@ -136,6 +136,7 @@ export default function ProductDetailsPage() {
   const addToCart = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { window.location.href = "/login"; return; }
+    if (supplierUserId && user.id === supplierUserId) { showToast("Du kannst deine eigenen Produkte nicht kaufen."); return; }
     const { data: existing } = await supabase.from("cart_items").select("id, quantity").eq("user_id", user.id).eq("product_id", product.id).maybeSingle();
     const { error } = existing
       ? await supabase.from("cart_items").update({ quantity: existing.quantity + 1 }).eq("id", existing.id)

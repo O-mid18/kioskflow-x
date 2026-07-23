@@ -340,6 +340,13 @@ export default function MarketplacePage({ initialProducts = [], initialSuppliers
       setTimeout(() => { window.location.href = "/login"; }, 1200);
       return;
     }
+    if (product.supplier_id) {
+      const { data: ownSupplier } = await supabase.from("suppliers").select("id").eq("id", product.supplier_id).eq("user_id", user.id).maybeSingle();
+      if (ownSupplier) {
+        showToast("Du kannst deine eigenen Produkte nicht kaufen.");
+        return;
+      }
+    }
     const { data: existing } = await supabase.from("cart_items").select("id, quantity").eq("user_id", user.id).eq("product_id", product.id).maybeSingle();
     const { error } = existing
       ? await supabase.from("cart_items").update({ quantity: existing.quantity + 1 }).eq("id", existing.id)
