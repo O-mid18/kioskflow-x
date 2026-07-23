@@ -58,6 +58,8 @@ export default function KioskPageManage() {
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
 
   const [items, setItems] = useState<any[]>([]);
+  const [itemPhotos, setItemPhotos] = useState<Record<string, any[]>>({});
+  const [uploadingPhotoFor, setUploadingPhotoFor] = useState<string | null>(null);
   const [myProducts, setMyProducts] = useState<any[]>([]);
   const [historyCache, setHistoryCache] = useState<Record<string, any[]>>({});
   const [qtyDrafts, setQtyDrafts] = useState<Record<string, string>>({});
@@ -101,6 +103,16 @@ export default function KioskPageManage() {
 
       const { data: inv } = await supabase.from("kiosk_inventory").select("*").eq("kiosk_id", user.id).order("created_at", { ascending: false });
       setItems(inv ?? []);
+
+      if (inv && inv.length > 0) {
+        const { data: itemPhotoRows } = await supabase.from("kiosk_inventory_photos").select("*").in("inventory_id", inv.map((i: any) => i.id)).order("created_at", { ascending: true });
+        const photoMap: Record<string, any[]> = {};
+        for (const p of itemPhotoRows ?? []) {
+          if (!photoMap[p.inventory_id]) photoMap[p.inventory_id] = [];
+          photoMap[p.inventory_id].push(p);
+        }
+        setItemPhotos(photoMap);
+      }
 
       const { data: histRows } = await supabase.from("kiosk_inventory_history").select("*").eq("kiosk_id", user.id).order("recorded_at", { ascending: true });
       const cache: Record<string, any[]> = {};
@@ -189,6 +201,25 @@ export default function KioskPageManage() {
   const deletePhoto = async (id: string) => {
     await supabase.from("kiosk_photos").delete().eq("id", id);
     setPhotos(prev => prev.filter(p => p.id !== id));
+  };
+
+  const addItemPhoto = async (inventoryId: string, file: File) => {
+    if (!userId) return;
+    setUploadingPhotoFor(inventoryId);
+    const ext = file.name.split(".").pop();
+    const path = `kiosk-item-photos/${userId}/${inventoryId}/${Date.now()}.${ext}`;
+    const { error: upErr } = await supabase.storage.from("product-images").upload(path, file, { contentType: file.type });
+    if (upErr) { setUploadingPhotoFor(null); setMsg({ text: "Foto-Upload fehlgeschlagen.", ok: false }); return; }
+    const { data: pub } = supabase.storage.from("product-images").getPublicUrl(path);
+    const { data, error } = await supabase.from("kiosk_inventory_photos").insert({ inventory_id: inventoryId, image_url: pub.publicUrl }).select().single();
+    setUploadingPhotoFor(null);
+    if (error) { setMsg({ text: "Foto konnte nicht gespeichert werden.", ok: false }); return; }
+    setItemPhotos(prev => ({ ...prev, [inventoryId]: [...(prev[inventoryId] ?? []), data] }));
+  };
+
+  const deleteItemPhoto = async (inventoryId: string, photoId: string) => {
+    await supabase.from("kiosk_inventory_photos").delete().eq("id", photoId);
+    setItemPhotos(prev => ({ ...prev, [inventoryId]: (prev[inventoryId] ?? []).filter(p => p.id !== photoId) }));
   };
 
   const toggleService = (key: string) => {
@@ -584,6 +615,23 @@ export default function KioskPageManage() {
                         )}
                       </div>
                     )}
+
+                    <div style={{ marginTop: 10, paddingTop: 10, borderTop: `1px solid ${BORDER}` }}>
+                      <p style={{ fontSize: 11, color: TEXT3, marginBottom: 6 }}>📷 Produktfotos ({(itemPhotos[item.id] ?? []).length})</p>
+                      <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
+                        {(itemPhotos[item.id] ?? []).map((p: any) => (
+                          <div key={p.id} style={{ position: "relative", width: 56, height: 56 }}>
+                            <img src={p.image_url} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: 8 }} />
+                            <button onClick={() => deleteItemPhoto(item.id, p.id)} style={{ position: "absolute", top: -5, right: -5, background: "#dc2626", color: "#fff", border: "none", borderRadius: "50%", width: 16, height: 16, fontSize: 9, cursor: "pointer", lineHeight: 1 }}>×</button>
+                          </div>
+                        ))}
+                        <label style={{ width: 56, height: 56, borderRadius: 8, border: `1.5px dashed ${BORDER}`, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", fontSize: 18, color: TEXT3 }}>
+                          {uploadingPhotoFor === item.id ? "…" : "+"}
+                          <input type="file" accept="image/*" style={{ display: "none" }}
+                            onChange={e => { const f = e.target.files?.[0]; if (f) addItemPhoto(item.id, f); e.target.value = ""; }} />
+                        </label>
+                      </div>
+                    </div>
                   </div>
                 );
               })}

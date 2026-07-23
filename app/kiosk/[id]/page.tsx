@@ -53,6 +53,8 @@ export default function KioskPublicPage() {
   const params = useParams();
   const [kiosk, setKiosk] = useState<any>(null);
   const [items, setItems] = useState<any[]>([]);
+  const [itemPhotos, setItemPhotos] = useState<Record<string, any[]>>({});
+  const [galleryItem, setGalleryItem] = useState<string | null>(null);
   const [photos, setPhotos] = useState<any[]>([]);
   const [reviews, setReviews] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -93,6 +95,17 @@ export default function KioskPublicPage() {
       setItems(inv ?? []);
       setPhotos(photoRows ?? []);
       setReviews(reviewRows ?? []);
+
+      if (inv && inv.length > 0) {
+        const { data: itemPhotoRows } = await supabase.from("kiosk_inventory_photos").select("*").in("inventory_id", inv.map((i: any) => i.id)).order("created_at", { ascending: true });
+        const photoMap: Record<string, any[]> = {};
+        for (const p of itemPhotoRows ?? []) {
+          if (!photoMap[p.inventory_id]) photoMap[p.inventory_id] = [];
+          photoMap[p.inventory_id].push(p);
+        }
+        setItemPhotos(photoMap);
+      }
+
       setLoading(false);
     })();
   }, [params.id]);
@@ -220,10 +233,17 @@ export default function KioskPublicPage() {
                 {catItems.map((item: any) => {
                   const s = STATUS_LABELS[item.stock_status] ?? STATUS_LABELS.in_stock;
                   const dk = STATUS_DARK[item.stock_status] ?? STATUS_DARK.in_stock;
+                  const myPhotos = itemPhotos[item.id] ?? [];
                   return (
-                    <div key={item.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: isDark ? 6 : 12, padding: "14px 18px" }}>
-                      <p style={{ fontSize: 14, fontWeight: 600, color: TEXT }}>{item.name}</p>
-                      <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                    <div key={item.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: isDark ? 6 : 12, padding: "14px 18px", gap: 12 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0 }}>
+                        {myPhotos.length > 0 && (
+                          <img src={myPhotos[0].image_url} alt="" onClick={() => setGalleryItem(item.id)}
+                            style={{ width: 44, height: 44, objectFit: "cover", borderRadius: 8, flexShrink: 0, cursor: "pointer" }} />
+                        )}
+                        <p style={{ fontSize: 14, fontWeight: 600, color: TEXT, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.name}</p>
+                      </div>
+                      <div style={{ display: "flex", alignItems: "center", gap: 12, flexShrink: 0 }}>
                         {item.price && <span style={{ fontSize: 14, fontWeight: 700, color: TEXT }}>€{item.price}</span>}
                         <span style={{ background: isDark ? dk.bg : s.bg, color: isDark ? dk.color : s.color, fontSize: 11, fontWeight: 700, padding: "3px 10px", borderRadius: 100 }}>{s.label}</span>
                       </div>
@@ -233,6 +253,22 @@ export default function KioskPublicPage() {
               </div>
             </div>
           ))
+        )}
+
+        {galleryItem && (itemPhotos[galleryItem] ?? []).length > 0 && (
+          <>
+            <div onClick={() => setGalleryItem(null)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.75)", zIndex: 300 }} />
+            <div style={{ position: "fixed", top: "50%", left: "50%", transform: "translate(-50%,-50%)", background: SURFACE, borderRadius: 16, padding: 20, zIndex: 301, maxWidth: "90vw", maxHeight: "85vh", overflowY: "auto" }}>
+              <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 10 }}>
+                <button onClick={() => setGalleryItem(null)} style={{ background: BG, border: `1px solid ${BORDER}`, borderRadius: 8, width: 30, height: 30, color: TEXT2, cursor: "pointer" }}>×</button>
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(160px,1fr))", gap: 10 }}>
+                {(itemPhotos[galleryItem] ?? []).map((p: any) => (
+                  <img key={p.id} src={p.image_url} alt="" style={{ width: "100%", height: 160, objectFit: "cover", borderRadius: 10 }} />
+                ))}
+              </div>
+            </div>
+          </>
         )}
 
         <div style={{ marginTop: 32, paddingTop: 24, borderTop: `1px solid ${BORDER}` }}>
