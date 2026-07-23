@@ -10,6 +10,8 @@ const TEXT = "var(--kf-text)";
 const TEXT2 = "var(--kf-text2)";
 const TEXT3 = "var(--kf-text3)";
 const ORANGE = "#003ec7";
+const ACCENT = "var(--kf-accent)";
+const BTN    = "var(--kf-btn)";
 
 type Tab = "stats" | "users" | "suppliers" | "orders" | "products" | "settings";
 
@@ -52,17 +54,18 @@ function matchesSearch(row: any, query: string): boolean {
   return Object.values(row).some(v => typeof v === "string" && v.toLowerCase().includes(q))
     || (row.profiles?.full_name ?? "").toLowerCase().includes(q);
 }
-function StatCard({ label, value, sub }: { label: string; value: string | number; sub?: string }) {
+function StatCard({ label, value, sub, isDark }: { label: string; value: string | number; sub?: string; isDark?: boolean }) {
+  const valColor = isDark ? "var(--kf-accent)" : "#003ec7";
   return (
-    <div style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 16, padding: "20px 22px" }}>
+    <div style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: isDark ? 8 : 16, padding: "20px 22px" }}>
       <p style={{ fontSize: 12, fontWeight: 600, color: TEXT3, marginBottom: 8 }}>{label}</p>
-      <p style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: 28, color: ORANGE }}>{value}</p>
+      <p style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: 28, color: valColor }}>{value}</p>
       {sub && <p style={{ fontSize: 11, color: TEXT3, marginTop: 4 }}>{sub}</p>}
     </div>
   );
 }
 
-function RevenueChart({ data }: { data: Record<string, number> }) {
+function RevenueChart({ data, barColor, textColor }: { data: Record<string, number>; barColor: string; textColor: string }) {
   const entries = Object.entries(data).sort(([a], [b]) => a.localeCompare(b)).slice(-8);
   if (!entries.length) return <p style={{ color: TEXT3, fontSize: 13, textAlign: "center", padding: "40px 0" }}>Noch keine Einnahmen</p>;
   const max = Math.max(...entries.map(([, v]) => v), 1);
@@ -83,9 +86,9 @@ function RevenueChart({ data }: { data: Record<string, number> }) {
         const bH = (val / max) * cH;
         const y = PT + cH - bH;
         return <g key={month}>
-          <rect x={x} y={y} width={bW} height={bH} fill={ORANGE} rx={4} opacity={0.85} />
+          <rect x={x} y={y} width={bW} height={bH} fill={barColor} rx={4} opacity={0.85} />
           <text x={x + bW / 2} y={H - PB + 14} textAnchor="middle" fontSize={9} fill={TEXT3}>{month.slice(5)}/{month.slice(2, 4)}</text>
-          {val > 0 && <text x={x + bW / 2} y={y - 4} textAnchor="middle" fontSize={9} fill={ORANGE} fontWeight={700}>€{val.toFixed(0)}</text>}
+          {val > 0 && <text x={x + bW / 2} y={y - 4} textAnchor="middle" fontSize={9} fill={textColor} fontWeight={700}>€{val.toFixed(0)}</text>}
         </g>;
       })}
     </svg>
@@ -113,6 +116,7 @@ function fmt(d: string) {
 export default function OwnerDashboard() {
   const [tab, setTab] = useState<Tab>("stats");
   const [loading, setLoading] = useState(true);
+  const [isDark, setIsDark] = useState(false);
   const [stats, setStats] = useState<any>(null);
   const [revenue, setRevenue] = useState<Record<string, number>>({});
   const [users, setUsers] = useState<any[]>([]);
@@ -139,6 +143,17 @@ export default function OwnerDashboard() {
   // Broadcast
   const [bTitle, setBTitle] = useState(""); const [bMsg, setBMsg] = useState("");
   const [bLoading, setBLoading] = useState(false); const [bResult, setBResult] = useState<{ text: string; ok: boolean } | null>(null);
+
+  useEffect(() => {
+    const check = () => setIsDark(document.documentElement.classList.contains("dark"));
+    check();
+    const obs = new MutationObserver(check);
+    obs.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+    return () => obs.disconnect();
+  }, []);
+
+  const accentColor = isDark ? ACCENT : ORANGE;
+  const btnColor    = isDark ? BTN    : ORANGE;
 
   const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(null), 2500); };
 
@@ -294,7 +309,7 @@ export default function OwnerDashboard() {
     <main style={{ minHeight: "100vh", background: BG, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Inter',system-ui,sans-serif" }}>
       <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
       <div style={{ textAlign: "center" }}>
-        <div style={{ width: 36, height: 36, border: `3px solid ${BORDER}`, borderTopColor: ORANGE, borderRadius: "50%", animation: "spin 0.8s linear infinite", margin: "0 auto 14px" }} />
+        <div style={{ width: 36, height: 36, border: `3px solid ${BORDER}`, borderTopColor: accentColor, borderRadius: "50%", animation: "spin 0.8s linear infinite", margin: "0 auto 14px" }} />
         <p style={{ color: TEXT3, fontSize: 13 }}>Owner-Panel wird geladen...</p>
       </div>
     </main>
@@ -306,7 +321,7 @@ export default function OwnerDashboard() {
         @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap');
         @keyframes spin{to{transform:rotate(360deg)}}
         ::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-track{background:${BG}}::-webkit-scrollbar-thumb{background:${BORDER};border-radius:99px}
-        input:focus,textarea:focus,select:focus{outline:none;border-color:${ORANGE}!important;box-shadow:0 0 0 3px rgba(0,62,199,0.12)!important}
+        input:focus,textarea:focus,select:focus{outline:none;border-color:${accentColor}!important;box-shadow:0 0 0 3px rgba(0,62,199,0.12)!important}
         tr:hover td{background:${BG}}
       `}</style>
 
@@ -336,7 +351,7 @@ export default function OwnerDashboard() {
             <div style={{ display: "flex", gap: 10 }}>
               <button onClick={() => setEditProd(null)} style={{ flex: 1, background: "none", border: `1.5px solid ${BORDER}`, borderRadius: 9, padding: "10px", fontSize: 13, color: TEXT2, cursor: "pointer", fontFamily: "inherit", fontWeight: 600 }}>Abbrechen</button>
               <button onClick={saveProduct} disabled={editLoading}
-                style={{ flex: 1, background: ORANGE, color: "#fff", border: "none", borderRadius: 9, padding: "10px", fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
+                style={{ flex: 1, background: btnColor, color: "#fff", border: "none", borderRadius: 9, padding: "10px", fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
                 {editLoading && <div style={{ width: 12, height: 12, border: "2px solid rgba(255,255,255,0.4)", borderTopColor: "#fff", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />}
                 Speichern
               </button>
@@ -353,7 +368,7 @@ export default function OwnerDashboard() {
           <span style={{ fontSize: 10, fontWeight: 700, background: "#fef3c7", color: "#d97706", padding: "2px 8px", borderRadius: 100 }}>OWNER</span>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <a href="/marketplace" style={{ display: "flex", alignItems: "center", gap: 6, background: `${ORANGE}15`, color: ORANGE, fontWeight: 700, fontSize: 13, textDecoration: "none", padding: "6px 12px", borderRadius: 8 }}>
+          <a href="/marketplace" style={{ display: "flex", alignItems: "center", gap: 6, background: `${ORANGE}15`, color: accentColor, fontWeight: 700, fontSize: 13, textDecoration: "none", padding: "6px 12px", borderRadius: 8 }}>
             🏪 Marktplatz
           </a>
           <button onClick={logout} style={{ background: "none", border: `1.5px solid ${BORDER}`, borderRadius: 8, padding: "6px 14px", fontSize: 13, color: TEXT2, cursor: "pointer", fontFamily: "inherit", fontWeight: 600 }}>Abmelden</button>
@@ -370,7 +385,7 @@ export default function OwnerDashboard() {
         <div style={{ display: "flex", gap: 4, marginBottom: 28, overflowX: "auto", scrollbarWidth: "none", background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 14, padding: 4 }}>
           {TABS.map(t => (
             <button key={t.key} onClick={() => setTab(t.key)}
-              style={{ flexShrink: 0, background: tab === t.key ? ORANGE : "none", color: tab === t.key ? "#fff" : TEXT2, border: "none", borderRadius: 10, padding: "8px 16px", fontSize: 13, fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", gap: 6, transition: "background 0.15s", fontFamily: "inherit" }}>
+              style={{ flexShrink: 0, background: tab === t.key ? btnColor : "none", color: tab === t.key ? "#fff" : TEXT2, border: "none", borderRadius: 10, padding: "8px 16px", fontSize: 13, fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", gap: 6, transition: "background 0.15s", fontFamily: "inherit" }}>
               {t.icon} {t.label}
             </button>
           ))}
@@ -380,15 +395,15 @@ export default function OwnerDashboard() {
         {tab === "stats" && stats && (
           <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: 14 }}>
-              <StatCard label="Nutzer gesamt" value={stats.userCount ?? 0} />
-              <StatCard label="Lieferanten" value={stats.supplierCount ?? 0} />
-              <StatCard label="Bestellungen" value={stats.orderCount ?? 0} />
-              <StatCard label="Produkte" value={stats.productCount ?? 0} />
-              <StatCard label="Gesamtumsatz" value={`€${(stats.revenue ?? 0).toFixed(2)}`} sub="bezahlte Bestellungen" />
+              <StatCard label="Nutzer gesamt" value={stats.userCount ?? 0} isDark={isDark} />
+              <StatCard label="Lieferanten" value={stats.supplierCount ?? 0} isDark={isDark} />
+              <StatCard label="Bestellungen" value={stats.orderCount ?? 0} isDark={isDark} />
+              <StatCard label="Produkte" value={stats.productCount ?? 0} isDark={isDark} />
+              <StatCard label="Gesamtumsatz" value={`€${(stats.revenue ?? 0).toFixed(2)}`} sub="bezahlte Bestellungen" isDark={isDark} />
             </div>
             <div style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 16, padding: "22px 24px" }}>
               <p style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 700, fontSize: 14, color: TEXT, marginBottom: 20 }}>📈 Monatliche Einnahmen</p>
-              <RevenueChart data={revenue} />
+              <RevenueChart data={revenue} barColor={btnColor} textColor={accentColor} />
             </div>
           </div>
         )}
@@ -509,7 +524,7 @@ export default function OwnerDashboard() {
                         </select>
                       </td>
                       <td style={{ padding: "8px 14px", borderBottom: `1px solid ${BORDER}` }}>
-                        <Btn label={expandedOrder === o.id ? "Schließen ▴" : "Details ▾"} fg={ORANGE} bg={`${ORANGE}15`} onClick={() => toggleOrderDetails(o.id)} />
+                        <Btn label={expandedOrder === o.id ? "Schließen ▴" : "Details ▾"} fg={accentColor} bg={`${ORANGE}15`} onClick={() => toggleOrderDetails(o.id)} />
                       </td>
                     </tr>
                     {expandedOrder === o.id && (
@@ -599,7 +614,7 @@ export default function OwnerDashboard() {
                   <textarea value={bMsg} onChange={e => setBMsg(e.target.value)} rows={3} placeholder="Nachricht an alle Nutzer..." style={{ ...inp(), resize: "none" } as any} />
                 </div>
                 <button onClick={broadcast} disabled={bLoading || !bTitle || !bMsg}
-                  style={{ background: bLoading || !bTitle || !bMsg ? "rgba(0,62,199,0.45)" : ORANGE, color: "#fff", border: "none", borderRadius: 10, padding: "12px", fontSize: 14, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+                  style={{ background: bLoading || !bTitle || !bMsg ? "rgba(0,62,199,0.45)" : btnColor, color: "#fff", border: "none", borderRadius: 10, padding: "12px", fontSize: 14, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
                   {bLoading && <div style={{ width: 14, height: 14, border: "2px solid rgba(255,255,255,0.4)", borderTopColor: "#fff", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />}
                   An alle {users.length} Nutzer senden
                 </button>
@@ -618,7 +633,7 @@ export default function OwnerDashboard() {
                   </div>
                 ))}
                 <button onClick={changePassword} disabled={pwLoading || !curPw || !newPw || !confPw}
-                  style={{ background: pwLoading || !curPw || !newPw || !confPw ? "rgba(0,62,199,0.45)" : ORANGE, color: "#fff", border: "none", borderRadius: 10, padding: "12px", fontSize: 14, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+                  style={{ background: pwLoading || !curPw || !newPw || !confPw ? "rgba(0,62,199,0.45)" : btnColor, color: "#fff", border: "none", borderRadius: 10, padding: "12px", fontSize: 14, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
                   {pwLoading && <div style={{ width: 14, height: 14, border: "2px solid rgba(255,255,255,0.4)", borderTopColor: "#fff", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />}
                   Passwort speichern
                 </button>
