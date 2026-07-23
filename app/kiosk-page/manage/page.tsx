@@ -198,9 +198,20 @@ export default function KioskPageManage() {
     setNewPhotoFile(null);
   };
 
+  const storagePathFromUrl = (url: string): string | null => {
+    const marker = "/product-images/";
+    const i = url.indexOf(marker);
+    return i === -1 ? null : url.slice(i + marker.length);
+  };
+
   const deletePhoto = async (id: string) => {
+    const photo = photos.find(p => p.id === id);
     await supabase.from("kiosk_photos").delete().eq("id", id);
     setPhotos(prev => prev.filter(p => p.id !== id));
+    if (photo) {
+      const path = storagePathFromUrl(photo.image_url);
+      if (path) await supabase.storage.from("product-images").remove([path]);
+    }
   };
 
   const addItemPhoto = async (inventoryId: string, file: File) => {
@@ -219,8 +230,13 @@ export default function KioskPageManage() {
   };
 
   const deleteItemPhoto = async (inventoryId: string, photoId: string) => {
+    const photo = (itemPhotos[inventoryId] ?? []).find(p => p.id === photoId);
     await supabase.from("kiosk_inventory_photos").delete().eq("id", photoId);
     setItemPhotos(prev => ({ ...prev, [inventoryId]: (prev[inventoryId] ?? []).filter(p => p.id !== photoId) }));
+    if (photo) {
+      const path = storagePathFromUrl(photo.image_url);
+      if (path) await supabase.storage.from("product-images").remove([path]);
+    }
   };
 
   const toggleService = (key: string) => {

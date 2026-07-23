@@ -134,8 +134,14 @@ export default function EditProductPage() {
   };
 
   const deleteGalleryPhoto = async (photoId: string) => {
+    const photo = galleryPhotos.find(p => p.id === photoId);
     await supabase.from("product_photos").delete().eq("id", photoId);
     setGalleryPhotos(prev => prev.filter(p => p.id !== photoId));
+    if (photo) {
+      const marker = "/product-images/";
+      const i = photo.image_url.indexOf(marker);
+      if (i !== -1) await supabase.storage.from("product-images").remove([photo.image_url.slice(i + marker.length)]);
+    }
   };
 
   const updateProduct = async () => {
