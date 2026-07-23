@@ -88,13 +88,13 @@ export default function OrdersPage() {
   const [expandedId, setExpandedId]   = useState<string | null>(null);
   const [role, setRole]               = useState<string | null>(null);
   const [reordering, setReordering]   = useState<string | null>(null);
+  const [confirmingCancel, setConfirmingCancel] = useState<string | null>(null);
   const [reorderToast, setReorderToast] = useState<string | null>(null);
   const [paying, setPaying]           = useState<string | null>(null);
 
   useEffect(() => { fetchOrders(); }, []);
 
   const cancelOrder = async (orderId: string) => {
-    if (!window.confirm("Bestellung wirklich stornieren?")) return;
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
     const { error } = await supabase.from("orders")
@@ -102,6 +102,7 @@ export default function OrdersPage() {
       .eq("id", orderId)
       .eq("buyer_id", user.id)
       .eq("status", "pending");
+    setConfirmingCancel(null);
     if (error) { alert("Stornierung fehlgeschlagen. Bitte versuche es erneut."); return; }
     setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: "cancelled" } : o));
   };
@@ -302,11 +303,19 @@ export default function OrdersPage() {
                         </button>
                       )}
                       {order.status === "pending" && (
-                        <button
-                          onClick={e => { e.stopPropagation(); cancelOrder(order.id); }}
-                          style={{ background: "none", border: "1.5px solid #dc2626", borderRadius: 8, padding: "5px 10px", color: "#dc2626", fontSize: 11, fontWeight: 700, cursor: "pointer" }}>
-                          Stornieren
-                        </button>
+                        confirmingCancel === order.id ? (
+                          <span onClick={e => e.stopPropagation()} style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                            <span style={{ fontSize: 11, color: TEXT2 }}>Sicher?</span>
+                            <button onClick={() => cancelOrder(order.id)} style={{ background: "#dc2626", border: "none", borderRadius: 8, padding: "5px 10px", color: "#fff", fontSize: 11, fontWeight: 700, cursor: "pointer" }}>Ja, stornieren</button>
+                            <button onClick={() => setConfirmingCancel(null)} style={{ background: "none", border: `1.5px solid ${BORDER}`, borderRadius: 8, padding: "5px 10px", color: TEXT2, fontSize: 11, cursor: "pointer" }}>Abbrechen</button>
+                          </span>
+                        ) : (
+                          <button
+                            onClick={e => { e.stopPropagation(); setConfirmingCancel(order.id); }}
+                            style={{ background: "none", border: "1.5px solid #dc2626", borderRadius: 8, padding: "5px 10px", color: "#dc2626", fontSize: 11, fontWeight: 700, cursor: "pointer" }}>
+                            Stornieren
+                          </button>
+                        )
                       )}
                       <span style={{ color: TEXT3, fontSize: 16, transition: "transform 0.2s", transform: expanded ? "rotate(180deg)" : "rotate(0deg)", display: "inline-block" }}>▾</span>
                     </div>

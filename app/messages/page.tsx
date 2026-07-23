@@ -73,7 +73,10 @@ export default function BuyerMessagesPage() {
     if (!text.trim() || !active || !userId) return;
     const content = text.trim();
     const { error } = await supabase.from("messages").insert({ conversation_id: active.id, sender_id: userId, content });
-    if (!error) setText("");
+    if (!error) {
+      setText("");
+      setConvs(prev => prev.map(c => c.id === active.id ? { ...c, last_message: content } : c));
+    }
   };
 
   const loadSuppliers = async () => {

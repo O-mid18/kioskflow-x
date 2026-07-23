@@ -270,7 +270,11 @@ export default function KioskPageManage() {
     if (negDeltas.length < 2) return null;
     const totalConsumed = negDeltas.reduce((s: number, h: any) => s + Math.abs(h.delta), 0);
     const span = (new Date(negDeltas[negDeltas.length - 1].recorded_at).getTime() - new Date(negDeltas[0].recorded_at).getTime()) / 86400000;
-    if (span <= 0) return null;
+    // Require at least a full day of real history — a shorter span (e.g.
+    // several quantity corrections made minutes apart while testing)
+    // produces an absurdly high extrapolated daily rate, showing "~0 Tage"
+    // even for healthy stock right after a restock.
+    if (span < 1) return null;
     const dailyRate = totalConsumed / span;
     return dailyRate > 0 ? Math.round(currentQty / dailyRate) : null;
   };

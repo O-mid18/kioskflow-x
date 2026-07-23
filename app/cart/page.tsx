@@ -18,6 +18,34 @@ interface CartItem { id: string; quantity: number; products: Product; }
 export default function CartPage() {
   const [items, setItems] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const pendingWrites = useState<Record<string, ReturnType<typeof setTimeout>>>({})[0];
+
+  const persistQuantity = (id: string, quantity: number) => {
+    if (pendingWrites[id]) clearTimeout(pendingWrites[id]);
+    pendingWrites[id] = setTimeout(async () => {
+      const { error } = await supabase.from("cart_items").update({ quantity }).eq("id", id);
+      if (error) fetchCart(); // only refetch (to resync) if the write actually failed
+    }, 350);
+  };
+
+  const increaseQuantity = (id: string, _quantity: number, stock?: number) => {
+    setItems(prev => prev.map(i => {
+      if (i.id !== id) return i;
+      if (stock !== undefined && i.quantity >= stock) return i;
+      const next = i.quantity + 1;
+      persistQuantity(id, next);
+      return { ...i, quantity: next };
+    }));
+  };
+
+  const decreaseQuantity = (id: string, _quantity: number) => {
+    setItems(prev => prev.map(i => {
+      if (i.id !== id || i.quantity <= 1) return i;
+      const next = i.quantity - 1;
+      persistQuantity(id, next);
+      return { ...i, quantity: next };
+    }));
+  };
   const [error, setError] = useState<string | null>(null);
   const [confirmingRemoveAll, setConfirmingRemoveAll] = useState(false);
   const [role, setRole] = useState<string | null>(null);
@@ -40,18 +68,6 @@ export default function CartPage() {
   };
 
   useEffect(() => { fetchCart(); }, []);
-
-  const increaseQuantity = async (id: string, quantity: number, stock?: number) => {
-    if (stock !== undefined && quantity >= stock) return;
-    await supabase.from("cart_items").update({ quantity: quantity + 1 }).eq("id", id);
-    fetchCart();
-  };
-
-  const decreaseQuantity = async (id: string, quantity: number) => {
-    if (quantity <= 1) return;
-    await supabase.from("cart_items").update({ quantity: quantity - 1 }).eq("id", id);
-    fetchCart();
-  };
 
   const removeItem = async (id: string) => {
     await supabase.from("cart_items").delete().eq("id", id);
