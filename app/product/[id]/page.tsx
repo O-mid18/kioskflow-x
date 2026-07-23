@@ -42,6 +42,9 @@ export default function ProductDetailsPage() {
   const [alreadyReviewed, setAlreadyReviewed] = useState(false);
   const [cartCount, setCartCount] = useState(0);
   const [role, setRole] = useState<string | null>(null);
+  const [supplierUserId, setSupplierUserId] = useState<string | null>(null);
+  const [chatting, setChatting] = useState(false);
+  const [showOffer, setShowOffer] = useState(false);
   const [currentSupplierRating, setCurrentSupplierRating] = useState<number | null>(null);
   const [isDark, setIsDark] = useState(false);
 
@@ -67,6 +70,9 @@ export default function ProductDetailsPage() {
     const fetchProduct = async () => {
       const { data } = await supabase.from("products").select("*").eq("id", String(params.id)).maybeSingle();
       setProduct(data);
+      if (data?.supplier_id) {
+        supabase.from("suppliers").select("user_id").eq("id", data.supplier_id).maybeSingle().then(({ data: s }) => setSupplierUserId(s?.user_id ?? null));
+      }
       const { data: rv } = await supabase.from("reviews").select("*").eq("product_id", String(params.id)).order("created_at", { ascending: false });
       setReviews(rv ?? []);
 
@@ -112,6 +118,17 @@ export default function ProductDetailsPage() {
     fetchProduct();
     loadCartCount();
   }, [params.id, loadCartCount]);
+
+  const startChat = async () => {
+    if (!supplierUserId) return;
+    setChatting(true);
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) { window.location.href = "/login"; return; }
+    const { error } = await supabase.from("conversations")
+      .upsert({ buyer_id: user.id, supplier_id: supplierUserId }, { onConflict: "buyer_id,supplier_id" });
+    if (error) { setChatting(false); showToast("Fehler beim Öffnen des Chats"); return; }
+    window.location.href = "/messages";
+  };
 
   const addToCart = async () => {
     const { data: { user } } = await supabase.auth.getUser();
@@ -252,6 +269,16 @@ export default function ProductDetailsPage() {
             <button onClick={addToCart} style={{ width: "100%", background: BTN, color: "#fff", border: "none", borderRadius: isDark ? 4 : 14, padding: "16px", fontWeight: 700, fontSize: 15, cursor: "pointer", fontFamily: "'DM Sans',sans-serif", marginBottom: 10 }}>
               🛒 In den Warenkorb
             </button>
+            {supplierUserId && (
+              <div style={{ display: "flex", gap: 10, marginBottom: 10 }}>
+                <button onClick={startChat} disabled={chatting} style={{ flex: 1, background: "none", border: `1.5px solid ${BORDER}`, color: TEXT, borderRadius: isDark ? 4 : 12, padding: "12px", fontWeight: 700, fontSize: 13, cursor: chatting ? "not-allowed" : "pointer", fontFamily: "'DM Sans',sans-serif" }}>
+                  💬 {chatting ? "…" : "Nachricht"}
+                </button>
+                <button onClick={() => setShowOffer(true)} style={{ flex: 1, background: "none", border: `1.5px solid ${BORDER}`, color: TEXT, borderRadius: isDark ? 4 : 12, padding: "12px", fontWeight: 700, fontSize: 13, cursor: "pointer", fontFamily: "'DM Sans',sans-serif" }}>
+                  🤝 Preis verhandeln
+                </button>
+              </div>
+            )}
             <a href="/marketplace" style={{ display: "block", textAlign: "center", color: TEXT2, fontSize: 13, textDecoration: "none", padding: "10px", fontWeight: 500 }}>
               ← Weiter einkaufen
             </a>
@@ -351,6 +378,70 @@ export default function ProductDetailsPage() {
           )}
         </div>
       </div>
+      {showOffer && product && supplierUserId && (
+        <NegotiateModal product={product} supplierUserId={supplierUserId} onClose={() => setShowOffer(false)} />
+      )}
     </main>
+  );
+}
+
+function NegotiateModal({ product, supplierUserId, onClose }: { product: any; supplierUserId: string; onClose: () => void }) {
+  const [qty, setQty] = useState("1");
+  const [price, setPrice] = useState("");
+  const [note, setNote] = useState("");
+  const [sending, setSending] = useState(false);
+  const [err, setErr] = useState("");
+
+  const send = async () => {
+    if (!price || !qty || Number(qty) < 1) { setErr("Bitte Menge und Angebotspreis angeben."); return; }
+    setSending(true);
+    setErr("");
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) { window.location.href = "/login"; return; }
+
+    const { data: conv } = await supabase.from("conversations")
+      .upsert({ buyer_id: user.id, supplier_id: supplierUserId }, { onConflict: "buyer_id,supplier_id" })
+      .select().maybeSingle();
+    if (!conv) { setErr("Fehler beim Erstellen der Unterhaltung."); setSending(false); return; }
+
+    const content = [
+      `🤝 Preisangebot`,
+      `📦 Produkt: ${product.name}`,
+      `🔢 Menge: ${qty} Stück`,
+      `💶 Mein Angebot: €${price}/Stück  (Listenpreis: €${product.price})`,
+      note ? `📝 ${note}` : null,
+    ].filter(Boolean).join("\n");
+
+    await supabase.from("messages").insert({ conversation_id: conv.id, sender_id: user.id, content });
+    setSending(false);
+    window.location.href = "/messages";
+  };
+
+  return (
+    <>
+      <div onClick={onClose} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.55)", zIndex: 200, backdropFilter: "blur(6px)" }} />
+      <div style={{ position: "fixed", top: "50%", left: "50%", transform: "translate(-50%,-50%)", background: "var(--kf-surface)", border: "1px solid var(--kf-border)", borderRadius: 20, padding: 28, width: 360, maxWidth: "90vw", zIndex: 201, fontFamily: "'DM Sans',sans-serif" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
+          <div>
+            <p style={{ fontWeight: 800, fontSize: 17, color: "var(--kf-text)" }}>Preis verhandeln</p>
+            <p style={{ fontSize: 12, color: "var(--kf-text3)", marginTop: 2 }}>{product.name}</p>
+          </div>
+          <button onClick={onClose} style={{ width: 30, height: 30, background: "var(--kf-bg)", border: "1px solid var(--kf-border)", borderRadius: 8, cursor: "pointer", color: "var(--kf-text2)", fontSize: 14 }}>×</button>
+        </div>
+        <label style={{ display: "block", fontSize: 12, fontWeight: 700, color: "var(--kf-text2)", marginBottom: 6 }}>Menge (Stück)</label>
+        <input type="number" min="1" value={qty} onChange={e => setQty(e.target.value)} placeholder="z.B. 50"
+          style={{ width: "100%", background: "var(--kf-bg)", border: "1.5px solid var(--kf-border)", borderRadius: 10, padding: "10px 14px", color: "var(--kf-text)", fontSize: 14, boxSizing: "border-box", marginBottom: 14, fontFamily: "inherit", outline: "none" }} />
+        <label style={{ display: "block", fontSize: 12, fontWeight: 700, color: "var(--kf-text2)", marginBottom: 6 }}>Mein Angebot (€/Stück)</label>
+        <input type="number" min="0" step="0.01" value={price} onChange={e => setPrice(e.target.value)} placeholder="z.B. 1.20"
+          style={{ width: "100%", background: "var(--kf-bg)", border: "1.5px solid var(--kf-border)", borderRadius: 10, padding: "10px 14px", color: "var(--kf-text)", fontSize: 14, boxSizing: "border-box", marginBottom: 14, fontFamily: "inherit", outline: "none" }} />
+        <label style={{ display: "block", fontSize: 12, fontWeight: 700, color: "var(--kf-text2)", marginBottom: 6 }}>Notiz (optional)</label>
+        <textarea value={note} onChange={e => setNote(e.target.value)} rows={2} placeholder="z.B. Lieferung bis Freitag möglich?"
+          style={{ width: "100%", background: "var(--kf-bg)", border: "1.5px solid var(--kf-border)", borderRadius: 10, padding: "10px 14px", color: "var(--kf-text)", fontSize: 14, boxSizing: "border-box", marginBottom: 14, fontFamily: "inherit", outline: "none", resize: "vertical" }} />
+        {err && <p style={{ color: "#dc2626", fontSize: 12, marginBottom: 12 }}>{err}</p>}
+        <button onClick={send} disabled={sending} style={{ width: "100%", background: "var(--kf-btn)", color: "#fff", border: "none", borderRadius: 10, padding: "13px", fontWeight: 700, fontSize: 14, cursor: sending ? "not-allowed" : "pointer" }}>
+          {sending ? "Wird gesendet…" : "Angebot senden"}
+        </button>
+      </div>
+    </>
   );
 }
