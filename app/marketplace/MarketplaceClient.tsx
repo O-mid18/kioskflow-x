@@ -436,6 +436,9 @@ export default function MarketplacePage({ initialProducts = [], initialSuppliers
             {role === "supplier" && (
               <a href="/supplier/dashboard" title="Lieferanten-Dashboard" style={{ display:"flex", alignItems:"center", background:`${ORANGE}15`, color:ACCENT, fontWeight:700, fontSize:13, textDecoration:"none", padding:"9px 14px", borderRadius:10 }}>📦</a>
             )}
+            {(role === "buyer" || !role) && (
+              <a href="/kiosk-page/manage" title="Meine Kiosk-Seite" style={{ display:"flex", alignItems:"center", background:`${ORANGE}15`, color:ACCENT, fontWeight:700, fontSize:13, textDecoration:"none", padding:"9px 14px", borderRadius:10 }}>🏪</a>
+            )}
             <NotificationBell />
             <a className="kf-wishlist-btn" href="/wishlist" style={{ position:"relative", display:"flex", alignItems:"center", gap:5, background:"none", border:`1.5px solid ${BORDER}`, borderRadius:10, padding:"9px 14px", color:TEXT2, fontWeight:600, fontSize:13, textDecoration:"none", cursor:"pointer" }}>
               ❤️

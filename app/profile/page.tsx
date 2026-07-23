@@ -188,7 +188,7 @@ function BuyerProfile({ email, buyerId, userId, isDark }: { email: string; buyer
 
       {/* Quick links */}
       <div style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: isDark ? 8 : 18, overflow: "hidden", marginBottom: 20 }}>
-        {[{ icon: "🛒", label: "Warenkorb", href: "/cart" }, { icon: "📦", label: "Meine Bestellungen", href: "/orders" }, { icon: "🏪", label: "Meine Kiosk-Seite", href: "/kiosk-page/manage" }, { icon: "❤️", label: "Wunschliste", href: "/wishlist" }, { icon: "💬", label: "Support", href: "/support" }, { icon: "⚙️", label: "Einstellungen", href: "/settings" }].map(({ icon, label, href }, i, arr) => (
+        {[{ icon: "🛒", label: "Warenkorb", href: "/cart" }, { icon: "📦", label: "Meine Bestellungen", href: "/orders" }, { icon: "💬", label: "Nachrichten", href: "/messages" }, { icon: "📊", label: "Analytik", href: "/analytics" }, { icon: "🏪", label: "Meine Kiosk-Seite", href: "/kiosk-page/manage" }, { icon: "❤️", label: "Wunschliste", href: "/wishlist" }, { icon: "💬", label: "Support", href: "/support" }, { icon: "⚙️", label: "Einstellungen", href: "/settings" }].map(({ icon, label, href }, i, arr) => (
           <a key={href} href={href} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "15px 22px", textDecoration: "none", borderBottom: i < arr.length - 1 ? `1px solid ${BORDER}` : "none" }}
             onMouseEnter={e => e.currentTarget.style.background = BG} onMouseLeave={e => e.currentTarget.style.background = "transparent"}>
             <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
@@ -279,7 +279,7 @@ function SupplierProfile({ email, supplierId, isDark }: { email: string; supplie
 
       {/* Supplier quick links */}
       <div style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: isDark ? 8 : 18, overflow: "hidden", marginBottom: 20 }}>
-        {[{ icon: "◉", label: "Dashboard Übersicht", href: "/supplier/dashboard" }, { icon: "📦", label: "Meine Produkte", href: "/supplier/dashboard/products" }, { icon: "🧾", label: "Bestellungen", href: "/supplier/dashboard/orders" }, { icon: "📊", label: "Analytik", href: "/supplier/dashboard/analytics" }, { icon: "⚙️", label: "Einstellungen", href: "/settings" }].map(({ icon, label, href }, i, arr) => (
+        {[{ icon: "◉", label: "Dashboard Übersicht", href: "/supplier/dashboard" }, { icon: "📦", label: "Meine Produkte", href: "/supplier/dashboard/products" }, { icon: "🧾", label: "Bestellungen", href: "/supplier/dashboard/orders" }, { icon: "💬", label: "Nachrichten", href: "/supplier/dashboard/messages" }, { icon: "📊", label: "Analytik", href: "/supplier/dashboard/analytics" }, { icon: "✅", label: "Verifizierung", href: "/supplier/dashboard/verification" }, { icon: "⚙️", label: "Einstellungen", href: "/settings" }].map(({ icon, label, href }, i, arr) => (
           <a key={href} href={href} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "15px 22px", textDecoration: "none", borderBottom: i < arr.length - 1 ? `1px solid ${BORDER}` : "none" }}
             onMouseEnter={e => e.currentTarget.style.background = BG} onMouseLeave={e => e.currentTarget.style.background = "transparent"}>
             <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
