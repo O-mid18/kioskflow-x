@@ -368,6 +368,9 @@ export default function OwnerDashboard() {
           <span style={{ fontSize: 10, fontWeight: 700, background: "#fef3c7", color: "#d97706", padding: "2px 8px", borderRadius: 100 }}>OWNER</span>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <a href="/admin/dashboard" style={{ display: "flex", alignItems: "center", gap: 6, background: `${ORANGE}15`, color: accentColor, fontWeight: 700, fontSize: 13, textDecoration: "none", padding: "6px 12px", borderRadius: 8 }}>
+            💬 Support-Postfach
+          </a>
           <a href="/marketplace" style={{ display: "flex", alignItems: "center", gap: 6, background: `${ORANGE}15`, color: accentColor, fontWeight: 700, fontSize: 13, textDecoration: "none", padding: "6px 12px", borderRadius: 8 }}>
             🏪 Marktplatz
           </a>
