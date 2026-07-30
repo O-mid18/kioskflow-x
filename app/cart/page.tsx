@@ -21,6 +21,19 @@ export default function CartPage() {
   const [items, setItems] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(true);
   const pendingWrites = useState<Record<string, ReturnType<typeof setTimeout>>>({})[0];
+  const lastClickAt = useState<Record<string, number>>({})[0];
+
+  // Guards against faulty mouse/trackpad hardware ("switch chatter"), where a
+  // single physical click fires multiple electrical click events in a few
+  // milliseconds. No genuine human click is this fast, so anything under
+  // 80ms since the last click on the same button is treated as chatter and
+  // ignored — deliberate rapid clicking is unaffected.
+  const isChatter = (key: string) => {
+    const now = Date.now();
+    const last = lastClickAt[key] ?? 0;
+    lastClickAt[key] = now;
+    return now - last < 80;
+  };
 
   const persistQuantity = (id: string, quantity: number) => {
     if (pendingWrites[id]) clearTimeout(pendingWrites[id]);
@@ -31,6 +44,7 @@ export default function CartPage() {
   };
 
   const increaseQuantity = (id: string, _quantity: number, stock?: number) => {
+    if (isChatter(`inc-${id}`)) return;
     setItems(prev => prev.map(i => {
       if (i.id !== id) return i;
       if (stock !== undefined && i.quantity >= stock) return i;
@@ -41,6 +55,7 @@ export default function CartPage() {
   };
 
   const decreaseQuantity = (id: string, _quantity: number) => {
+    if (isChatter(`dec-${id}`)) return;
     setItems(prev => prev.map(i => {
       if (i.id !== id || i.quantity <= 1) return i;
       const next = i.quantity - 1;
