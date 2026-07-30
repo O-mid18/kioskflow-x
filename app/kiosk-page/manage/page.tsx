@@ -491,7 +491,7 @@ export default function KioskPageManage() {
                   </div>
                   <button onClick={() => confirmSuggestedOrder(item)} disabled={confirmingOrder === item.id}
                     style={{ background: "#f59e0b", color: "#fff", border: "none", borderRadius: 8, padding: "7px 14px", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
-                    {confirmingOrder === item.id ? "…" : "In den Warenkorb"}
+                    {confirmingOrder === item.id ? "…" : `+${item.auto_reorder_quantity && item.auto_reorder_quantity > 0 ? item.auto_reorder_quantity : 1} in den Warenkorb`}
                   </button>
                 </div>
               ))}
