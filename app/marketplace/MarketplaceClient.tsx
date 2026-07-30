@@ -782,6 +782,10 @@ export default function MarketplacePage({ initialProducts = [], initialSuppliers
                       <img loading="lazy" decoding="async" src={product.image_url||"https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?w=400&q=80"} alt={product.name}
                         style={{ width:"100%", height:"100%", objectFit:"cover", padding:24, opacity:0.9 }}
                         onError={e => { (e.currentTarget as HTMLImageElement).src = "https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?w=400&q=80"; }} />
+                      <button onClick={e => { e.stopPropagation(); toggleWishlist(product); }}
+                        style={{ position:"absolute", top:8, left:8, width:28, height:28, background:"rgba(30,32,34,0.85)", border:"1px solid rgba(255,255,255,0.15)", borderRadius:"50%", cursor:"pointer", fontSize:12, display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 2px 8px rgba(0,0,0,0.3)" }}>
+                        {inWish?"❤️":"🖤"}
+                      </button>
                       {(isNew || isTopRated) && (
                         <div style={{ position:"absolute", top:8, right:8, background:"#0052ff", padding:"2px 8px", borderRadius:100, fontSize:11, fontWeight:500, color:"#fff", letterSpacing:"0.02em" }}>
                           {isNew ? "New" : "Top"}
