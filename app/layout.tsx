@@ -28,15 +28,15 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Flowio — Direkt vom Hersteller zum Kiosk",
-  description: "B2B Marktplatz fuer lokale Marken und Kiosk-Betreiber in Frankfurt. Keine Mindestmengen. Keine Zwischenhaendler.",
+  title: "Flowio — B2B Marktplatz für Getränke & Snacks in Frankfurt",
+  description: "Flowio verbindet Kiosk- und Späti-Betreiber in Frankfurt direkt mit lokalen Getränke- und Snack-Herstellern. Keine Mindestmenge, keine Zwischenhändler, Lieferung in 24 Stunden.",
   keywords: ["Kiosk", "Spaeti", "Grosshandel", "Frankfurt", "B2B", "Getraenke", "Snacks"],
   authors: [{ name: "Flowio" }],
-  metadataBase: new URL("https://kioskflow-x.vercel.app"),
+  metadataBase: new URL("https://www.myflowie.de"),
   openGraph: {
-    title: "Flowio — Direkt vom Hersteller zum Kiosk",
-    description: "B2B Marktplatz fuer lokale Marken und Kiosk-Betreiber in Frankfurt.",
-    url: "https://kioskflow-x.vercel.app",
+    title: "Flowio — B2B Marktplatz für Getränke & Snacks in Frankfurt",
+    description: "Direkt vom Hersteller zum Kiosk. Keine Mindestmenge, keine Zwischenhändler, Lieferung in 24 Stunden in Frankfurt.",
+    url: "https://www.myflowie.de",
     siteName: "Flowio",
     locale: "de_DE",
     type: "website",
@@ -44,8 +44,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Flowio — Direkt vom Hersteller zum Kiosk",
-    description: "B2B Marktplatz fuer lokale Marken und Kiosk-Betreiber in Frankfurt.",
+    title: "Flowio — B2B Marktplatz für Getränke & Snacks in Frankfurt",
+    description: "Direkt vom Hersteller zum Kiosk. Keine Mindestmenge, keine Zwischenhändler, Lieferung in 24 Stunden in Frankfurt.",
     images: ["/og-image.svg"],
   },
   icons: {

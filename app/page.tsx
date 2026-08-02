@@ -2,8 +2,8 @@
 import MobileNav from "./components/MobileNav";
 
 export const metadata: Metadata = {
-  title: "Flowio — Direkt vom Hersteller zum Kiosk",
-  description: "B2B Marktplatz für lokale Marken und Kiosk-Betreiber in Frankfurt. Keine Mindestmengen, Direktpreise, Lieferung in 24h.",
+  title: "Flowio — B2B Marktplatz für Getränke & Snacks in Frankfurt",
+  description: "Flowio verbindet Kiosk- und Späti-Betreiber in Frankfurt direkt mit lokalen Getränke- und Snack-Herstellern. Keine Mindestmenge, keine Zwischenhändler, Lieferung in 24 Stunden.",
 };
 
 const ORANGE = "#003ec7";
@@ -136,7 +136,29 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* HOW IT WORKS */}
+      {/* FÜR WEN */}
+      <section style={{ maxWidth: 900, margin: "0 auto", padding: "80px 32px 0" }}>
+        <div style={{ textAlign: "center", marginBottom: 40 }} className="kf-reveal">
+          <p style={{ fontSize: 12, fontWeight: 700, color: ORANGE, letterSpacing: "2.5px", textTransform: "uppercase", marginBottom: 12 }}>Für wen ist Flowio?</p>
+          <h2 style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: "clamp(1.8rem,3.5vw,2.6rem)", color: "var(--kf-text)", letterSpacing: "-0.8px" }}>Zwei Seiten, ein Marktplatz</h2>
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 32 }} className="kf-hero-grid">
+          <div>
+            <h3 style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 700, fontSize: 18, color: "var(--kf-text)", marginBottom: 10 }}>Für Kiosk- und Späti-Betreiber</h3>
+            <p style={{ fontSize: 14, color: "var(--kf-text2)", lineHeight: 1.8 }}>
+              Statt Zeit beim Großhändler zu verlieren oder überhöhte Preise über Zwischenhändler zu zahlen, bestellst du auf Flowio direkt bei lokalen Herstellern in Frankfurt — vom Getränkehersteller bis zur kleinen Snack-Manufaktur. Du siehst Preise sofort, vergleichst Anbieter, und bestellst genau die Menge, die du brauchst — auch wenn das nur eine einzelne Kiste ist. Keine Verträge, keine Mindestbestellwerte, keine versteckten Gebühren.
+            </p>
+          </div>
+          <div>
+            <h3 style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 700, fontSize: 18, color: "var(--kf-text)", marginBottom: 10 }}>Für Hersteller und lokale Marken</h3>
+            <p style={{ fontSize: 14, color: "var(--kf-text2)", lineHeight: 1.8 }}>
+              Flowio gibt kleinen und mittleren Getränke- und Snackherstellern einen direkten Draht zu Frankfurter Kiosken und Spätis — ohne den klassischen Umweg über den Großhandel. Du listest deine Produkte kostenlos, bestimmst deine eigenen Preise, und erreichst lokale Verkaufsstellen, die sonst schwer zugänglich wären. Zahlungen laufen sicher über die Plattform, Bestellungen und Kommunikation mit Käufern bündelst du an einem Ort.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <div style={{ borderTop: "1px solid var(--kf-border)", marginTop: 80 }} aria-hidden="true" />
       <section style={{ maxWidth: 1200, margin: "0 auto", padding: "80px 32px" }}>
         <div style={{ textAlign: "center", marginBottom: 52 }} className="kf-reveal">
           <p style={{ fontSize: 12, fontWeight: 700, color: ORANGE, letterSpacing: "2.5px", textTransform: "uppercase", marginBottom: 12 }}>So einfach geht&apos;s</p>
@@ -206,6 +228,9 @@ export default function HomePage() {
             { q: "Was kostet die Registrierung?", a: "Nichts. Kein Abo, kein Eintrittsgeld, keine versteckten Kosten — jetzt und in Zukunft." },
             { q: "Welche Zahlungsmethoden gibt es?", a: "Kreditkarte (Visa, Mastercard, American Express). Bezahle sicher per Stripe." },
             { q: "Was ist, wenn ein Produkt nicht ankommt oder defekt ist?", a: "Melde dich bei uns. Wir erstatten dein Geld oder schicken Ersatz — ohne Diskussion, garantiert." },
+            { q: "Welche Produkte gibt es auf Flowio?", a: "Getränke (Softdrinks, Bier, Wasser, Energydrinks) und Snacks (Chips, Süßwaren, Backwaren) von lokalen Herstellern und Marken aus Frankfurt und Umgebung." },
+            { q: "Liefert ihr auch außerhalb von Frankfurt?", a: "Aktuell konzentrieren wir uns auf Frankfurt am Main und die nähere Umgebung. Eine Erweiterung auf weitere Städte im Rhein-Main-Gebiet ist geplant." },
+            { q: "Wie werde ich als Lieferant auf Flowio verifiziert?", a: "Nach der Registrierung reichst du kurz Angaben zu deinem Unternehmen ein (Firmenname, Handelsregister, Steuernummer). Unser Team prüft das in der Regel innerhalb weniger Werktage." },
           ] as const).map(({ q, a }, i) => (
             <div key={i} className="kf-reveal" style={{ borderBottom: "1px solid var(--kf-border)", padding: "22px 0", animationDelay: `${i * 0.08}s` }}>
               <p style={{ fontFamily: "'Inter',sans-serif", fontWeight: 700, fontSize: 16, color: "var(--kf-text)", marginBottom: 10 }}>{q}</p>
