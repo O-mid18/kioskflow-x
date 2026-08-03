@@ -156,6 +156,9 @@ export default function HomePage() {
             </p>
           </div>
         </div>
+        <p style={{ fontSize: 14, color: "var(--kf-text2)", lineHeight: 1.8, marginTop: 32, textAlign: "center", maxWidth: 700, marginLeft: "auto", marginRight: "auto" }}>
+          Flowio ist bewusst lokal gedacht. Statt ein generischer, überregionaler Großhandel zu sein, konzentrieren wir uns auf Frankfurt am Main und die direkte Verbindung zwischen den Menschen, die hier produzieren, und den Menschen, die hier verkaufen. Das bedeutet kurze Lieferwege, echte Ansprechpartner statt anonymer Bestellnummern, und einen Marktplatz, der die Vielfalt der Frankfurter Kiosk- und Herstellerlandschaft sichtbar macht — nicht ersetzt.
+        </p>
       </section>
 
       <div style={{ borderTop: "1px solid var(--kf-border)", marginTop: 80 }} aria-hidden="true" />
