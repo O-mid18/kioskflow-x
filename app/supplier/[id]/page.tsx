@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState, useCallback } from "react";
 import { useParams } from "next/navigation";
@@ -84,7 +84,7 @@ export default function SupplierProfilePage() {
   const btnColor    = isDark ? BTN    : ORANGE;
 
   if (loading) return (
-    <main style={{ minHeight: "100vh", background: BG, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'DM Sans',system-ui,sans-serif" }}>
+    <main style={{ minHeight: "100vh", background: BG, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "var(--font-dm-sans),system-ui,sans-serif" }}>
       <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
       <div style={{ textAlign: "center" }}>
         <div style={{ width: 36, height: 36, border: `3px solid ${BORDER}`, borderTopColor: accentColor, borderRadius: "50%", animation: "spin 0.8s linear infinite", margin: "0 auto 14px" }} />
@@ -94,7 +94,7 @@ export default function SupplierProfilePage() {
   );
 
   if (!supplier) return (
-    <main style={{ minHeight: "100vh", background: BG, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 16, fontFamily: "'DM Sans',system-ui,sans-serif" }}>
+    <main style={{ minHeight: "100vh", background: BG, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 16, fontFamily: "var(--font-dm-sans),system-ui,sans-serif" }}>
       <p style={{ fontSize: 48 }}>😭</p>
       <p style={{ color: TEXT, fontSize: 18, fontWeight: 700 }}>Lieferant nicht gefunden</p>
       <a href="/marketplace" style={{ color: accentColor, fontWeight: 600, fontSize: 14, textDecoration: "none" }}>← Zurück zum Marktplatz</a>
@@ -102,8 +102,8 @@ export default function SupplierProfilePage() {
   );
 
   return (
-    <main style={{ minHeight: "100vh", background: BG, fontFamily: "'DM Sans','Helvetica Neue',system-ui,sans-serif", color: TEXT, paddingBottom: 80 }}>
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600;700&display=swap'); @keyframes spin{to{transform:rotate(360deg)}}`}</style>
+    <main style={{ minHeight: "100vh", background: BG, fontFamily: "var(--font-dm-sans),'Helvetica Neue',system-ui,sans-serif", color: TEXT, paddingBottom: 80 }}>
+      <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
 
       {/* Toast */}
       {toast && (
@@ -117,7 +117,7 @@ export default function SupplierProfilePage() {
       <header style={{ background: SURFACE, borderBottom: `1px solid ${BORDER}`, padding: "0 20px", height: 60, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <a href="/marketplace" style={{ display: "flex", alignItems: "center", gap: 8, textDecoration: "none" }}>
           <img src="/flowio-icon.png" alt="Flowio" style={{ width: 30, height: 30, borderRadius: 7, objectFit: "cover" }} />
-          <span style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 15, color: TEXT, letterSpacing: "-0.3px" }}>Flowio</span>
+          <span style={{ fontFamily: "var(--font-syne),sans-serif", fontWeight: 800, fontSize: 15, color: TEXT, letterSpacing: "-0.3px" }}>Flowio</span>
         </a>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           {role === "admin" && <a href="/owner/dashboard" title="Owner-Panel" style={{ background:`${ORANGE}15`, color: accentColor, fontWeight:700, fontSize:13, textDecoration:"none", padding:"7px 12px", borderRadius:9 }}>🏛️</a>}
@@ -139,12 +139,12 @@ export default function SupplierProfilePage() {
             {supplier.logo_url ? (
               <img loading="lazy" decoding="async" src={supplier.logo_url} alt={supplier.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
             ) : (
-              <span style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 28, color: accentColor }}>{supplier.name?.trim()?.[0]?.toUpperCase() ?? "?"}</span>
+              <span style={{ fontFamily: "var(--font-syne),sans-serif", fontWeight: 800, fontSize: 28, color: accentColor }}>{supplier.name?.trim()?.[0]?.toUpperCase() ?? "?"}</span>
             )}
           </div>
           <div style={{ flex: 1, minWidth: 200 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
-              <h1 style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 24, color: TEXT, letterSpacing: "-0.5px" }}>{supplier.name}</h1>
+              <h1 style={{ fontFamily: "var(--font-syne),sans-serif", fontWeight: 800, fontSize: 24, color: TEXT, letterSpacing: "-0.5px" }}>{supplier.name}</h1>
               {supplier.verified && (
                 <span style={{ background: isDark ? "rgba(0,82,255,0.15)" : "#dcfce7", color: isDark ? "#b7c4ff" : "#16a34a", fontSize: 11, fontWeight: 700, padding: "3px 10px", borderRadius: 100 }}>✓ Verifiziert</span>
               )}
@@ -154,7 +154,7 @@ export default function SupplierProfilePage() {
           </div>
           <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 10, flexShrink: 0 }}>
             <div style={{ textAlign: "right" }}>
-              <p style={{ fontFamily: "'DM Sans',sans-serif", fontWeight: 800, fontSize: 28, color: accentColor }}>{products.length}</p>
+              <p style={{ fontFamily: "var(--font-dm-sans),sans-serif", fontWeight: 800, fontSize: 28, color: accentColor }}>{products.length}</p>
               <p style={{ color: TEXT3, fontSize: 12 }}>Produkte</p>
             </div>
             <button
@@ -172,7 +172,7 @@ export default function SupplierProfilePage() {
 
       {/* Products grid */}
       <div style={{ maxWidth: 900, margin: "0 auto", padding: "28px 20px" }}>
-        <h2 style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 20, color: TEXT, marginBottom: 20 }}>
+        <h2 style={{ fontFamily: "var(--font-syne),sans-serif", fontWeight: 800, fontSize: 20, color: TEXT, marginBottom: 20 }}>
           Produkte {products.length > 0 && <span style={{ fontSize: 13, fontWeight: 500, color: TEXT3 }}>({products.length})</span>}
         </h2>
 
@@ -198,7 +198,7 @@ export default function SupplierProfilePage() {
                     </a>
                     {product.description && <p style={{ color: TEXT3, fontSize: 12, marginBottom: 8, lineHeight: 1.5, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{product.description}</p>}
                     <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: 8 }}>
-                      <span style={{ fontFamily: "'DM Sans',sans-serif", fontWeight: 800, fontSize: 18, color: accentColor }}>€{product.price}</span>
+                      <span style={{ fontFamily: "var(--font-dm-sans),sans-serif", fontWeight: 800, fontSize: 18, color: accentColor }}>€{product.price}</span>
                       <button onClick={() => addToCart(product.id)}
                         style={{ background: btnColor, color: "#fff", border: "none", fontSize: 12, fontWeight: 700, padding: "7px 14px", borderRadius: isDark ? 4 : 8, cursor: "pointer" }}>
                         + Warenkorb

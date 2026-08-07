@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/lib/supabase";
@@ -121,7 +121,6 @@ export default function AddProductPage() {
   return (
     <main style={{ minHeight:"100vh", background:BG, fontFamily:"'Inter','Helvetica Neue',system-ui,sans-serif", color:TEXT, paddingBottom:60 }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap');
         input::placeholder,textarea::placeholder { color:${TEXT3}; }
         @keyframes spin { to { transform:rotate(360deg); } }
       `}</style>

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
@@ -215,7 +215,7 @@ export default function OrdersPage() {
 
   return (
     <main style={{ minHeight: "100vh", background: BG, fontFamily: "'Inter','Helvetica Neue',system-ui,sans-serif", color: TEXT, paddingBottom: 60 }}>
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap'); *{box-sizing:border-box}`}</style>
+      <style>{`*{box-sizing:border-box}`}</style>
       {reorderToast && (
         <div style={{ position:"fixed", bottom:90, right:20, zIndex:999, background:"var(--kf-toast-bg,#1a1714)", color:"var(--kf-toast-fg,#fff)", fontSize:13, padding:"12px 18px", borderRadius:12, display:"flex", alignItems:"center", gap:8, boxShadow:"0 4px 24px rgba(0,0,0,0.15)" }}>
           <span style={{ width:18, height:18, background:"#22c55e", borderRadius:"50%", display:"flex", alignItems:"center", justifyContent:"center", fontSize:9, fontWeight:900 }}>✓</span>

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState, useCallback } from "react";
 import { useParams } from "next/navigation";
@@ -165,7 +165,7 @@ export default function ProductDetailsPage() {
   const avg = reviews.length ? reviews.reduce((s, r) => s + r.rating, 0) / reviews.length : 0;
 
   if (loading) return (
-    <main style={{ minHeight: "100vh", background: BG, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'DM Sans',system-ui,sans-serif" }}>
+    <main style={{ minHeight: "100vh", background: BG, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "var(--font-dm-sans),system-ui,sans-serif" }}>
       <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
       <div style={{ textAlign: "center" }}>
         <div style={{ width: 36, height: 36, border: `3px solid ${BORDER}`, borderTopColor: ACCENT, borderRadius: "50%", animation: "spin 0.8s linear infinite", margin: "0 auto 14px" }} />
@@ -175,7 +175,7 @@ export default function ProductDetailsPage() {
   );
 
   if (!product) return (
-    <main style={{ minHeight: "100vh", background: BG, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 16, fontFamily: "'DM Sans',system-ui,sans-serif" }}>
+    <main style={{ minHeight: "100vh", background: BG, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 16, fontFamily: "var(--font-dm-sans),system-ui,sans-serif" }}>
       <p style={{ fontSize: 48 }}>📦</p>
       <p style={{ color: TEXT, fontSize: 18, fontWeight: 700 }}>Produkt nicht gefunden</p>
       <a href="/marketplace" style={{ color: ACCENT, fontWeight: 600, fontSize: 14, textDecoration: "none" }}>← Zurück zum Marktplatz</a>
@@ -183,8 +183,8 @@ export default function ProductDetailsPage() {
   );
 
   return (
-    <main style={{ minHeight: "100vh", background: BG, fontFamily: "'DM Sans','Helvetica Neue',system-ui,sans-serif", color: TEXT }}>
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600;700&display=swap'); @keyframes spin{to{transform:rotate(360deg)}}`}</style>
+    <main style={{ minHeight: "100vh", background: BG, fontFamily: "var(--font-dm-sans),'Helvetica Neue',system-ui,sans-serif", color: TEXT }}>
+      <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
 
       {/* Toast */}
       {toast && (
@@ -198,7 +198,7 @@ export default function ProductDetailsPage() {
       <header style={{ background: SURFACE, borderBottom: `1px solid ${BORDER}`, padding: "0 20px", height: 60, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <img src="/flowio-icon.png" alt="Flowio" style={{ width: 30, height: 30, borderRadius: 7, objectFit: "cover" }} />
-          <span style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 15, color: TEXT, letterSpacing: "-0.3px" }}>Flowio</span>
+          <span style={{ fontFamily: "var(--font-syne),sans-serif", fontWeight: 800, fontSize: 15, color: TEXT, letterSpacing: "-0.3px" }}>Flowio</span>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           {role === "admin" && <a href="/owner/dashboard" title="Owner-Panel" style={{ background:`${ORANGE}15`, color:ACCENT, fontWeight:700, fontSize:13, textDecoration:"none", padding:"7px 12px", borderRadius:9 }}>🏛️</a>}
@@ -237,7 +237,7 @@ export default function ProductDetailsPage() {
           {/* RIGHT — details */}
           <div style={isDark ? { background:"#0c0e10", border:"1px solid #434656", borderRadius:8, padding:"32px", display:"flex", flexDirection:"column" } : {}}>
             <p style={{ fontSize: 11, fontWeight: 700, color: TEXT3, letterSpacing: "2px", textTransform: "uppercase", marginBottom: 8 }}>{product.category || "Produkt"}</p>
-            <h1 style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 28, color: TEXT, letterSpacing: "-0.8px", lineHeight: 1.15, marginBottom: 16 }}>{product.name}</h1>
+            <h1 style={{ fontFamily: "var(--font-syne),sans-serif", fontWeight: 800, fontSize: 28, color: TEXT, letterSpacing: "-0.8px", lineHeight: 1.15, marginBottom: 16 }}>{product.name}</h1>
 
             {reviews.length > 0 && (
               <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16 }}>
@@ -247,7 +247,7 @@ export default function ProductDetailsPage() {
             )}
 
             <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
-              <span style={{ fontFamily: "'DM Sans',sans-serif", fontSize: isDark ? 48 : 36, fontWeight: isDark ? 700 : 800, color: ACCENT, letterSpacing: isDark ? "-0.02em" : undefined }}>€{product.price}</span>
+              <span style={{ fontFamily: "var(--font-dm-sans),sans-serif", fontSize: isDark ? 48 : 36, fontWeight: isDark ? 700 : 800, color: ACCENT, letterSpacing: isDark ? "-0.02em" : undefined }}>€{product.price}</span>
               <span style={{ color: TEXT3, fontSize: 13 }}>/Stück</span>
             </div>
             {(product as any).shipping_cost > 0 && (
@@ -280,15 +280,15 @@ export default function ProductDetailsPage() {
               <p style={{ color: TEXT2, fontSize: 14, lineHeight: 1.8, marginBottom: 28 }}>{product.description}</p>
             )}
 
-            <button onClick={addToCart} style={{ width: "100%", background: BTN, color: "#fff", border: "none", borderRadius: isDark ? 4 : 14, padding: "16px", fontWeight: 700, fontSize: 15, cursor: "pointer", fontFamily: "'DM Sans',sans-serif", marginBottom: 10 }}>
+            <button onClick={addToCart} style={{ width: "100%", background: BTN, color: "#fff", border: "none", borderRadius: isDark ? 4 : 14, padding: "16px", fontWeight: 700, fontSize: 15, cursor: "pointer", fontFamily: "var(--font-dm-sans),sans-serif", marginBottom: 10 }}>
               🛒 In den Warenkorb
             </button>
             {supplierUserId && (
               <div style={{ display: "flex", gap: 10, marginBottom: 10 }}>
-                <button onClick={startChat} disabled={chatting} style={{ flex: 1, background: "none", border: `1.5px solid ${BORDER}`, color: TEXT, borderRadius: isDark ? 4 : 12, padding: "12px", fontWeight: 700, fontSize: 13, cursor: chatting ? "not-allowed" : "pointer", fontFamily: "'DM Sans',sans-serif" }}>
+                <button onClick={startChat} disabled={chatting} style={{ flex: 1, background: "none", border: `1.5px solid ${BORDER}`, color: TEXT, borderRadius: isDark ? 4 : 12, padding: "12px", fontWeight: 700, fontSize: 13, cursor: chatting ? "not-allowed" : "pointer", fontFamily: "var(--font-dm-sans),sans-serif" }}>
                   💬 {chatting ? "…" : "Nachricht"}
                 </button>
-                <button onClick={() => setShowOffer(true)} style={{ flex: 1, background: "none", border: `1.5px solid ${BORDER}`, color: TEXT, borderRadius: isDark ? 4 : 12, padding: "12px", fontWeight: 700, fontSize: 13, cursor: "pointer", fontFamily: "'DM Sans',sans-serif" }}>
+                <button onClick={() => setShowOffer(true)} style={{ flex: 1, background: "none", border: `1.5px solid ${BORDER}`, color: TEXT, borderRadius: isDark ? 4 : 12, padding: "12px", fontWeight: 700, fontSize: 13, cursor: "pointer", fontFamily: "var(--font-dm-sans),sans-serif" }}>
                   🤝 Preis verhandeln
                 </button>
               </div>
@@ -329,7 +329,7 @@ export default function ProductDetailsPage() {
 
         {/* Reviews section */}
         <div style={{ marginTop: 52, borderTop: `1px solid ${BORDER}`, paddingTop: 40 }}>
-          <h2 style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 22, color: TEXT, marginBottom: 28 }}>
+          <h2 style={{ fontFamily: "var(--font-syne),sans-serif", fontWeight: 800, fontSize: 22, color: TEXT, marginBottom: 28 }}>
             Bewertungen {reviews.length > 0 && <span style={{ fontSize: 14, fontWeight: 500, color: TEXT3 }}>({reviews.length})</span>}
           </h2>
 
@@ -356,7 +356,7 @@ export default function ProductDetailsPage() {
                 onFocus={e => e.currentTarget.style.borderColor = ACCENT}
                 onBlur={e => e.currentTarget.style.borderColor = BORDER} />
 
-              <button onClick={submitReview} disabled={submitting || !comment.trim()} style={{ background: submitting || !comment.trim() ? TEXT3 : BTN, color: "#fff", border: "none", borderRadius: 10, padding: "11px 22px", fontWeight: 700, fontSize: 14, cursor: submitting || !comment.trim() ? "not-allowed" : "pointer", fontFamily: "'DM Sans',sans-serif" }}>
+              <button onClick={submitReview} disabled={submitting || !comment.trim()} style={{ background: submitting || !comment.trim() ? TEXT3 : BTN, color: "#fff", border: "none", borderRadius: 10, padding: "11px 22px", fontWeight: 700, fontSize: 14, cursor: submitting || !comment.trim() ? "not-allowed" : "pointer", fontFamily: "var(--font-dm-sans),sans-serif" }}>
                 {submitting ? "Wird gespeichert..." : "Bewertung abgeben ⭐"}
               </button>
             </div>
@@ -382,7 +382,7 @@ export default function ProductDetailsPage() {
                 <div key={r.id} style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 14, padding: "16px 20px" }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
                     <Stars rating={r.rating} />
-                    <span style={{ fontFamily: "'DM Sans',sans-serif", fontWeight: 700, fontSize: 13, color: TEXT }}>{r.rating}/5</span>
+                    <span style={{ fontFamily: "var(--font-dm-sans),sans-serif", fontWeight: 700, fontSize: 13, color: TEXT }}>{r.rating}/5</span>
                     <span style={{ color: TEXT3, fontSize: 11, marginLeft: "auto" }}>{new Date(r.created_at).toLocaleDateString("de-DE")}</span>
                   </div>
                   {r.comment && <p style={{ color: TEXT2, fontSize: 14, lineHeight: 1.7 }}>{r.comment}</p>}
@@ -434,7 +434,7 @@ function NegotiateModal({ product, supplierUserId, onClose }: { product: any; su
   return (
     <>
       <div onClick={onClose} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.55)", zIndex: 200, backdropFilter: "blur(6px)" }} />
-      <div style={{ position: "fixed", top: "50%", left: "50%", transform: "translate(-50%,-50%)", background: "var(--kf-surface)", border: "1px solid var(--kf-border)", borderRadius: 20, padding: 28, width: 360, maxWidth: "90vw", zIndex: 201, fontFamily: "'DM Sans',sans-serif" }}>
+      <div style={{ position: "fixed", top: "50%", left: "50%", transform: "translate(-50%,-50%)", background: "var(--kf-surface)", border: "1px solid var(--kf-border)", borderRadius: 20, padding: 28, width: 360, maxWidth: "90vw", zIndex: 201, fontFamily: "var(--font-dm-sans),sans-serif" }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
           <div>
             <p style={{ fontWeight: 800, fontSize: 17, color: "var(--kf-text)" }}>Preis verhandeln</p>

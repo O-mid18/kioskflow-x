@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
@@ -47,7 +47,6 @@ export default function ForgotPasswordPage() {
   return (
     <main style={{ minHeight: "100vh", background: BG, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Inter','Helvetica Neue',system-ui,sans-serif", padding: "32px 16px" }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap');
         input::placeholder { color: ${TEXT3}; }
         input:focus { outline:none; border-color:${accentColor} !important; box-shadow:0 0 0 3px rgba(0,62,199,0.1); }
       `}</style>

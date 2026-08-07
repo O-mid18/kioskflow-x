@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
@@ -149,13 +149,13 @@ export default function KioskPublicPage() {
   const mapsQuery = encodeURIComponent(`${kiosk.address ?? ""}, ${kiosk.city ?? ""}`);
 
   return (
-    <div style={{ minHeight: "100vh", background: BG, fontFamily: "'DM Sans','Helvetica Neue',system-ui,sans-serif" }}>
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600;700&display=swap');`}</style>
+    <div style={{ minHeight: "100vh", background: BG, fontFamily: "var(--font-dm-sans),'Helvetica Neue',system-ui,sans-serif" }}>
+      <style>{``}</style>
 
       <nav style={{ background: SURFACE, borderBottom: `1px solid ${BORDER}`, padding: "0 24px", height: 58, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <a href="/" style={{ display: "flex", alignItems: "center", gap: 8, textDecoration: "none" }}>
           <img src="/flowio-icon.png" alt="Flowio" style={{ width: 30, height: 30, borderRadius: 7, objectFit: "cover" }} />
-          <span style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 14, color: TEXT }}>Flowio</span>
+          <span style={{ fontFamily: "var(--font-syne),sans-serif", fontWeight: 800, fontSize: 14, color: TEXT }}>Flowio</span>
         </a>
         <a href="/marketplace" style={{ fontSize: 13, color: TEXT2, textDecoration: "none" }}>Marktplatz</a>
       </nav>
@@ -174,7 +174,7 @@ export default function KioskPublicPage() {
             {kiosk.kiosk_logo_url && <img src={kiosk.kiosk_logo_url} alt="" style={{ width: 56, height: 56, borderRadius: 12, objectFit: "cover", border: `1px solid ${BORDER}` }} />}
             <div>
               <span style={{ background: `${ORANGE}15`, color: accentColor, fontSize: 11, fontWeight: 700, padding: "3px 10px", borderRadius: 100 }}>KIOSK</span>
-              <h1 style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 24, color: TEXT, marginTop: 6 }}>
+              <h1 style={{ fontFamily: "var(--font-syne),sans-serif", fontWeight: 800, fontSize: 24, color: TEXT, marginTop: 6 }}>
                 {kiosk.company_name || kiosk.full_name || "Kiosk"}
               </h1>
             </div>
@@ -221,7 +221,7 @@ export default function KioskPublicPage() {
           )}
         </div>
 
-        <h2 style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 18, color: TEXT, marginBottom: 16 }}>Sortiment ({items.length})</h2>
+        <h2 style={{ fontFamily: "var(--font-syne),sans-serif", fontWeight: 800, fontSize: 18, color: TEXT, marginBottom: 16 }}>Sortiment ({items.length})</h2>
 
         {items.length === 0 ? (
           <p style={{ color: TEXT3, fontSize: 13 }}>Dieser Kiosk hat noch keine Produkte eingetragen.</p>
@@ -272,7 +272,7 @@ export default function KioskPublicPage() {
         )}
 
         <div style={{ marginTop: 32, paddingTop: 24, borderTop: `1px solid ${BORDER}` }}>
-          <h2 style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 18, color: TEXT, marginBottom: 16 }}>
+          <h2 style={{ fontFamily: "var(--font-syne),sans-serif", fontWeight: 800, fontSize: 18, color: TEXT, marginBottom: 16 }}>
             Bewertungen {avgRating !== null && `· ⭐ ${avgRating.toFixed(1)}`}
           </h2>
 

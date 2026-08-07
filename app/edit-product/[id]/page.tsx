@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
@@ -189,7 +189,7 @@ export default function EditProductPage() {
 
   if (loading) {
     return (
-      <main style={{ minHeight:"100vh", background:BG, display:"flex", alignItems:"center", justifyContent:"center", fontFamily:"'DM Sans',system-ui,sans-serif" }}>
+      <main style={{ minHeight:"100vh", background:BG, display:"flex", alignItems:"center", justifyContent:"center", fontFamily:"var(--font-dm-sans),system-ui,sans-serif" }}>
         <style>{`@keyframes spin { to { transform:rotate(360deg); } }`}</style>
         <div style={{ textAlign:"center" }}>
           <div style={{ width:36, height:36, border:`3px solid ${BORDER}`, borderTopColor: accentColor, borderRadius:"50%", animation:"spin 0.8s linear infinite", margin:"0 auto 14px" }} />
@@ -200,9 +200,8 @@ export default function EditProductPage() {
   }
 
   return (
-    <main style={{ minHeight:"100vh", background:BG, fontFamily:"'DM Sans','Helvetica Neue',system-ui,sans-serif", color:TEXT, paddingBottom:60 }}>
+    <main style={{ minHeight:"100vh", background:BG, fontFamily:"var(--font-dm-sans),'Helvetica Neue',system-ui,sans-serif", color:TEXT, paddingBottom:60 }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600;700&display=swap');
         input::placeholder,textarea::placeholder { color:${TEXT3}; }
         @keyframes spin { to { transform:rotate(360deg); } }
       `}</style>
@@ -211,7 +210,7 @@ export default function EditProductPage() {
       <nav style={{ background:SURFACE, borderBottom:`1px solid ${BORDER}`, padding:"0 24px", height:60, display:"flex", alignItems:"center", justifyContent:"space-between" }}>
         <div style={{ display:"flex", alignItems:"center", gap:8 }}>
           <img src="/flowio-icon.png" alt="Flowio" style={{ width: 30, height: 30, borderRadius: 7, objectFit: "cover" }} />
-          <span style={{ fontFamily:"'Syne',sans-serif", fontWeight:800, fontSize:14, color:TEXT, letterSpacing:"-0.3px" }}>Flowio</span>
+          <span style={{ fontFamily:"var(--font-syne),sans-serif", fontWeight:800, fontSize:14, color:TEXT, letterSpacing:"-0.3px" }}>Flowio</span>
         </div>
         <a href="/supplier/dashboard/products" style={{ color:TEXT2, fontSize:13, textDecoration:"none", display:"flex", alignItems:"center", gap:6, fontWeight:500 }}>← Zurück zum Dashboard</a>
       </nav>
@@ -219,7 +218,7 @@ export default function EditProductPage() {
       <div style={{ maxWidth:680, margin:"0 auto", padding:"36px 24px" }}>
         <div style={{ marginBottom:32 }}>
           <p style={{ fontSize:11, fontWeight:700, color:TEXT3, letterSpacing:"2.5px", textTransform:"uppercase", marginBottom:8 }}>Lieferant-Dashboard</p>
-          <h1 style={{ fontFamily:"'Syne',sans-serif", fontWeight:800, fontSize:28, color:TEXT, letterSpacing:"-0.8px", marginBottom:6 }}>Produkt bearbeiten</h1>
+          <h1 style={{ fontFamily:"var(--font-syne),sans-serif", fontWeight:800, fontSize:28, color:TEXT, letterSpacing:"-0.8px", marginBottom:6 }}>Produkt bearbeiten</h1>
           <p style={{ color:TEXT2, fontSize:14 }}>Änderungen werden sofort im Marktplatz übernommen.</p>
         </div>
 
@@ -232,7 +231,7 @@ export default function EditProductPage() {
         <div style={{ display:"flex", flexDirection:"column", gap:14 }}>
           {/* Produktdetails */}
           <div style={{ background:SURFACE, border:`1px solid ${BORDER}`, borderRadius: isDark ? 8 : 16, padding:"24px" }}>
-            <h2 style={{ fontFamily:"'Syne',sans-serif", fontWeight:700, fontSize:14, color:TEXT, marginBottom:20 }}>Produktdetails</h2>
+            <h2 style={{ fontFamily:"var(--font-syne),sans-serif", fontWeight:700, fontSize:14, color:TEXT, marginBottom:20 }}>Produktdetails</h2>
             <div style={{ display:"flex", flexDirection:"column", gap:16 }}>
               <Field label="Name" required isDark={isDark}>
                 <input type="text" value={name} onChange={e => setName(e.target.value)} style={inputStyle(isDark)} onFocus={focus} onBlur={blur} />
@@ -251,7 +250,7 @@ export default function EditProductPage() {
 
           {/* Produktbild */}
           <div style={{ background:SURFACE, border:`1px solid ${BORDER}`, borderRadius: isDark ? 8 : 16, padding:"24px" }}>
-            <h2 style={{ fontFamily:"'Syne',sans-serif", fontWeight:700, fontSize:14, color:TEXT, marginBottom:20 }}>Produktbild</h2>
+            <h2 style={{ fontFamily:"var(--font-syne),sans-serif", fontWeight:700, fontSize:14, color:TEXT, marginBottom:20 }}>Produktbild</h2>
 
             {shownPreview ? (
               <div style={{ display:"flex", alignItems:"flex-start", gap:16 }}>
@@ -298,7 +297,7 @@ export default function EditProductPage() {
 
           {/* Weitere Fotos (Galerie) */}
           <div style={{ background:SURFACE, border:`1px solid ${BORDER}`, borderRadius: isDark ? 8 : 16, padding:"24px" }}>
-            <h2 style={{ fontFamily:"'Syne',sans-serif", fontWeight:700, fontSize:14, color:TEXT, marginBottom:6 }}>Weitere Fotos ({galleryPhotos.length}/5)</h2>
+            <h2 style={{ fontFamily:"var(--font-syne),sans-serif", fontWeight:700, fontSize:14, color:TEXT, marginBottom:6 }}>Weitere Fotos ({galleryPhotos.length}/5)</h2>
             <p style={{ fontSize:12, color:TEXT3, marginBottom:16 }}>Zusätzlich zum Hauptbild — für Detailansichten, Verpackung, o.ä.</p>
             <div style={{ display:"flex", gap:10, flexWrap:"wrap" }}>
               {galleryPhotos.map(p => (
@@ -319,7 +318,7 @@ export default function EditProductPage() {
 
           {/* Preis & Lager */}
           <div style={{ background:SURFACE, border:`1px solid ${BORDER}`, borderRadius: isDark ? 8 : 16, padding:"24px" }}>
-            <h2 style={{ fontFamily:"'Syne',sans-serif", fontWeight:700, fontSize:14, color:TEXT, marginBottom:20 }}>Preis & Lagerbestand</h2>
+            <h2 style={{ fontFamily:"var(--font-syne),sans-serif", fontWeight:700, fontSize:14, color:TEXT, marginBottom:20 }}>Preis & Lagerbestand</h2>
             <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:16 }}>
               <Field label="Preis" required isDark={isDark}>
                 <div style={{ position:"relative" }}>
@@ -343,7 +342,7 @@ export default function EditProductPage() {
           <div style={{ background:SURFACE, border:`1px solid ${BORDER}`, borderRadius: isDark ? 8 : 16, padding:"24px" }}>
             <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom: saleEnabled ? 20 : 0 }}>
               <div>
-                <h2 style={{ fontFamily:"'Syne',sans-serif", fontWeight:700, fontSize:14, color:TEXT }}>🔥 Zeitlich begrenztes Angebot</h2>
+                <h2 style={{ fontFamily:"var(--font-syne),sans-serif", fontWeight:700, fontSize:14, color:TEXT }}>🔥 Zeitlich begrenztes Angebot</h2>
                 <p style={{ fontSize:12, color:TEXT3, marginTop:4 }}>Erscheint im "Angebote heute"-Panel für Käufer.</p>
               </div>
               <label style={{ position:"relative", display:"inline-block", width:44, height:24, cursor:"pointer" }}>

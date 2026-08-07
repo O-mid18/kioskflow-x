@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
@@ -376,7 +376,7 @@ export default function KioskPageManage() {
 
   return (
     <div style={{ minHeight: "100vh", background: BG, padding: 32, fontFamily: "'Inter','Helvetica Neue',system-ui,sans-serif" }}>
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap');`}</style>
+      <style>{``}</style>
       <div style={{ maxWidth: 800, margin: "0 auto" }}>
         <a href="/profile" style={{ fontSize: 13, color: TEXT2, textDecoration: "none" }}>← Profil</a>
         <h1 style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: 26, color: TEXT, margin: "8px 0 4px" }}>Meine Kiosk-Seite</h1>

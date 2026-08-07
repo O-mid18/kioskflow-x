@@ -15,7 +15,6 @@ export default function HomePage() {
       <a href="#main-content" className="kf-skip-link">Zum Inhalt springen</a>
 
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Inter:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap');
         * { box-sizing: border-box; }
         .kf-nav-link:hover { color: #003ec7 !important; }
         .kf-step { transition: transform 0.2s, box-shadow 0.2s; }

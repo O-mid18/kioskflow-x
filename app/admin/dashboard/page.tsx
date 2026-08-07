@@ -232,7 +232,7 @@ export default function AdminDashboard() {
 
   return (
     <main style={{ minHeight: "100vh", background: BG, fontFamily: "'Inter','Helvetica Neue',system-ui,sans-serif", color: TEXT }}>
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap'); * { box-sizing: border-box; }`}</style>
+      <style>{`* { box-sizing: border-box; }`}</style>
 
       {/* Header */}
       <header style={{ background: SURFACE, borderBottom: `1px solid ${BORDER}`, padding: "0 32px", height: 60, display: "flex", alignItems: "center", justifyContent: "space-between", position: "sticky", top: 0, zIndex: 50 }}>

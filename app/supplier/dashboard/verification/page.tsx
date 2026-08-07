@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
@@ -118,7 +118,7 @@ export default function VerificationPage() {
 
   return (
     <div style={{ padding: "32px 32px 60px", fontFamily: "'Inter','Helvetica Neue',system-ui,sans-serif", color: TEXT }}>
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap'); @keyframes spin{to{transform:rotate(360deg)}} *{box-sizing:border-box}`}</style>
+      <style>{`@keyframes spin{to{transform:rotate(360deg)}} *{box-sizing:border-box}`}</style>
 
       {/* Header */}
       <div style={{ marginBottom: 28 }}>

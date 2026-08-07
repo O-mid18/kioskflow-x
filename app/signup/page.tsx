@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect } from "react";
 
@@ -27,7 +27,7 @@ export default function SignupPage() {
 
   return (
     <main style={{ minHeight: "100vh", background: BG, display: "flex", fontFamily: "'Inter','Helvetica Neue',system-ui,sans-serif" }}>
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap'); input::placeholder { color: var(--kf-text3); }`}</style>
+      <style>{`input::placeholder { color: var(--kf-text3); }`}</style>
 
       {/* Left — brand panel */}
       <div style={{ width: "45%", background: `linear-gradient(150deg, ${ORANGE} 0%, #1D4ED8 100%)`, display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "48px 52px", position: "relative", overflow: "hidden" }}>

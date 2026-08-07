@@ -37,7 +37,6 @@ export default function OwnerLogin() {
   return (
     <main style={{ minHeight: "100vh", background: BG, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Inter','Helvetica Neue',system-ui,sans-serif" }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap');
         @keyframes spin { to { transform: rotate(360deg); } }
         input:focus { outline: none; border-color: ${ORANGE} !important; box-shadow: 0 0 0 3px rgba(0,62,199,0.12) !important; }
       `}</style>

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useRef, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
@@ -131,7 +131,7 @@ export default function BuyerSignupPage() {
   if (otpStep) {
     return (
       <main style={{ minHeight: "100vh", background: BG, fontFamily: "'Inter','Helvetica Neue',system-ui,sans-serif", display: "flex", alignItems: "center", justifyContent: "center", padding: "24px" }}>
-        <style>{`@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap');`}</style>
+        <style>{``}</style>
         <div style={{ maxWidth: 420, width: "100%" }}>
           <div style={{ textAlign: "center", marginBottom: 32 }}>
             <div style={{ width: 56, height: 56, background: `${ORANGE}15`, borderRadius: 16, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28, margin: "0 auto 16px" }}>✉️</div>
@@ -193,7 +193,7 @@ export default function BuyerSignupPage() {
 
   return (
     <main style={{ minHeight: "100vh", background: BG, fontFamily: "'Inter','Helvetica Neue',system-ui,sans-serif", paddingBottom: 60 }}>
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap'); input::placeholder { color: var(--kf-text3); }`}</style>
+      <style>{`input::placeholder { color: var(--kf-text3); }`}</style>
 
       {/* Header */}
       <nav style={{ background: SURFACE, borderBottom: `1px solid ${BORDER}`, padding: "0 24px", height: 60, display: "flex", alignItems: "center", justifyContent: "space-between" }}>

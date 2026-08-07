@@ -58,7 +58,7 @@ export default function SupplierDashboardLayout({ children }: { children: React.
   if (isPendingBlocked) {
     return (
       <div style={{ minHeight: "100vh", background: BG, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Inter','Helvetica Neue',system-ui,sans-serif", padding: 24 }}>
-        <style>{`@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap');`}</style>
+        <style>{``}</style>
         <div style={{ maxWidth: 480, width: "100%", textAlign: "center" }}>
           <div style={{ fontSize: 48, marginBottom: 16 }}>⏳</div>
           <h1 style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: 24, color: TEXT, letterSpacing: "-0.5px", marginBottom: 10 }}>
@@ -93,7 +93,6 @@ export default function SupplierDashboardLayout({ children }: { children: React.
   return (
     <div style={{ display: "flex", minHeight: "100vh", background: BG, fontFamily: "'Inter','Helvetica Neue',system-ui,sans-serif" }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap');
         * { box-sizing: border-box; }
         a { text-decoration: none; }
         .kf-supplier-sidebar { position: sticky; top: 0; height: 100vh; }

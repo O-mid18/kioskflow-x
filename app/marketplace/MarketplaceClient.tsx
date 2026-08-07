@@ -401,7 +401,6 @@ export default function MarketplacePage({ initialProducts = [], initialSuppliers
   return (
     <main style={{ minHeight:"100vh", background:BG, color:TEXT, fontFamily:"'Inter','Helvetica Neue',system-ui,sans-serif", paddingBottom:80 }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap');
         @keyframes fadeUp { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
         .pcard { animation: fadeUp 0.35s ease both; transition: transform 0.2s, box-shadow 0.2s; }
         .pcard:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba(0,0,0,0.1) !important; }

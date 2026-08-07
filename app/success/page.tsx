@@ -61,7 +61,7 @@ export default function SuccessPage() {
 
   return (
     <main style={{ minHeight:"100vh", background:BG, fontFamily:"'Inter','Helvetica Neue',system-ui,sans-serif" }}>
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap'); @keyframes pop { 0% { transform:scale(0.7); opacity:0; } 80% { transform:scale(1.08); } 100% { transform:scale(1); opacity:1; } }`}</style>
+      <style>{`@keyframes pop { 0% { transform:scale(0.7); opacity:0; } 80% { transform:scale(1.08); } 100% { transform:scale(1); opacity:1; } }`}</style>
 
       {/* Step breadcrumb — all complete */}
       <div style={{ background:SURFACE, borderBottom:`1px solid ${BORDER}`, padding:"10px 24px" }}>

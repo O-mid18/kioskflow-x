@@ -318,7 +318,6 @@ export default function OwnerDashboard() {
   return (
     <main style={{ minHeight: "100vh", background: BG, fontFamily: "'Inter','Helvetica Neue',system-ui,sans-serif", color: TEXT }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap');
         @keyframes spin{to{transform:rotate(360deg)}}
         ::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-track{background:${BG}}::-webkit-scrollbar-thumb{background:${BORDER};border-radius:99px}
         input:focus,textarea:focus,select:focus{outline:none;border-color:${accentColor}!important;box-shadow:0 0 0 3px rgba(0,62,199,0.12)!important}
