@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
+import { syne, dmSans } from "@/lib/scoped-fonts";
 
 const BG     = "var(--kf-bg)";
 const SURFACE = "var(--kf-surface)";
@@ -149,7 +150,7 @@ export default function KioskPublicPage() {
   const mapsQuery = encodeURIComponent(`${kiosk.address ?? ""}, ${kiosk.city ?? ""}`);
 
   return (
-    <div style={{ minHeight: "100vh", background: BG, fontFamily: "var(--font-dm-sans),'Helvetica Neue',system-ui,sans-serif" }}>
+    <div className={`${syne.variable} ${dmSans.variable}`} style={{ minHeight: "100vh", background: BG, fontFamily: "var(--font-dm-sans),'Helvetica Neue',system-ui,sans-serif" }}>
       <style>{``}</style>
 
       <nav style={{ background: SURFACE, borderBottom: `1px solid ${BORDER}`, padding: "0 24px", height: 58, display: "flex", alignItems: "center", justifyContent: "space-between" }}>

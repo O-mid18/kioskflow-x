@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Manrope, Inter, Syne, DM_Sans } from "next/font/google";
+import { Geist, Geist_Mono, Manrope, Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 
@@ -22,20 +22,6 @@ const manrope = Manrope({
 
 const inter = Inter({
   variable: "--font-inter",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  display: "swap",
-});
-
-const syne = Syne({
-  variable: "--font-syne",
-  subsets: ["latin"],
-  weight: ["700", "800"],
-  display: "swap",
-});
-
-const dmSans = DM_Sans({
-  variable: "--font-dm-sans",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
   display: "swap",
@@ -76,7 +62,7 @@ export default function RootLayout({
   return (
     <html
       lang="de"
-      className={`${geistSans.variable} ${geistMono.variable} ${manrope.variable} ${inter.variable} ${syne.variable} ${dmSans.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${manrope.variable} ${inter.variable} h-full antialiased`}
       suppressHydrationWarning
     >
       <head>

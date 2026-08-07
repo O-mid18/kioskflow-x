@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
+import { syne, dmSans } from "@/lib/scoped-fonts";
 
 const BG = "var(--kf-bg)";
 const SURFACE = "var(--kf-surface)";
@@ -165,7 +166,7 @@ export default function ProductDetailsPage() {
   const avg = reviews.length ? reviews.reduce((s, r) => s + r.rating, 0) / reviews.length : 0;
 
   if (loading) return (
-    <main style={{ minHeight: "100vh", background: BG, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "var(--font-dm-sans),system-ui,sans-serif" }}>
+    <main className={`${syne.variable} ${dmSans.variable}`} style={{ minHeight: "100vh", background: BG, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "var(--font-dm-sans),system-ui,sans-serif" }}>
       <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
       <div style={{ textAlign: "center" }}>
         <div style={{ width: 36, height: 36, border: `3px solid ${BORDER}`, borderTopColor: ACCENT, borderRadius: "50%", animation: "spin 0.8s linear infinite", margin: "0 auto 14px" }} />
@@ -175,7 +176,7 @@ export default function ProductDetailsPage() {
   );
 
   if (!product) return (
-    <main style={{ minHeight: "100vh", background: BG, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 16, fontFamily: "var(--font-dm-sans),system-ui,sans-serif" }}>
+    <main className={`${syne.variable} ${dmSans.variable}`} style={{ minHeight: "100vh", background: BG, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 16, fontFamily: "var(--font-dm-sans),system-ui,sans-serif" }}>
       <p style={{ fontSize: 48 }}>📦</p>
       <p style={{ color: TEXT, fontSize: 18, fontWeight: 700 }}>Produkt nicht gefunden</p>
       <a href="/marketplace" style={{ color: ACCENT, fontWeight: 600, fontSize: 14, textDecoration: "none" }}>← Zurück zum Marktplatz</a>
@@ -183,7 +184,7 @@ export default function ProductDetailsPage() {
   );
 
   return (
-    <main style={{ minHeight: "100vh", background: BG, fontFamily: "var(--font-dm-sans),'Helvetica Neue',system-ui,sans-serif", color: TEXT }}>
+    <main className={`${syne.variable} ${dmSans.variable}`} style={{ minHeight: "100vh", background: BG, fontFamily: "var(--font-dm-sans),'Helvetica Neue',system-ui,sans-serif", color: TEXT }}>
       <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
 
       {/* Toast */}

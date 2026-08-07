@@ -1,4 +1,5 @@
 ﻿import type { Metadata } from "next";
+import Image from "next/image";
 import MobileNav from "./components/MobileNav";
 
 export const metadata: Metadata = {
@@ -44,7 +45,7 @@ export default function HomePage() {
       {/* NAVBAR */}
       <nav role="navigation" aria-label="Hauptnavigation" style={{ position: "sticky", top: 0, zIndex: 50, background: "var(--kf-surface)", borderBottom: "1px solid var(--kf-border)", padding: "0 32px", height: 60, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <a href="/" aria-label="Flowio — Startseite" style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none" }}>
-          <img src="/flowio-icon.png" alt="" aria-hidden="true" style={{ width: 32, height: 32, borderRadius: 8, objectFit: "cover" }} />
+          <Image src="/flowio-icon.png" alt="" aria-hidden="true" width={32} height={32} priority style={{ borderRadius: 8, objectFit: "cover" }} />
           <span style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: 16, color: "var(--kf-text)", letterSpacing: "-0.3px" }}>Flowio</span>
         </a>
         <div className="kf-nav-links" style={{ display: "flex", alignItems: "center", gap: 28 }}>
@@ -91,7 +92,7 @@ export default function HomePage() {
           </div>
           <div style={{ width: 2, height: 20, background: "var(--kf-border)", margin: "0 auto" }} aria-hidden="true" />
           <div style={{ background: ORANGE, borderRadius: 16, padding: "20px", display: "flex", alignItems: "center", gap: 14 }}>
-            <img src="/flowio-icon.png" alt="" aria-hidden="true" style={{ width: 44, height: 44, borderRadius: 12, objectFit: "cover", flexShrink: 0 }} />
+            <Image src="/flowio-icon.png" alt="" aria-hidden="true" width={44} height={44} style={{ borderRadius: 12, objectFit: "cover", flexShrink: 0 }} />
             <div style={{ flex: 1 }}>
               <p style={{ fontWeight: 700, fontSize: 14, color: "#fff" }}>Flowio Marktplatz</p>
               <p style={{ fontSize: 12, color: "rgba(255,255,255,0.7)" }}>Sichere Zahlung · Direktpreise</p>
@@ -261,7 +262,7 @@ export default function HomePage() {
         <div style={{ maxWidth: 1200, margin: "0 auto", display: "grid", gridTemplateColumns: "2fr 1fr 1fr 1fr", gap: 48, marginBottom: 36 }} className="kf-footer-grid">
           <div>
             <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
-              <img src="/flowio-icon.png" alt="" aria-hidden="true" style={{ width: 28, height: 28, borderRadius: 7, objectFit: "cover" }} />
+              <Image src="/flowio-icon.png" alt="" aria-hidden="true" width={28} height={28} style={{ borderRadius: 7, objectFit: "cover" }} />
               <span style={{ fontFamily: "'Manrope',sans-serif", fontWeight: 800, fontSize: 14, color: "var(--kf-text)" }}>Flowio</span>
             </div>
             <p style={{ fontSize: 13, color: "var(--kf-text3)", lineHeight: 1.7, maxWidth: 260 }}>B2B Marktplatz für Kiosk-Betreiber und lokale Marken in Frankfurt, Deutschland.</p>
