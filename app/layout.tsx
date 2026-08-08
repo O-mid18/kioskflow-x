@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { Geist, Geist_Mono, Manrope, Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
@@ -72,6 +73,18 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col">
         {children}
         <ThemeToggle />
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-0QHWYPZBPW"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-0QHWYPZBPW');
+          `}
+        </Script>
       </body>
     </html>
   );
