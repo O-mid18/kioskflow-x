@@ -459,9 +459,9 @@ export default function MarketplacePage({ initialProducts = [], initialSuppliers
       </header>
 
       <div style={{ maxWidth:1100, margin:"0 auto", padding:"0 20px" }}>
-        <div style={{ display: isDark ? "flex" : "block", alignItems:"flex-start", gap:24, paddingTop: isDark ? 24 : 0 }}>
+        <div className="kf-marketplace-layout" style={{ display: isDark ? "flex" : "block", alignItems:"flex-start", gap:24, paddingTop: isDark ? 24 : 0 }}>
           {isDark && (
-            <aside style={{ width:256, flexShrink:0, position:"sticky", top:80 }}>
+            <aside className="kf-marketplace-sidebar" style={{ width:256, flexShrink:0, position:"sticky", top:80 }}>
               <div style={{ background:"#1a1c1e", border:"1px solid rgba(255,255,255,0.1)", borderRadius:4, padding:16, display:"flex", flexDirection:"column", gap:16 }}>
                 <div style={{ fontFamily:"'Manrope',sans-serif", fontWeight:600, fontSize:16, color:"#e2e2e5", paddingBottom:8, borderBottom:"1px solid rgba(255,255,255,0.1)" }}>Filters</div>
                 <div>

@@ -308,3 +308,14 @@ html.dark { color-scheme: dark; }
     bottom: 90px;
   }
 }
+
+@media (max-width: 900px) {
+  .kf-marketplace-layout {
+    display: block !important;
+  }
+  .kf-marketplace-sidebar {
+    width: 100% !important;
+    position: static !important;
+    margin-bottom: 16px;
+  }
+}
